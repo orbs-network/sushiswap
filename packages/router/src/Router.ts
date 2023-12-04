@@ -1,27 +1,27 @@
-import { ChainId } from 'sushi/chain'
-import { Token, Type, WNATIVE, WNATIVE_ADDRESS } from 'sushi/currency'
 import {
-  findMultiRouteExactIn,
-  getBigInt,
   MultiRoute,
   NetworkInfo,
-  RouteStatus,
   RPool,
   RToken,
+  RouteStatus,
+  findMultiRouteExactIn,
+  getBigInt,
 } from '@sushiswap/tines'
+import { ChainId } from 'sushi/chain'
+import { Token, Type, WNATIVE, WNATIVE_ADDRESS } from 'sushi/currency'
 import { Address, Hex } from 'viem'
 
-import { convertTokenToBento, getBentoChainId } from './lib/convert'
+import { convertTokenToBento, getBentoChainId } from '@sushiswap/tines'
+import { getRouteProcessorCode } from './TinesToRouteProcessor'
+import {
+  PermitData,
+  RouterLiquiditySource,
+  getRouteProcessor2Code,
+} from './TinesToRouteProcessor2'
+import { getRouteProcessor4Code } from './TinesToRouteProcessor4'
 import { LiquidityProviders } from './liquidity-providers/LiquidityProvider'
 import { Bridge } from './pools/Bridge'
 import { PoolCode } from './pools/PoolCode'
-import { getRouteProcessorCode } from './TinesToRouteProcessor'
-import {
-  getRouteProcessor2Code,
-  PermitData,
-  RouterLiquiditySource,
-} from './TinesToRouteProcessor2'
-import { getRouteProcessor4Code } from './TinesToRouteProcessor4'
 
 function TokenToRToken(t: Type): RToken {
   if (t instanceof Token) return t as RToken
@@ -175,7 +175,7 @@ export class Router {
   }
 
   static findBestRoute(
-    poolCodesMap: Map<string, PoolCode>,
+    poolCodes: Map<string, PoolCode> | PoolCode[],
     chainId: ChainId,
     fromToken: Type,
     amountIn: bigint,
@@ -197,15 +197,23 @@ export class Router {
       },
     ]
 
-    let poolCodes = Array.from(poolCodesMap.values())
+    let poolCodesMap: Map<string, PoolCode>
+    if (poolCodes instanceof Map) poolCodesMap = poolCodes
+    else {
+      poolCodesMap = new Map()
+      poolCodes.forEach((p) => poolCodesMap.set(p.pool.uniqueID(), p))
+    }
+
+    let poolCodesList =
+      poolCodes instanceof Map ? Array.from(poolCodes.values()) : poolCodes
     if (providers) {
-      poolCodes = poolCodes.filter((pc) =>
+      poolCodesList = poolCodesList.filter((pc) =>
         [...providers, LiquidityProviders.NativeWrap].includes(
           pc.liquidityProvider,
         ),
       )
     }
-    let pools = Array.from(poolCodes).map((pc) => pc.pool)
+    let pools = Array.from(poolCodesList).map((pc) => pc.pool)
 
     if (poolFilter) pools = pools.filter(poolFilter)
 
@@ -362,7 +370,7 @@ export class Router {
     route.legs.forEach((l, i) => {
       res += `${shiftSub}${i + 1}. ${l.tokenFrom.symbol} ${Math.round(
         l.absolutePortion * 100,
-      )}% -> [${poolCodesMap.get(l.poolAddress)?.poolName}] -> ${
+      )}% -> [${poolCodesMap.get(l.uniqueId)?.poolName}] -> ${
         l.tokenTo.symbol
       }\n`
       //console.log(l.poolAddress, l.assumedAmountIn, l.assumedAmountOut)

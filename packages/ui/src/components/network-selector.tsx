@@ -3,6 +3,7 @@
 import React, { ReactNode, useMemo, useState } from 'react'
 import { Chain, ChainId } from 'sushi/chain'
 
+import Link from 'next/link'
 import {
   Command,
   CommandEmpty,
@@ -10,7 +11,7 @@ import {
   CommandInput,
   CommandItem,
 } from './command'
-import { NetworkIcon } from './icons/NetworkIcon'
+import { AptosCircle, NetworkIcon } from './icons'
 import { Popover, PopoverContent, PopoverPrimitive } from './popover'
 
 export type NetworkSelectorOnSelectCallback<T extends number = ChainId> = (
@@ -23,8 +24,12 @@ const PREFERRED_CHAINID_ORDER: ChainId[] = [
   ChainId.ARBITRUM,
   ChainId.BASE,
   ChainId.POLYGON,
-  ChainId.LINEA,
+  ChainId.POLYGON_ZKEVM,
+  ChainId.SCROLL,
   ChainId.OPTIMISM,
+  ChainId.LINEA,
+  ChainId.CORE,
+  ChainId.FILECOIN,
   ChainId.BSC,
   ChainId.THUNDERCORE,
   ChainId.GNOSIS,
@@ -41,7 +46,10 @@ export interface NetworkSelectorProps<T extends number = ChainId> {
   children: ReactNode
 }
 
-const NEW_CHAINS: number[] = [ChainId.LINEA] satisfies ChainId[]
+const NEW_CHAINS: number[] = [
+  ChainId.FILECOIN,
+  ChainId.HAQQ,
+] satisfies ChainId[]
 
 const NetworkSelector = <T extends number>({
   onSelect,
@@ -62,11 +70,30 @@ const NetworkSelector = <T extends number>({
       <PopoverPrimitive.Trigger asChild>{children}</PopoverPrimitive.Trigger>
       <PopoverContent className="!w-60 !p-0 !overflow-x-hidden !overflow-y-scroll scroll">
         <Command>
-          <CommandInput placeholder="Search network" />
+          <CommandInput
+            testdata-id="network-selector-input"
+            placeholder="Search network"
+          />
           <CommandEmpty>No network found.</CommandEmpty>
           <CommandGroup>
+            <CommandItem className="cursor-pointer">
+              <Link
+                href="https://aptos.sushi.com"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <div className="flex items-center gap-2">
+                  <AptosCircle width={22} height={22} />
+                  Aptos
+                  <div className="text-[10px] italic rounded-full px-[6px] bg-gradient-to-r from-blue to-pink text-white font-bold">
+                    NEW
+                  </div>
+                </div>
+              </Link>
+            </CommandItem>
             {_networks.map((el) => (
               <CommandItem
+                className="cursor-pointer"
                 testdata-id={`network-selector-${el}`}
                 value={`${Chain.from(el)?.name}__${el}`}
                 key={el}

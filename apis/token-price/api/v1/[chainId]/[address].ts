@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { roundToNearestMinutes, sub } from 'date-fns'
 
-import { getPrice } from '../../../lib/api.js'
+import { getPrice } from '../../../lib/api/v1.js'
 import { TokenPriceV1ApiSchema } from '../../../lib/schemas/v1/chainId/address.js'
 
 const handler = async (request: VercelRequest, response: VercelResponse) => {

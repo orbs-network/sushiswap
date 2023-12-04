@@ -1,4 +1,4 @@
-export * from './count.js'
-export * from './pool.js'
-export * from './pools.js'
+export * from './count/count'
+export * from './pool/pool'
+export * from './pools/pools'
 export { ChefType, Protocol, RewarderType } from '@sushiswap/database'

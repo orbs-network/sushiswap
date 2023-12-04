@@ -1,5 +1,5 @@
 {
-  "extends": "@sushiswap/typescript-config/esm.json",
+  "extends": "@tsconfig/node18/tsconfig.json",
   "include": ["src", "resolvers"],
   "exclude": ["node_modules"],
   "compilerOptions": {
@@ -7,8 +7,8 @@
     "rootDir": ".",
     "target": "ES2020",
     "lib": ["ESNext"],
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ES2020",
+    "moduleResolution": "Bundler",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "downlevelIteration": true,

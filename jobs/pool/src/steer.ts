@@ -1,4 +1,3 @@
-import { getPools, getTokenPricesChain } from '@sushiswap/client'
 import { Prisma, SteerStrategy, VaultState } from '@sushiswap/database'
 import {
   STEER_ENABLED_NETWORKS,
@@ -45,12 +44,26 @@ async function extractChain(chainId: SteerChainId) {
     url: STEER_SUBGRAPH_URL[chainId],
   })
 
+  const { getTokenPricesChain, getPools } = await import('@sushiswap/client')
+
   const prices = await getTokenPricesChain({ chainId })
+
   const { vaults } = await sdk.SteerVaults()
-  const pools = await getPools({
-    ids: vaults.map((vault) => `${chainId}:${vault.pool.toLowerCase()}`),
-    chainIds: [chainId],
-  })
+
+  const poolIds = vaults
+    .filter((vault) => !!vault.pool)
+    .map((vault) => `${chainId}:${vault.pool.toLowerCase()}`)
+
+  const pools = [] as Awaited<ReturnType<typeof getPools>>
+
+  while (poolIds.length > 0) {
+    const poolIdsChunk = poolIds.splice(0, 100)
+    const poolsChunk = await getPools({
+      ids: poolIdsChunk,
+      chainIds: [chainId],
+    })
+    pools.push(...poolsChunk)
+  }
 
   const vaultsWithPayloads = await Promise.allSettled(
     vaults.map(async (vault) => {
@@ -155,8 +168,9 @@ function transform(
   return chainsWithVaults.flatMap(({ chainId, vaults }) =>
     vaults.flatMap((vault) => {
       // ! Missing strategies will be ignored
-      const strategyType =
-        StrategyTypes[vault?.payload?.strategyConfigData.name]
+      const strategyType = vault?.payload?.strategyConfigData.name
+        ? StrategyTypes[vault.payload.strategyConfigData.name]
+        : null
 
       if (!strategyType) return []
 
@@ -181,7 +195,7 @@ function transform(
       )
 
       let lastAdjustmentTimestamp = Math.floor(
-        vault.payload.strategyConfigData.epochStart,
+        vault.payload!.strategyConfigData.epochStart,
       )
       if (lastAdjustmentTimestamp > 1000000000000) {
         lastAdjustmentTimestamp = Math.floor(lastAdjustmentTimestamp / 1000)
@@ -219,7 +233,7 @@ function transform(
 
         strategy: strategyType,
         payloadHash: vault.payloadIpfs,
-        description: vault.payload.strategyConfigData.description,
+        description: vault.payload!.strategyConfigData.description,
         state: Object.values(VaultState)[vault.state],
 
         performanceFee: 0.15, // currently constant
@@ -228,7 +242,7 @@ function transform(
         upperTick: highestTick,
 
         adjustmentFrequency: Number(
-          vault.payload.strategyConfigData.epochLength,
+          vault.payload!.strategyConfigData.epochLength,
         ),
         lastAdjustmentTimestamp,
 

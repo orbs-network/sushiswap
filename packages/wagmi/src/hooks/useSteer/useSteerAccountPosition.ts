@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getChainIdAddressFromId } from 'sushi'
 import { Address, usePublicClient } from 'wagmi'
 
+import { PublicClient } from 'viem'
 import { clientsFromIds } from './getClientsFromIds'
 
 interface UseSteerAccountPositions {
@@ -23,13 +24,24 @@ export const useSteerAccountPositions = ({
 
   return useQuery({
     queryKey: ['useSteerAccountPositions', { vaultIds, account, client }],
-    queryFn: () => {
+    queryFn: async () => {
       if (!vaultIds || !account) return null
 
-      return getSteerAccountPositions({
-        clients: clientsFromIds(vaultIds),
+      const data = await getSteerAccountPositions({
+        clients: clientsFromIds(vaultIds) as PublicClient[],
         account,
         vaultIds: vaultIds,
+      })
+
+      return data.map((el, i) => {
+        if (el) {
+          return {
+            ...el,
+            vaultId: vaultIds[i],
+          }
+        }
+
+        return null
       })
     },
     refetchInterval: 10000,

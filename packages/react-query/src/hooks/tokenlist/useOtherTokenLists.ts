@@ -1,11 +1,11 @@
-import { getAddress } from '@ethersproject/address'
-import { ChainId } from 'sushi/chain'
-import { Token } from 'sushi/currency'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
+import { ChainId } from 'sushi/chain'
+import { Token } from 'sushi/currency'
+import { getAddress } from 'viem'
 
+import { BLACKLIST_TOKEN_IDS, DEFAULT_LIST_OF_LISTS } from 'sushi/token-list'
 import { useTokens } from '../tokens'
-import { DEFAULT_LIST_OF_LISTS } from './constants'
 import { otherTokenListValidator } from './validator'
 
 interface UseOtherTokenListsParams {
@@ -26,14 +26,18 @@ export const useOtherTokenListsQuery = ({
       )
       return res
         .map((el) => otherTokenListValidator.parse(el))
-        .map((el) => el.tokens)
-        .flat()
+        .flatMap((el) => el.tokens)
     },
     keepPreviousData: true,
     staleTime: 900000, // 15 mins
     cacheTime: 86400000, // 24hs
     enabled: Boolean(defaultTokenList && query && chainId && query.length > 2),
+    refetchOnWindowFocus: true,
   })
+
+  const blacklisted = useMemo(() => {
+    return BLACKLIST_TOKEN_IDS.map((el) => el.toLowerCase())
+  }, [])
 
   return useMemo(() => {
     const _query = query?.toLowerCase()
@@ -44,6 +48,7 @@ export const useOtherTokenListsQuery = ({
         if (!_query || chainId !== _chainId) return acc
         // Filter out dupes
         if (defaultTokenList[`${_chainId}:${getAddress(address)}`]) return acc
+        if (blacklisted.includes(address.toLowerCase())) return acc
 
         if (
           symbol.toLowerCase().includes(_query) ||
@@ -67,7 +72,13 @@ export const useOtherTokenListsQuery = ({
       ...tokenListQuery,
       data: _data,
     }
-  }, [query, defaultTokenList, tokenListQuery]) as typeof tokenListQuery & {
+  }, [
+    chainId,
+    query,
+    defaultTokenList,
+    tokenListQuery,
+    blacklisted,
+  ]) as typeof tokenListQuery & {
     data: Record<string, Token>
   }
 }

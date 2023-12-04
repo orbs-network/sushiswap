@@ -1,6 +1,6 @@
 import { Address } from 'viem'
 
-import { RPool, RToken } from './PrimaryPools'
+import { RPool, RToken } from './RPool'
 
 export class BridgeUnlimited extends RPool {
   constructor(
@@ -31,7 +31,7 @@ export class BridgeUnlimited extends RPool {
     return 1
   }
 
-  alwaysAppropriateForPricing() {
+  override alwaysAppropriateForPricing() {
     return true
   }
 }

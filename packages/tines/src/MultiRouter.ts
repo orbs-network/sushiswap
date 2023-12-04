@@ -5,7 +5,7 @@ import {
   NoWayMultiRoute,
   RouteStatus,
 } from './Graph'
-import { RPool, RToken, setTokenId } from './PrimaryPools'
+import { RPool, RToken, setTokenId } from './RPool'
 
 // Assumes route is a single path
 function calcPriceImactWithoutFee(route: MultiRoute) {
@@ -42,7 +42,7 @@ function calcBestFlowNumber(
     (bestSingleRoute.gasSpent * (gasPriceIn || 0) * amountIn) / priceImpact,
   )
   const bestFlowNumber = Math.round(amountIn / bestFlowAmount)
-  if (!isFinite(bestFlowNumber)) return maxFlowNumber
+  if (!Number.isFinite(bestFlowNumber)) return maxFlowNumber
 
   const realFlowNumber = Math.max(1, Math.min(bestFlowNumber, maxFlowNumber))
   return realFlowNumber
@@ -74,7 +74,7 @@ function deduplicatePools(pools: RPool[]): RPool[] {
     const chId1 = p.token1.chainId || 0
     const chainInfo =
       chId0 < chId1 ? `_${chId0}_${chId1}` : `_${chId1}_${chId0}`
-    poolMap.set(p.address + chainInfo, p)
+    poolMap.set(p.uniqueID() + chainInfo, p)
   })
   return Array.from(poolMap.values())
 }
@@ -88,29 +88,33 @@ export function findMultiRouteExactIn(
   gasPrice?: number,
   flows?: number | number[],
 ): MultiRoute {
-  pools = deduplicatePools(pools)
-  checkChainId(pools, baseTokenOrNetworks)
-  setTokenId(from, to)
-  if (from.tokenId === to.tokenId) return NoWayMultiRoute(from, to)
-  const g = new Graph(pools, from, baseTokenOrNetworks, gasPrice)
+  try {
+    pools = deduplicatePools(pools)
+    checkChainId(pools, baseTokenOrNetworks)
+    setTokenId(from, to)
+    if (from.tokenId === to.tokenId) return NoWayMultiRoute(from, to)
+    const g = new Graph(pools, from, baseTokenOrNetworks, gasPrice)
 
-  if (flows !== undefined)
-    return g.findBestRouteExactIn(from, to, amountIn, flows)
+    if (flows !== undefined)
+      return g.findBestRouteExactIn(from, to, amountIn, flows)
 
-  const outSingle = g.findBestRouteExactIn(from, to, amountIn, 1)
-  // Possible optimization of timing
-  // if (g.findBestPathExactIn(from, to, amountIn/100 + 10_000, 0)?.gasSpent === 0) return outSingle
-  g.cleanTmpData()
+    const outSingle = g.findBestRouteExactIn(from, to, amountIn, 1)
+    // Possible optimization of timing
+    // if (g.findBestPathExactIn(from, to, amountIn/100 + 10_000, 0)?.gasSpent === 0) return outSingle
+    g.cleanTmpData()
 
-  const bestFlowNumber = calcBestFlowNumber(
-    outSingle,
-    amountIn,
-    g.getVert(from)?.gasPrice,
-  )
-  if (bestFlowNumber === 1) return outSingle
+    const bestFlowNumber = calcBestFlowNumber(
+      outSingle,
+      amountIn,
+      g.getVert(from)?.gasPrice,
+    )
+    if (bestFlowNumber === 1) return outSingle
 
-  const outMulti = g.findBestRouteExactIn(from, to, amountIn, bestFlowNumber)
-  return getBetterRouteExactIn(outSingle, outMulti)
+    const outMulti = g.findBestRouteExactIn(from, to, amountIn, bestFlowNumber)
+    return getBetterRouteExactIn(outSingle, outMulti)
+  } catch (_e) {
+    return NoWayMultiRoute(from, to)
+  }
 }
 
 function getBetterRouteExactOut(
@@ -242,7 +246,7 @@ function checkChainId(
   pools: RPool[],
   baseTokenOrNetworks: RToken | NetworkInfo[],
 ) {
-  if (baseTokenOrNetworks instanceof Array) {
+  if (Array.isArray(baseTokenOrNetworks)) {
     baseTokenOrNetworks.forEach((n) => {
       if (n.chainId !== n.baseToken.chainId) {
         throw new Error(
@@ -252,10 +256,11 @@ function checkChainId(
     })
   }
 
-  const chainIds: (string | number | undefined)[] =
-    baseTokenOrNetworks instanceof Array
-      ? baseTokenOrNetworks.map((n) => n.chainId)
-      : [baseTokenOrNetworks.chainId]
+  const chainIds: (string | number | undefined)[] = Array.isArray(
+    baseTokenOrNetworks,
+  )
+    ? baseTokenOrNetworks.map((n) => n.chainId)
+    : [baseTokenOrNetworks.chainId]
   const chainIdSet = new Set(chainIds)
 
   const checkToken = (t: RToken) => {

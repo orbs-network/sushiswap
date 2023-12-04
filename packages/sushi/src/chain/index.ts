@@ -58,6 +58,7 @@ export const Type = {
 } as const
 export type Type = typeof Type[keyof typeof Type]
 
+// biome-ignore lint/suspicious/noUnsafeDeclarationMerging: explaination
 export class Chain implements Chain {
   public static fromRaw(data: Data) {
     return new Chain(data)
@@ -101,6 +102,11 @@ export class Chain implements Chain {
     }
 
     // process explorer overrides etc...
+    if (data.name === 'Scroll') {
+      this.explorers?.sort((explorer) =>
+        explorer.name === 'Scrollscan' ? -1 : 1,
+      )
+    }
   }
   getTxUrl(txHash: string): string {
     if (!this.explorers) return ''

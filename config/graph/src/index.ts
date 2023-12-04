@@ -32,6 +32,10 @@ export const SUSHISWAP_ENABLED_NETWORKS = [
   ChainId.BOBA_BNB,
   ChainId.BASE,
   ChainId.SCROLL,
+  ChainId.KAVA,
+  ChainId.METIS,
+  ChainId.BTTC,
+  ChainId.FILECOIN,
   // ChainId.PALM,
   // ChainId.HECO,
   // ChainId.OKEX
@@ -58,6 +62,11 @@ export const SUSHISWAP_V3_ENABLED_NETWORKS = [
   ChainId.BASE,
   ChainId.LINEA,
   ChainId.SCROLL,
+  ChainId.KAVA,
+  ChainId.METIS,
+  ChainId.BTTC,
+  ChainId.FILECOIN,
+  ChainId.HAQQ,
 ]
 export type SushiSwapV3ChainId = typeof SUSHISWAP_V3_ENABLED_NETWORKS[number]
 
@@ -81,10 +90,12 @@ export const PENDING_KAVA_HOST = 'pvt.graph.kava.io/subgraphs/id'
 export const METIS_HOST = 'andromeda.thegraph.metis.io/subgraphs/name'
 export const PENDING_METIS_HOST = 'andromeda.thegraph.metis.io/subgraphs/id'
 
+export const FILECOIN_HOST = 'sushi.laconic.com/subgraphs/name'
 export const STUDIO_HOST = 'api.studio.thegraph.com/query/32073'
 export const THUNDERCORE_HOST = 'graph-node.thundercore.com/subgraphs/name'
 export const CORE_HOST = 'thegraph.coredao.org/subgraphs/name'
 export const LINEA_HOST = 'graph-query.linea.build/subgraphs/name'
+export const HAQQ_HOST = 'haqq.graph.p2p.org/subgraphs/name'
 
 export const SUSHI_HOST = 'subgraphs.sushi.com/subgraphs/name'
 
@@ -120,6 +131,8 @@ export const CHAIN_NAME: Record<number, string> = {
   [ChainId.BASE]: 'Base',
   [ChainId.LINEA]: 'Linea',
   [ChainId.SCROLL]: 'Scroll',
+  [ChainId.FILECOIN]: 'Filecoin',
+  [ChainId.HAQQ]: 'HAQQ',
 } as const
 
 export const SUBGRAPH_HOST: Record<number, string> = {
@@ -153,6 +166,8 @@ export const SUBGRAPH_HOST: Record<number, string> = {
   [ChainId.BASE]: STUDIO_HOST,
   [ChainId.LINEA]: LINEA_HOST,
   [ChainId.SCROLL]: STUDIO_HOST,
+  [ChainId.FILECOIN]: FILECOIN_HOST,
+  [ChainId.HAQQ]: HAQQ_HOST,
 } as const
 
 export const BENTOBOX_SUBGRAPH_NAME = {
@@ -208,6 +223,8 @@ export const BLOCKS_SUBGRAPH_NAME: Record<number, string> = {
   [ChainId.BASE]: 'blocks-base/v0.0.1',
   [ChainId.LINEA]: 'sushiswap/blocks-linea',
   [ChainId.SCROLL]: 'blocks-scroll/v0.0.1',
+  [ChainId.FILECOIN]: 'sushiswap/blocks',
+  [ChainId.HAQQ]: 'sushi/blocks-haqq',
 } as const
 
 export const SECONDS_BETWEEN_BLOCKS: Record<number, number> = {
@@ -278,6 +295,10 @@ export const SUSHISWAP_SUBGRAPH_NAME: Record<number, string> = {
   [ChainId.BOBA_BNB]: 'sushi-0m/sushiswap-boba-bnb',
   [ChainId.BASE]: 'sushiswap-base/v0.0.1',
   [ChainId.SCROLL]: 'sushiswap-scroll/v0.0.1',
+  [ChainId.KAVA]: 'sushi-v2/sushiswap-kava',
+  [ChainId.METIS]: 'sushi-v2/sushiswap-metis',
+  [ChainId.BTTC]: 'sushi-v2/sushiswap-bttc',
+  [ChainId.FILECOIN]: 'sushiswap/sushiswap-filecoin',
 } as const
 
 export const SUSHISWAP_V3_SUBGRAPH_NAME: Record<number, string> = {
@@ -299,6 +320,11 @@ export const SUSHISWAP_V3_SUBGRAPH_NAME: Record<number, string> = {
   [ChainId.BASE]: 'v3-base/v0.0.1',
   [ChainId.LINEA]: 'sushi-v3/v3-linea',
   [ChainId.SCROLL]: 'v3-scroll/v0.0.1',
+  [ChainId.KAVA]: 'sushi-v3/v3-kava',
+  [ChainId.METIS]: 'sushi-v3/v3-metis',
+  [ChainId.BTTC]: 'sushi-v3/v3-bttc',
+  [ChainId.FILECOIN]: 'sushiswap/v3-filecoin',
+  [ChainId.HAQQ]: 'sushi/v3-haqq',
 }
 
 export const TRIDENT_SUBGRAPH_NAME: Record<number, string> = {
@@ -435,7 +461,7 @@ export const STEER_SUBGRAPH_URL: Record<SteerChainId, string> = {
     'subgraph.steer.finance/linea/subgraphs/name/steerprotocol/steer-linea',
   [ChainId.SCROLL]:
     'subgraph.steer.finance/scroll/subgraphs/name/steerprotocol/steer-scroll',
-  // [ChainId.MANTA]: 'https://subgraph.steer.finance/manta/subgraphs/name/steerprotocol/steer-manta'
+  // [ChainId.MANTA]: 'subgraph.steer.finance/manta/subgraphs/name/steerprotocol/steer-manta'
 }
 
 export const DEFAULT_CHAIN_ID = ChainId.ETHEREUM

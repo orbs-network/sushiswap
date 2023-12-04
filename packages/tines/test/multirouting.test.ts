@@ -1,14 +1,15 @@
 import { Address } from 'viem'
 
 import {
+  MultiRoute,
+  RouteStatus,
   closeValues,
   findMultiRouteExactIn,
   findMultiRouteExactOut,
   getBigInt,
-  MultiRoute,
-  RouteStatus,
 } from '../src'
-import { ConstantProductRPool, RToken } from '../src/PrimaryPools'
+import { ConstantProductRPool } from '../src/PrimaryPools'
+import { RToken } from '../src/RPool'
 import { checkRouteResult } from './snapshots/snapshot'
 
 const gasPrice = 1 * 200 * 1e-9
