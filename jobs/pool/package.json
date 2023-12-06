@@ -26,15 +26,15 @@
     "build": "graphclient build --fileType js && rm -f .graphclient/package.json",
     "check": "tsc --pretty --noEmit",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-    "incentives": "ts-node --swc src/incentives.ts",
+    "incentives": "tsx --swc src/incentives.ts",
     "lint": "TIMING=1 eslint src",
     "lint:fix": "TIMING=1 eslint src --fix",
-    "pools": "ts-node --swc src/pools.ts",
-    "server": "ts-node src/server.ts",
-    "start": "ts-node src/server.ts",
+    "pools": "tsx --swc src/pools.ts",
+    "server": "tsx src/server.ts",
+    "start": "tsx src/server.ts",
     "test": "jest --passWithNoTests",
     "validate": "graphclient validate",
-    "volume": "ts-node --swc src/volume.ts"
+    "volume": "tsx --swc src/volume.ts"
   },
   "jest": {
     "preset": "@sushiswap/jest-config/node"
@@ -96,7 +96,6 @@
     "eslint": "8.43.0",
     "jest": "29.3.1",
     "prettier": "2.8.1",
-    "ts-node": "10.9.1",
     "typescript": "5.0.4"
   }
 }
