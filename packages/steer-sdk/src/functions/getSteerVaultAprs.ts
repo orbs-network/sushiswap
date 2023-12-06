@@ -6,7 +6,7 @@ interface GetSteerVaultsAprs {
   vaultIds: string[]
 }
 
-function getApr(
+async function getApr(
   chainId: number,
   address: string,
   interval?: number,
