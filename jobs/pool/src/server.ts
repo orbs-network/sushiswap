@@ -5,6 +5,8 @@ import express from 'express'
 
 import { steer } from './steer.js'
 
+process.env['NEXT_PUBLIC_EVM_APP_BASE_URL'] = 'https://www.sushi.com/'
+
 const app = express()
 
 app.get(
