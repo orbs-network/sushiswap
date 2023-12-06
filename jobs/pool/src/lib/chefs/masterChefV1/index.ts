@@ -46,7 +46,11 @@ export async function getMasterChefV1(): Promise<ChefReturn> {
       const lpBalance = lpBalances.find(({ token }) => token === farm.lpToken)?.balance
       if (!pair || !lpBalance) return acc
 
-      const rewardPerDay = sushiPerDay * (Number(farm.allocPoint) / Number(totalAllocPoint))
+      let rewardPerDay = sushiPerDay * (Number(farm.allocPoint) / Number(totalAllocPoint))
+
+      // Edge case for virtually disabled rewards
+      if(rewardPerDay < 0.000001) rewardPerDay = 0
+
       const rewardPerYearUSD = daysInYear * rewardPerDay * sushiPriceUSD
 
       const incentives: Farm['incentives'] = [

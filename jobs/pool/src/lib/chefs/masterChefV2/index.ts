@@ -63,7 +63,11 @@ export async function getMasterChefV2(): Promise<ChefReturn> {
     farms: pools.reduce<Record<string, Farm>>((acc, pool) => {
       if (!pool.pair || !pool.lpBalance || !pool.poolInfo) return acc
 
-      const sushiRewardPerDay = sushiPerDay * (Number(pool.poolInfo.allocPoint) / Number(totalAllocPoint))
+      let sushiRewardPerDay = sushiPerDay * (Number(pool.poolInfo.allocPoint) / Number(totalAllocPoint))
+
+      // Edge case for virtually disabled rewards
+      if(sushiRewardPerDay < 0.000001) sushiRewardPerDay = 0
+
       const sushiRewardPerYearUSD = daysInYear * sushiRewardPerDay * sushiPriceUSD
 
       const stakedLiquidityUSD = (pool.pair.liquidityUSD * pool.lpBalance) / pool.pair.totalSupply

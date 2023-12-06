@@ -68,14 +68,18 @@ export async function getMinichef(chainId: SushiSwapChainId | TridentChainId): P
 
         if (!pool.pair || typeof pool.lpBalance !== 'number' || !pool.poolInfo) return acc
 
-        const sushiRewardPerDay = sushiPerDay * (Number(pool.poolInfo.allocPoint) / Number(totalAllocPoint))
+        let sushiRewardPerDay = sushiPerDay * (Number(pool.poolInfo.allocPoint) / Number(totalAllocPoint))
+        
+        // Edge case for virtually disabled rewards
+        if(sushiRewardPerDay < 0.000001) sushiRewardPerDay = NaN
+        
         const sushiRewardPerYearUSD = daysInYear * sushiRewardPerDay * sushiPriceUSD
 
         const stakedLiquidityUSD = (pool.pair.liquidityUSD * pool.lpBalance) / pool.pair.totalSupply
 
         const incentives: Farm['incentives'] = []
 
-        if (!isNaN(sushiRewardPerDay)) {
+        if (!Number.isNaN(sushiRewardPerDay)) {
           incentives.push({
             apr: sushiRewardPerYearUSD / stakedLiquidityUSD,
             rewardPerDay: sushiRewardPerDay,
@@ -113,7 +117,10 @@ export async function getMinichef(chainId: SushiSwapChainId | TridentChainId): P
               rewardPerSecond = divBigIntToNumber(pool.rewarder.rewardPerSecond, token.decimals)
             }
 
-            if (!isNaN(rewardPerSecond)) {
+            // Edge case for virtually disabled rewards
+            if(rewardPerSecond < 0.000001) sushiRewardPerDay = NaN
+
+            if (!Number.isNaN(rewardPerSecond)) {
               const rewardPerDay = secondsInDay * rewardPerSecond
               const rewardPerYearUSD = daysInYear * rewardPerDay * token.derivedUSD
 
