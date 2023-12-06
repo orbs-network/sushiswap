@@ -1,5 +1,5 @@
 {
-  "extends": "@sushiswap/typescript-config/esm.json",
+  "extends": "@tsconfig/node18/tsconfig.json",
   "include": ["src", "resolvers"],
   "exclude": ["node_modules"],
   "compilerOptions": {
