@@ -24,6 +24,7 @@
     "load-new-tokens": "artillery run test/load-new-tokens.yml",
     "load-testing": "artillery run test/load.yml",
     "simulate": "ts-node --skipProject ./test/requestSimulation.ts",
+    "start-extractor": "node dist/extractor.js",
     "start": "node dist/index.js"
   },
   "dependencies": {
