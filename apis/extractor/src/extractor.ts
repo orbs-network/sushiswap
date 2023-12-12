@@ -2,7 +2,7 @@ import 'dotenv/config'
 
 import * as Sentry from '@sentry/node'
 import { Extractor, type WarningLevel } from '@sushiswap/extractor'
-import { PoolCode, getNativeWrapBridgePoolCode } from '@sushiswap/router'
+import { PoolCode } from '@sushiswap/router'
 import {
   ADDITIONAL_BASES,
   BASES_TO_CHECK_TRADES_AGAINST,
@@ -16,12 +16,11 @@ import {
   // EXTRACTOR_SUPPORTED_CHAIN_IDS,
   type ExtractorSupportedChainId,
 } from 'sushi/config'
-import { Token } from 'sushi/currency'
+import { Native, Token } from 'sushi/currency'
 import { Address, isAddress } from 'viem'
 import z from 'zod'
 import { EXTRACTOR_CONFIG } from './config'
 import { RequestStatistics, ResponseRejectReason } from './requestStatistics'
-import { findToken } from './lib/api'
 
 const PORT = process.env['EXTRACTOR_PORT'] || 80
 
@@ -190,41 +189,43 @@ async function main() {
         )
     }
 
-    const tokensFound = await Promise.all([
-      findToken(_tokenIn as Address),
-      findToken(_tokenOut as Address),
-    ])
-    const tokenIn = tokensFound[0]
-    const tokenOut = tokensFound[1]
-    // if (!tokenIn || !tokenOut) {
-    //   // take unknown tokens async
-    //   tokensAreKnown = false
-    //   if (tokenIn === undefined && tokenOut !== undefined) {
-    //     tokenIn = await getKnownToken(tokenIn)
-    //   } else if (tokenIn !== undefined && tokenOut === undefined) {
-    //     tokenOut =  await getKnownToken(tokenOut)
-    //   } else {
-    //     // both tokens are unknown
-    //     const tokens = await Promise.all([
-    //       findToken(_tokenIn as Address),
-    //       findToken(_tokenOut as Address),
-    //     ])
-    //     tokenIn = tokens[0]
-    //     tokenOut = tokens[1]
-    //   }
-    // }
+
+    console.log({_tokenIn})
+    let tokensAreKnown = true
+    let tokenIn =
+      _tokenIn === '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+        ? Native.onChain(chainId)
+        : extractor.tokenManager.getKnownToken(_tokenIn as Address)
+    let tokenOut =
+      _tokenOut === '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+        ? Native.onChain(chainId)
+        : extractor.tokenManager.getKnownToken(_tokenOut as Address)
+    if (!tokenIn || !tokenOut) {
+      // throw new Error('tokenIn or tokenOut is not supported')
+      return res.status(400).send('tokenIn or tokenOut is not supported')
+    }
+    if (!tokenIn || !tokenOut) {
+      // take unknown tokens async
+      tokensAreKnown = false
+      if (tokenIn === undefined && tokenOut !== undefined) {
+        tokenIn = extractor.tokenManager.getKnownToken(tokenIn)
+      } else if (tokenIn !== undefined && tokenOut === undefined) {
+        tokenOut = extractor.tokenManager.getKnownToken(tokenOut)
+      } else {
+        // both tokens are unknown
+        const tokens = await Promise.all([
+          extractor.tokenManager.findToken(_tokenIn as Address),
+          extractor.tokenManager.findToken(_tokenOut as Address),
+        ])
+        tokenIn = tokens[0]
+        tokenOut = tokens[1]
+      }
+    }
 
     if (!tokenIn || !tokenOut) {
       requestStatistics.requestRejected(ResponseRejectReason.UNSUPPORTED_TOKENS)
-      throw new Error('tokenIn or tokenOut is not supported')
+      return res.status(400).send('tokenIn or tokenOut is not supported')
     }
-
-    const poolCodesMap = new Map<string, PoolCode>()
-    const nativeWrapBridgePoolCode = getNativeWrapBridgePoolCode(chainId)
-    poolCodesMap.set(
-      nativeWrapBridgePoolCode.pool.uniqueID(),
-      nativeWrapBridgePoolCode,
-    )
 
     const common = BASES_TO_CHECK_TRADES_AGAINST?.[chainId] ?? []
     const additionalA = tokenIn
@@ -242,9 +243,49 @@ async function main() {
       ...additionalB,
     ]
 
-    const poolCodes = extractor.getPoolCodesForTokens(tokens)
+    const poolCodes = tokensAreKnown
+      ? extractor.getPoolCodesForTokens(tokens)
+      : await extractor.getPoolCodesForTokensAsync(tokens, 2_000)
     const { serialize } = await import('wagmi')
     return res.json(serialize(poolCodes))
+  })
+
+  app.get('/token', async (req: Request, res: Response) => {
+    // console.log('HTTP: GET /pool-codes', JSON.stringify(req.query))
+    res.setHeader(
+      'Cache-Control',
+      's-maxage=9696969, stale-while-revalidate=9696969',
+    ) // TODO: what's reasonable values here?
+    const { chainId, address } = z
+      .object({
+        chainId: z.coerce
+          .number()
+          .int()
+          .gte(0)
+          .lte(2 ** 256)
+          .default(ChainId.ETHEREUM)
+          .refine((chainId) => isExtractorSupportedChainId(chainId), {
+            message: 'ChainId not supported.',
+          })
+          .transform((chainId) => chainId as ExtractorSupportedChainId),
+        address: z.coerce.string().transform((address) => address as Address),
+        // .refine(isAddress, {
+        // message: 'Address is not checksummed.',
+        // }),
+      })
+      .parse(req.query)
+    if (chainId !== CHAIN_ID) {
+      return res
+        .status(400)
+        .send(
+          `Unsupported network, supported networks are: ${EXTRACTOR_SUPPORTED_CHAIN_IDS.join(
+            ', ',
+          )}`,
+        )
+    }
+    const token = await extractor.tokenManager.findToken(address)
+    const { serialize } = await import('wagmi')
+    return res.json(serialize(token))
   })
 
   // app.get('/debug-sentry', function mainHandler(req, res) {

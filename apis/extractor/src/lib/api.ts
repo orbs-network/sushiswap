@@ -12,15 +12,14 @@ export async function getCurrentPoolCodes(
   chainId: EnabledExtractorChainId,
 ): Promise<PoolCode[]> {
   const SERVER_ADDRESS = process.env['EXTRACTOR_URL'] ?? `http://extractor-${chainId}`
-  // TODO: do we pass in full token info or fetch it from the manager again?
   const requestUrl = `${SERVER_ADDRESS}/pool-codes`
   try {
     const resp = await fetch(requestUrl)
     const json = (await resp.json()) as string
-    const respObj = JSON.parse(json)
+    // const respObj = JSON.parse(json)
     // res = respObj.route.status
-    console.log({ respObj })
-    return respObj as PoolCode[]
+    const { deserialize } = await import('wagmi')
+    return deserialize(json) as PoolCode[]
   } catch (e) {
     console.log('Failed request:', requestUrl, e)
     // return 'Failed'
@@ -34,15 +33,15 @@ export async function getCurrentPoolCodesForTokens(
   tokenOut: string,
 ): Promise<PoolCode[]> {
   const SERVER_ADDRESS = process.env['EXTRACTOR_URL'] ?? `http://extractor-${chainId}`
-  // TODO: do we pass in full token info or fetch it from the manager again?
-  const requestUrl = `${SERVER_ADDRESS}/pool-codes-for-tokens?tokenIn=${tokenIn}&tokenOut=${tokenOut}`
+  const requestUrl = `${SERVER_ADDRESS}/pool-codes-for-tokens?chainId=${chainId}&tokenIn=${tokenIn}&tokenOut=${tokenOut}`
   try {
     const resp = await fetch(requestUrl)
     const json = (await resp.json()) as string
-    const respObj = JSON.parse(json)
+    // const respObj = JSON.parse(json)
     // res = respObj.route.status
-    console.log({ respObj })
-    return respObj as PoolCode[]
+    // return respObj as PoolCode[]
+    const { deserialize } = await import('wagmi')
+    return deserialize(json) as PoolCode[]
   } catch (e) {
     console.log('Failed request:', requestUrl, e)
     // return 'Failed'
@@ -50,13 +49,16 @@ export async function getCurrentPoolCodesForTokens(
   }
 }
 
-export async function findToken(address: Address): Promise<Token | undefined> {
-  console.log({ address })
-  return undefined
+export async function findToken(chainId: EnabledExtractorChainId, address: Address): Promise<Token | undefined> {
+    const SERVER_ADDRESS = process.env['EXTRACTOR_URL'] ?? `http://extractor-${chainId}`
+    const requestUrl = `${SERVER_ADDRESS}/token?chainId=${chainId}&address=${address}`
+    try {
+      const resp = await fetch(requestUrl)
+      const json = (await resp.json()) as string
+      const respObj = JSON.parse(json)
+      return respObj as Token
+    } catch (e) {
+      console.log('Failed request:', requestUrl, e)
+      return undefined
+    }
 }
-
-export async function getKnownToken(address: Address): Promise<Token | undefined> {
-    console.log({ address })
-    return undefined
-  }
-  

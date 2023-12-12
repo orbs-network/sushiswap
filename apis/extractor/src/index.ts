@@ -5,7 +5,7 @@ import {
   PoolCode,
   Router,
   RouterLiquiditySource,
-  getNativeWrapBridgePoolCode
+  getNativeWrapBridgePoolCode,
 } from '@sushiswap/router'
 import {
   ADDITIONAL_BASES,
@@ -35,7 +35,7 @@ import {
   findToken,
   getCurrentPoolCodes,
   getCurrentPoolCodesForTokens,
-  getPoolCodesForTokensFull
+  getPoolCodesForTokensFull,
 } from './lib/api'
 import { RequestStatistics, ResponseRejectReason } from './requestStatistics'
 import { EnabledExtractorChainId, isEnabledExtractorChainId } from './config'
@@ -50,7 +50,7 @@ const querySchema = z.object({
     .refine(
       (chainId) =>
         isRouteProcessor3ChainId(chainId as RouteProcessor3ChainId) &&
-        isExtractorSupportedChainId(chainId) && 
+        isExtractorSupportedChainId(chainId) &&
         isEnabledExtractorChainId(chainId),
       {
         message: 'ChainId not supported.',
@@ -79,7 +79,7 @@ const querySchema3_1 = querySchema.extend({
     .refine(
       (chainId) =>
         isRouteProcessor3_1ChainId(chainId as RouteProcessor3_1ChainId) &&
-        isExtractorSupportedChainId(chainId) && 
+        isExtractorSupportedChainId(chainId) &&
         isEnabledExtractorChainId(chainId),
       {
         message: 'ChainId not supported.',
@@ -98,7 +98,7 @@ const querySchema3_2 = querySchema.extend({
     .refine(
       (chainId) =>
         isRouteProcessor3_2ChainId(chainId as RouteProcessor3_2ChainId) &&
-        isExtractorSupportedChainId(chainId) && 
+        isExtractorSupportedChainId(chainId) &&
         isEnabledExtractorChainId(chainId),
       {
         message: 'ChainId not supported.',
@@ -197,7 +197,7 @@ async function main() {
       .parse(req.query)
     // const extractor = extractors.get(chainId) as Extractor
     // const tokenManager = extractor.tokenManager
-    const token = await findToken(address)
+    const token = await findToken(chainId, address)
     if (!token) {
       return res.status(422).send(`Token ${address} is not supported`)
     }
@@ -290,39 +290,30 @@ function processRequest(
     // let tokensAreKnown = true
     // let tokenIn =
     //   _tokenIn === '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
-    //     ? Native.onChain(chainId) : findToken(_tokenIn as Address)
+    //     ? Native.onChain(chainId)
+    //     : await findToken(_tokenIn as Address)
     // let tokenOut =
     //   _tokenOut === '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
     //     ? Native.onChain(chainId)
     //     : getKnownToken(_tokenOut as Address)
 
     const tokensFound = await Promise.all([
-      findToken(_tokenIn as Address),
-      findToken(_tokenOut as Address),
+      _tokenIn === '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+        ? Native.onChain(chainId)
+        : await findToken(chainId, _tokenIn as Address),
+      _tokenOut === '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+        ? Native.onChain(chainId)
+        : await findToken(chainId, _tokenOut as Address),
     ])
     const tokenIn = tokensFound[0]
     const tokenOut = tokensFound[1]
-    // if (!tokenIn || !tokenOut) {
-    //   // take unknown tokens async
-    //   tokensAreKnown = false
-    //   if (tokenIn === undefined && tokenOut !== undefined) {
-    //     tokenIn = await getKnownToken(tokenIn)
-    //   } else if (tokenIn !== undefined && tokenOut === undefined) {
-    //     tokenOut =  await getKnownToken(tokenOut)
-    //   } else {
-    //     // both tokens are unknown
-    //     const tokens = await Promise.all([
-    //       findToken(_tokenIn as Address),
-    //       findToken(_tokenOut as Address),
-    //     ])
-    //     tokenIn = tokens[0]
-    //     tokenOut = tokens[1]
-    //   }
-    // }
 
     if (!tokenIn || !tokenOut) {
       requestStatistics.requestRejected(ResponseRejectReason.UNSUPPORTED_TOKENS)
-      throw new Error('tokenIn or tokenOut is not supported')
+      // throw new Error('tokenIn or tokenOut is not supported')
+      return res
+        .status(422)
+        .send(`${_tokenIn} or ${_tokenOut} is not supported`)
     }
 
     const poolCodesMap = new Map<string, PoolCode>()
@@ -332,29 +323,13 @@ function processRequest(
       nativeWrapBridgePoolCode,
     )
 
-    // const common = BASES_TO_CHECK_TRADES_AGAINST?.[chainId] ?? []
-    // const additionalA = tokenIn
-    //   ? ADDITIONAL_BASES[chainId]?.[tokenIn.wrapped.address] ?? []
-    //   : []
-    // const additionalB = tokenOut
-    //   ? ADDITIONAL_BASES[chainId]?.[tokenOut.wrapped.address] ?? []
-    //   : []
+    const poolCodes = await getCurrentPoolCodesForTokens(
+      chainId,
+      _tokenIn,
+      _tokenOut,
+    )
 
-    // const tokens = [
-    //   tokenIn.wrapped,
-    //   tokenOut.wrapped,
-    //   ...common,
-    //   ...additionalA,
-    //   ...additionalB,
-    // ]
-
-    // const poolCodes = 
-    // tokensAreKnown
-    //   ? extractor.getPoolCodesForTokens(tokens) // fast version
-    //   : await extractor.getPoolCodesForTokensAsync(tokens, 2_000)
-    
-    const poolCodes = await getCurrentPoolCodesForTokens(chainId, tokenIn.address, tokenOut.address)
-    poolCodes.forEach((p) => poolCodesMap.set(p.pool.uniqueID(), p))
+    poolCodes.forEach((p) => poolCodesMap.set(p.pool.address, p)) // TODO: this was unique ID, but was throwing TypeError: p.pool.uniqueID is not a function
 
     const bestRoute = preferSushi
       ? Router.findSpecialRoute(
