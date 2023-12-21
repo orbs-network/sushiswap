@@ -17,10 +17,11 @@ spec:
           image: extractor:latest
           ports:
             - containerPort: 80
-          # resources:
-          #   requests:
-          #     memory: "8Gi"
-          #     cpu: "1000m"
+          resources:
+            limits:
+              cpu: "1"
+            requests:
+              cpu: "0.5"
           livenessProbe:
             httpGet:
               path: /health
@@ -63,10 +64,11 @@ spec:
           image: extractor:latest
           ports:
             - containerPort: 80
-          # resources:
-          #   requests:
-          #     memory: "8Gi"
-          #     cpu: "1000m"
+          resources:
+            limits:
+              cpu: "1"
+            requests:
+              cpu: "0.5"
           livenessProbe:
             httpGet:
               path: /health
@@ -109,10 +111,11 @@ spec:
           image: extractor:latest
           ports:
             - containerPort: 80
-          # resources:
-          #   requests:
-          #     memory: "8Gi"
-          #     cpu: "1000m"
+          resources:
+            limits:
+              cpu: "1"
+            requests:
+              cpu: "0.5"
           livenessProbe:
             httpGet:
               path: /health
@@ -155,10 +158,11 @@ spec:
           image: extractor:latest
           ports:
             - containerPort: 80
-          # resources:
-          #   requests:
-          #     memory: "8Gi"
-          #     cpu: "1000m"
+          resources:
+            limits:
+              cpu: "1"
+            requests:
+              cpu: "0.5"
           livenessProbe:
             httpGet:
               path: /health

@@ -157,7 +157,10 @@ async function simulate() {
   const totalTokens = tokenNumber.reduce((a, b) => a + b[1], 0)
   for (;;) {
     const delayPromise = delay(MS_PER_REQUEST)
-    const chainId = getRandomNetwork(totalTokens, tokenNumber)
+
+    const chainId = 1
+    // const chainId = getRandomNetwork(totalTokens, tokenNumber)
+
     const chainTokens = tokens[chainId]
     const [from, to] = getRandomPair(chainTokens.length, TEST_MODE)
     const amount = BigInt(SWAP_AMOUNT * 10 ** chainTokens[from].decimals)
