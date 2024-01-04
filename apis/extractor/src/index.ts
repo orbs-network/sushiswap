@@ -12,6 +12,7 @@ import {
   ADDITIONAL_BASES,
   BASES_TO_CHECK_TRADES_AGAINST,
 } from '@sushiswap/router-config'
+import { RToken, calcTokenAddressPrices } from '@sushiswap/tines'
 import cors from 'cors'
 import express, { type Express, type Request, type Response } from 'express'
 import { ChainId } from 'sushi/chain'
@@ -29,7 +30,7 @@ import {
   isRouteProcessor3_1ChainId,
   isRouteProcessor3_2ChainId,
 } from 'sushi/config'
-import { Native, Token } from 'sushi/currency'
+import { Native, STABLES, Token } from 'sushi/currency'
 import { type Address, isAddress } from 'viem'
 import z from 'zod'
 import { EXTRACTOR_CONFIG } from './config'
@@ -254,6 +255,67 @@ async function main() {
     const poolCodes = extractor.getCurrentPoolCodes()
     const { serialize } = await import('wagmi')
     res.json(serialize(poolCodes))
+  })
+
+  function priceRecalcInterval(_chainId: ChainId) {
+    return 10
+  }
+  const lastPriceUpdate: number[] = []
+  const lastPricesSerialized: string[] = []
+
+  app.get('/prices', async (req: Request, res: Response) => {
+    const { chainId } = z
+      .object({
+        chainId: z.coerce
+          .number()
+          .int()
+          .gte(0)
+          .lte(2 ** 256)
+          .default(ChainId.ETHEREUM)
+          .refine(
+            (chainId) =>
+              isExtractorSupportedChainId(chainId) &&
+              STABLES[chainId] !== undefined,
+            {
+              message: 'ChainId not supported.',
+            },
+          )
+          .transform((chainId) => chainId as ExtractorSupportedChainId),
+      })
+      .parse(req.query)
+    const interval = priceRecalcInterval(chainId)
+    res.setHeader('Cache-Control', `maxage=${interval}`)
+    const lastUpdate = lastPriceUpdate[chainId]
+    if (
+      lastUpdate === undefined ||
+      lastUpdate + interval < Date.now() / 1000 ||
+      lastPricesSerialized[chainId] === undefined
+    ) {
+      const extractor = extractors.get(chainId) as Extractor
+      const pools = extractor.getCurrentPoolCodes().map((pc) => pc.pool)
+      const baseToken = STABLES[chainId][0] as RToken
+
+      const prices = calcTokenAddressPrices(
+        pools,
+        baseToken,
+        1000 * 10 ** baseToken.decimals,
+      )
+
+      const stablesPrices = STABLES[chainId]
+        .map((t) => {
+          const price = prices[t.address]
+          if (price === undefined) return undefined
+          return price < 1.05 && price > 0.95 ? price : undefined
+        })
+        .filter((p) => p !== undefined) as number[]
+      const usdPriceSupposed =
+        stablesPrices.reduce((a, b) => a + b, 0) / stablesPrices.length
+      Object.keys(prices).forEach((addr) => {
+        prices[addr] /= usdPriceSupposed
+      })
+      lastPricesSerialized[chainId] = JSON.stringify(prices)
+    }
+    res.json(lastPricesSerialized[chainId])
   })
 
   // app.get('/debug-sentry', function mainHandler(req, res) {
