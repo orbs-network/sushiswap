@@ -537,7 +537,7 @@ export async function updatePoolsWithSteerVaults() {
       )
     WHERE
       EXISTS (SELECT 1 FROM SteerVault sv WHERE sv.poolId = p.id AND (sv.isEnabled OR sv.wasEnabled));
-  `;
+  `
 
   const endTime = performance.now()
 
