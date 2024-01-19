@@ -12,6 +12,7 @@ import {
   ROUTE_PROCESSOR_3_1_ADDRESS,
   ROUTE_PROCESSOR_3_2_ADDRESS,
   ROUTE_PROCESSOR_3_ADDRESS,
+  ROUTE_PROCESSOR_4_ADDRESS,
   ROUTE_PROCESSOR_ADDRESS,
   SQUID_CHAIN_NAME,
   SQUID_ROUTER_ADDRESS,
@@ -20,6 +21,7 @@ import {
   isRouteProcessor3ChainId,
   isRouteProcessor3_1ChainId,
   isRouteProcessor3_2ChainId,
+  isRouteProcessor4ChainId,
   isRouteProcessorChainId,
 } from 'sushi/config'
 import { Amount, Currency, Token, Type } from 'sushi/currency'
@@ -239,7 +241,9 @@ export const getSquidRouteRequest = ({
 
   // RouteProcessor dstHook
   if (useDstTrade && dstTrade?.writeArgs) {
-    const rpAddress = isRouteProcessor3_2ChainId(token1.chainId)
+    const rpAddress = isRouteProcessor4ChainId(token1.chainId)
+      ? ROUTE_PROCESSOR_4_ADDRESS[token1.chainId]
+      : isRouteProcessor3_2ChainId(token1.chainId)
       ? ROUTE_PROCESSOR_3_2_ADDRESS[token1.chainId]
       : isRouteProcessor3_1ChainId(token1.chainId)
       ? ROUTE_PROCESSOR_3_1_ADDRESS[token1.chainId]

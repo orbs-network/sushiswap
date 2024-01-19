@@ -8,10 +8,12 @@ import {
   ROUTE_PROCESSOR_3_1_ADDRESS,
   ROUTE_PROCESSOR_3_2_ADDRESS,
   ROUTE_PROCESSOR_3_ADDRESS,
+  ROUTE_PROCESSOR_4_ADDRESS,
   ROUTE_PROCESSOR_ADDRESS,
   isRouteProcessor3ChainId,
   isRouteProcessor3_1ChainId,
   isRouteProcessor3_2ChainId,
+  isRouteProcessor4ChainId,
   isRouteProcessorChainId,
 } from 'sushi/config'
 import { Native } from 'sushi/currency'
@@ -79,7 +81,9 @@ export const _SimpleSwapTradeButton: FC<{
                   id="approve-erc20"
                   amount={swapAmount}
                   contract={
-                    isRouteProcessor3_2ChainId(chainId)
+                    isRouteProcessor4ChainId(chainId)
+                      ? ROUTE_PROCESSOR_4_ADDRESS[chainId]
+                      : isRouteProcessor3_2ChainId(chainId)
                       ? ROUTE_PROCESSOR_3_2_ADDRESS[chainId]
                       : isRouteProcessor3_1ChainId(chainId)
                       ? ROUTE_PROCESSOR_3_1_ADDRESS[chainId]
