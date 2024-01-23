@@ -35,16 +35,22 @@ import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger
+  TooltipTrigger,
 } from '@sushiswap/ui'
-import { ColumnDef, PaginationState, Row, SortingState, TableState } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  PaginationState,
+  Row,
+  SortingState,
+  TableState,
+} from '@tanstack/react-table'
 import Link from 'next/link'
 import { FC, ReactNode, useCallback, useMemo, useState } from 'react'
 import { Native } from 'sushi/currency'
 
 import { usePoolsCount } from 'src/lib/flair/hooks/simplePools/count/count'
 import { useSimplePools } from 'src/lib/flair/hooks/simplePools/simplePools'
-import { isAngleEnabledChainId } from '../../config'
+import { isAngleEnabledChainId } from 'sushi/config'
 import { usePoolFilters } from './PoolsFiltersProvider'
 import {
   APR_COLUMN_POOL,
@@ -287,7 +293,8 @@ interface PositionsTableProps {
 }
 
 export const PoolsTable: FC<PositionsTableProps> = ({ onRowClick }) => {
-  const { chainIds, tokenSymbols, protocols, farmsOnly, smartPoolsOnly } = usePoolFilters()
+  const { chainIds, tokenSymbols, protocols, farmsOnly, smartPoolsOnly } =
+    usePoolFilters()
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'liquidityUSD', desc: true },
   ])
@@ -317,7 +324,15 @@ export const PoolsTable: FC<PositionsTableProps> = ({ onRowClick }) => {
       protocols,
     }
     // }, [chainIds, tokenSymbols, protocols, farmsOnly, sorting])
-  }, [pagination, chainIds, tokenSymbols, protocols, farmsOnly, smartPoolsOnly, sorting])
+  }, [
+    pagination,
+    chainIds,
+    tokenSymbols,
+    protocols,
+    farmsOnly,
+    smartPoolsOnly,
+    sorting,
+  ])
 
   const { data: pools, isLoading: isValidatingPools } = useSimplePools(args)
   const { data: poolCount /*, isLoading: isValidatingCount*/ } =

@@ -1,10 +1,9 @@
-import { getPool } from 'src/lib/flair/fetchers/pool/id/pool'
+import { PoolProtocol } from '@sushiswap/rockset-client'
 import { Container, Separator } from '@sushiswap/ui'
 import { unstable_cache } from 'next/cache'
+import { getPool } from 'src/lib/flair/fetchers/pool/id/pool'
 import { ID, unsanitize } from 'sushi'
-import {
-  UnknownTokenAlert,
-} from '../../../../ui/pool'
+import { UnknownTokenAlert } from '../../../../ui/pool'
 import { ManageV2LiquidityCard } from '../../../../ui/pool/ManageV2LiquidityCard'
 import { PoolChartV2 } from '../../../../ui/pool/PoolChartV2'
 import { PoolComposition } from '../../../../ui/pool/PoolComposition'
@@ -13,8 +12,6 @@ import { PoolRewards } from '../../../../ui/pool/PoolRewards'
 import { PoolStats } from '../../../../ui/pool/PoolStats'
 import { PoolTransactionsV2 } from '../../../../ui/pool/PoolTransactionsV2'
 import notFound from '../../not-found'
-import { PoolProtocol } from '@sushiswap/rockset-client'
-
 
 export default async function PoolPage({
   params,
@@ -24,8 +21,8 @@ export default async function PoolPage({
   tab: 'add' | 'remove' | 'unstake' | 'stake'
 }) {
   const poolId = unsanitize(params.id)
-  const {success, data: pool} = await unstable_cache(
-    async () => getPool({id: poolId as ID}),
+  const { success, data: pool } = await unstable_cache(
+    async () => getPool({ id: poolId as ID }),
     ['pool', poolId],
     {
       revalidate: 60 * 15,
