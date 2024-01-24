@@ -26,7 +26,6 @@ import {
 } from '@sushiswap/wagmi'
 import React, { FC, useMemo, useState } from 'react'
 import { useTokenAmountDollarValues } from 'src/lib/hooks'
-import { ChainId } from 'sushi/chain'
 import { formatPercent, formatUSD } from 'sushi/format'
 
 import { Pool } from '@sushiswap/rockset-client'
@@ -123,7 +122,7 @@ const _Pool: FC<{ pool: Pool }> = ({ pool }) => {
         )}
         <PoolsFiltersProvider>
           <ConcentratedPositionsTable
-            chainId={pool.chainId as ChainId}
+            chainId={pool.chainId as SushiSwapV3ChainId}
             poolId={pool.address}
           />
         </PoolsFiltersProvider>
