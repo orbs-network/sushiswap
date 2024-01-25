@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { simplePoolOutputSchema, transformSimplePool } from '../../index.js'
+import { simplePoolOutputSchema, transformSimplePool } from '../../pools/index.js'
 
 export const v2PositionOutputSchema = z.object({
   pool: simplePoolOutputSchema,

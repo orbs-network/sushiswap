@@ -1,6 +1,6 @@
 import { type Address, isAddress } from 'viem'
 import { z } from 'zod'
-import type { IncentiveType } from '../index.js'
+import type { IncentiveType } from '../incentives/index.js'
 
 const commaArray = <T = string>() =>
   z.string().transform((val) => val.split(',') as T[])
