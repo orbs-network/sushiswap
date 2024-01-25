@@ -1,4 +1,4 @@
-import { Pool, Protocol } from '@sushiswap/client'
+import { Protocol } from '@sushiswap/client'
 import { TridentConstantPool, TridentStablePool } from '@sushiswap/trident-sdk'
 import { SushiSwapV2Pool } from '@sushiswap/v2-sdk'
 import {
@@ -24,6 +24,7 @@ import {
   tryParseAmount,
 } from 'sushi/currency'
 
+import { Incentive } from '@sushiswap/rockset-client'
 import { Bound } from './constants'
 import { useTicks } from './hooks'
 import { TickProcessed } from './pool/v3/use-concentrated-active-liquidity'
@@ -53,7 +54,7 @@ export const isTridentPoolProtocol = (protocol: Protocol) =>
 
 export const incentiveRewardToToken = (
   chainId: ChainId,
-  incentive: Pool['incentives'][0],
+  incentive: Incentive,
 ): Token => {
   return new Token({
     chainId,

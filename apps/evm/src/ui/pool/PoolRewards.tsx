@@ -1,6 +1,6 @@
 'use client'
 
-import { Pool } from '@sushiswap/client'
+import { Pool } from '@sushiswap/rockset-client'
 import {
   CardContent,
   CardCurrencyAmountItem,

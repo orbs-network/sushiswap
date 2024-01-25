@@ -1,6 +1,6 @@
 'use client'
 
-import { Pool } from '@sushiswap/client'
+import { Pool } from '@sushiswap/rockset-client'
 import {
   Card,
   CardContent,
@@ -13,8 +13,7 @@ import { formatUSD } from 'sushi/format'
 
 import { PoolPositionDesktop } from './PoolPositionDesktop'
 import { usePoolPosition } from './PoolPositionProvider'
-import { PoolPositionStakedDesktop } from './PoolPositionStakedDesktop'
-import { usePoolPositionStaked } from './PoolPositionStakedProvider'
+// import { PoolPositionStakedDesktop } from './PoolPositionStakedDesktop'
 
 interface PoolPositionProps {
   pool: Pool
@@ -22,19 +21,16 @@ interface PoolPositionProps {
 
 export const PoolPosition: FC<PoolPositionProps> = ({ pool }) => {
   const { value0, value1 } = usePoolPosition()
-  const { value0: stakedValue0, value1: stakedValue1 } = usePoolPositionStaked()
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>My Position</CardTitle>
-        <CardDescription>
-          {formatUSD(value0 + value1 + stakedValue0 + stakedValue1)}
-        </CardDescription>
+        <CardDescription>{formatUSD(value0 + value1)}</CardDescription>
       </CardHeader>
       <CardContent>
         <PoolPositionDesktop pool={pool} />
-        <PoolPositionStakedDesktop pool={pool} />
+        {/* <PoolPositionStakedDesktop pool={pool} /> */}
       </CardContent>
     </Card>
   )

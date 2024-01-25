@@ -1,38 +1,40 @@
 import { Protocol } from '@sushiswap/client'
+import { V2Position } from '@sushiswap/rockset-client'
 import { useAccount } from '@sushiswap/wagmi'
 import React, { FC, ReactNode } from 'react'
 import { SUPPORTED_CHAIN_IDS } from 'src/config'
-import { useUserPositions } from 'src/lib/hooks'
-import { PositionWithPool } from 'src/types'
+import { useV2Positions } from 'src/lib/flair/hooks/positions/v2/v2'
 
 interface PositionCardList {
   children({
     positions,
     isLoading,
-  }: { positions: PositionWithPool[]; isLoading: boolean }): ReactNode
+  }: { positions: V2Position[]; isLoading: boolean }): ReactNode
 }
 
-const value = (position: PositionWithPool) =>
-  (Number(position.balance + position.stakedBalance) /
-    Number(position.pool.totalSupply)) *
+const value = (position: V2Position) =>
+  (Number(position.balance) / Number(position.pool.liquidity)) *
   Number(position.pool.liquidityUSD)
 
 export const PositionCardList: FC<PositionCardList> = ({ children }) => {
   const { address } = useAccount()
-  const { data: userPositions, isValidating } = useUserPositions({
-    id: address,
-    chainIds: SUPPORTED_CHAIN_IDS,
-  })
+  const { data: userPositions, isLoading } = useV2Positions(
+    {
+      user: address!,
+      chainIds: SUPPORTED_CHAIN_IDS,
+    },
+    { enabled: !!address },
+  )
 
   return (
     <>
       {children({
-        positions: isValidating
+        positions: isLoading
           ? new Array(6).fill(null)
           : (userPositions || [])
               .filter((el) => el.pool.protocol === Protocol.SUSHISWAP_V2)
               .sort((a, b) => value(b) - value(a)),
-        isLoading: isValidating,
+        isLoading: isLoading,
       })}
     </>
   )

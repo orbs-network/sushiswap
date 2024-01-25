@@ -1,8 +1,8 @@
-import { getPool } from '@sushiswap/client'
 import { Breadcrumb, Container } from '@sushiswap/ui'
-import { unstable_cache } from 'next/cache'
 import { headers } from 'next/headers'
+import { getPool } from 'src/lib/flair/fetchers/pool/id/pool'
 import { unsanitize } from 'sushi'
+import { ID } from 'sushi/types'
 import { PoolHeader } from '../../../../ui/pool/PoolHeader'
 import notFound from '../../not-found'
 
@@ -15,13 +15,10 @@ export default async function Layout({
   params,
 }: { children: React.ReactNode; params: { id: string } }) {
   const poolId = unsanitize(params.id)
-  const pool = await unstable_cache(
-    async () => getPool(poolId),
-    ['pool', poolId],
-    {
-      revalidate: 60 * 15,
-    },
-  )()
+  const { data: pool } = await getPool(
+    { id: poolId as ID },
+    { next: { revalidate: 60 } },
+  )
 
   if (!pool) {
     notFound()

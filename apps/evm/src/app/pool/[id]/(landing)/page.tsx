@@ -1,10 +1,10 @@
-import { getPool } from '@sushiswap/client'
+import { PoolProtocol } from '@sushiswap/rockset-client'
 import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
-
+import { getPool } from 'src/lib/flair/fetchers/pool/id/pool'
 import { PoolPageV2 } from 'src/ui/pool/PoolPageV2'
 import { PoolPageV3 } from 'src/ui/pool/PoolPageV3'
-import { unsanitize } from 'sushi'
+import { ID, unsanitize } from 'sushi'
 
 export default async function PoolPage({
   params,
@@ -14,8 +14,8 @@ export default async function PoolPage({
   tab: 'add' | 'remove' | 'unstake' | 'stake'
 }) {
   const poolId = unsanitize(params.id)
-  const pool = await unstable_cache(
-    async () => getPool(poolId),
+  const { data: pool } = await unstable_cache(
+    async () => getPool({ id: poolId as ID }),
     ['pool', poolId],
     {
       revalidate: 60 * 15,
@@ -26,7 +26,7 @@ export default async function PoolPage({
     notFound()
   }
 
-  if (pool.protocol === 'SUSHISWAP_V3') {
+  if (pool.protocol === PoolProtocol.SUSHISWAP_V3) {
     return <PoolPageV3 pool={pool} />
   }
 

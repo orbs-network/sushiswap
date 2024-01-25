@@ -1,4 +1,4 @@
-import { Pool } from '@sushiswap/client'
+import { Pool } from '@sushiswap/rockset-client'
 import { classNames } from '@sushiswap/ui'
 import { Currency as UICurrency } from '@sushiswap/ui/components/currency'
 import React, { FC } from 'react'
@@ -6,7 +6,7 @@ import { incentiveRewardToToken } from 'src/lib/functions'
 import { ChainId } from 'sushi/chain'
 import { formatPercent } from 'sushi/format'
 
-import { AddSectionMyPositionStaked } from './AddSectionMyPositionStaked'
+// import { AddSectionMyPositionStaked } from './AddSectionMyPositionStaked'
 import { AddSectionMyPositionUnstaked } from './AddSectionMyPositionUnstaked'
 
 export const AddSectionMyPosition: FC<{ pool: Pool }> = ({ pool }) => {
@@ -65,7 +65,7 @@ export const AddSectionMyPosition: FC<{ pool: Pool }> = ({ pool }) => {
       </div>
       <div className="p-5 space-y-5">
         <AddSectionMyPositionUnstaked />
-        {pool.incentives && <AddSectionMyPositionStaked />}
+        {/* {pool.incentives && <AddSectionMyPositionStaked />} */}
       </div>
     </div>
   )

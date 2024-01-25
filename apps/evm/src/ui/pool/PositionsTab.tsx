@@ -14,7 +14,7 @@ import React, { useState } from 'react'
 
 import { ConcentratedPositionsTable } from './ConcentratedPositionsTable/ConcentratedPositionsTable'
 import { PositionsTable } from './PositionsTable'
-import { SmartPositionsTable } from './SmartPositionsTable'
+// import { SmartPositionsTable } from './SmartPositionsTable'
 
 const ITEMS: { id: string; value: string; children: React.ReactNode }[] = [
   {
@@ -127,9 +127,7 @@ export const PositionsTab = () => {
             rowLink={(row) => `/pool/${row.pool.id}`}
           />
         </TabsContent>
-        <TabsContent value="smart">
-          <SmartPositionsTable />
-        </TabsContent>
+        <TabsContent value="smart">{/* <SmartPositionsTable /> */}</TabsContent>
       </Tabs>
     </div>
   )

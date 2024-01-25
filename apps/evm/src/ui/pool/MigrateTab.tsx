@@ -1,7 +1,7 @@
 'use client'
 
 import { SwitchHorizontalIcon } from '@heroicons/react-v1/solid'
-import { Pool } from '@sushiswap/client'
+import { Pool } from '@sushiswap/rockset-client'
 import {
   Card,
   CardContent,
@@ -11,7 +11,7 @@ import {
   CardGroup,
   CardHeader,
   CardLabel,
-  CardOverlay,
+  // CardOverlay,
   CardTitle,
   Currency,
   DialogConfirm,
@@ -40,9 +40,9 @@ import {
 } from '@sushiswap/v3-sdk'
 import {
   Address,
-  getMasterChefContractConfig,
+  // getMasterChefContractConfig,
   useAccount,
-  useMasterChefWithdraw,
+  // useMasterChefWithdraw,
   useSushiSwapV2Pool,
   useTotalSupply,
   useWaitForTransaction,
@@ -58,7 +58,7 @@ import {
 import React, { FC, useMemo, useState } from 'react'
 import {
   APPROVE_TAG_MIGRATE,
-  APPROVE_TAG_UNSTAKE,
+  // APPROVE_TAG_UNSTAKE,
   Bound,
   Field,
 } from 'src/lib/constants'
@@ -71,7 +71,7 @@ import { formatUSD } from 'sushi/format'
 import { Fraction, ZERO } from 'sushi/math'
 import { useConcentratedDerivedMintInfo } from './ConcentratedLiquidityProvider'
 import { usePoolPosition } from './PoolPositionProvider'
-import { usePoolPositionStaked } from './PoolPositionStakedProvider'
+// import { usePoolPositionStaked } from './PoolPositionStakedProvider'
 import { SelectFeeConcentratedWidget } from './SelectFeeConcentratedWidget'
 import { SelectPricesWidget } from './SelectPricesWidget'
 
@@ -80,7 +80,7 @@ export const MODAL_MIGRATE_ID = 'migrate-modal'
 export const MigrateTab: FC<{ pool: Pool }> = withCheckerRoot(({ pool }) => {
   const { address } = useAccount()
   const [feeAmount, setFeeAmount] = useState<FeeAmount>(FeeAmount.LOWEST)
-  const { approved } = useApproved(APPROVE_TAG_UNSTAKE)
+  // const { approved } = useApproved(APPROVE_TAG_UNSTAKE)
   const [invertPrice, setInvertPrice] = useState(false)
   const [invertTokens, setInvertTokens] = useState(false)
   const [slippageTolerance] = useSlippageTolerance('addLiquidity')
@@ -121,28 +121,28 @@ export const MigrateTab: FC<{ pool: Pool }> = withCheckerRoot(({ pool }) => {
   )
   const totalSupply = useTotalSupply(liquidityToken)
 
-  // Harvest & Withdraw
-  const {
-    value0: stakedValue0,
-    value1: stakedValue1,
-    balance: stakedBalance,
-    underlying0: stakedUnderlying0,
-    underlying1: stakedUnderlying1,
-    isLoading: isStakedLoading,
-  } = usePoolPositionStaked()
+  // // Harvest & Withdraw
+  // const {
+  //   value0: stakedValue0,
+  //   value1: stakedValue1,
+  //   balance: stakedBalance,
+  //   underlying0: stakedUnderlying0,
+  //   underlying1: stakedUnderlying1,
+  //   isLoading: isStakedLoading,
+  // } = usePoolPositionStaked()
 
-  const { sendTransaction, isLoading: isWritePending } = useMasterChefWithdraw({
-    chainId: pool.chainId,
-    amount: stakedBalance,
-    pid: pool.incentives?.[0]?.pid,
-    chef: pool.incentives?.[0]?.chefType,
-    enabled: Boolean(
-      approved &&
-        stakedBalance?.greaterThan(ZERO) &&
-        pool.incentives?.[0]?.pid &&
-        pool.incentives?.[0]?.chefType,
-    ),
-  })
+  // const { sendTransaction, isLoading: isWritePending } = useMasterChefWithdraw({
+  //   chainId: pool.chainId,
+  //   amount: stakedBalance,
+  //   pid: pool.incentives?.[0]?.pid,
+  //   chef: pool.incentives?.[0]?.chefType,
+  //   enabled: Boolean(
+  //     approved &&
+  //       stakedBalance?.greaterThan(ZERO) &&
+  //       pool.incentives?.[0]?.pid &&
+  //       pool.incentives?.[0]?.chefType,
+  //   ),
+  // })
 
   // this is just getLiquidityValue with the fee off, but for the passed pair
   const token0Value = useMemo(
@@ -403,7 +403,7 @@ export const MigrateTab: FC<{ pool: Pool }> = withCheckerRoot(({ pool }) => {
   return (
     <DialogProvider>
       <Card>
-        <CardOverlay show={Boolean(stakedBalance?.equalTo(ZERO))}>
+        {/* <CardOverlay show={Boolean(stakedBalance?.equalTo(ZERO))}>
           Already unstaked. You{`'`}re all set! ✅
         </CardOverlay>
         <CardHeader>
@@ -482,7 +482,7 @@ export const MigrateTab: FC<{ pool: Pool }> = withCheckerRoot(({ pool }) => {
       <Card>
         <CardOverlay show={Boolean(stakedBalance?.greaterThan(ZERO))}>
           Please unstake first before migrating!
-        </CardOverlay>
+        </CardOverlay> */}
         <CardHeader>
           <CardTitle>Migrate position</CardTitle>
           <CardDescription>

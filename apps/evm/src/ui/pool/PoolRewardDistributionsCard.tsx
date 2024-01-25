@@ -1,6 +1,5 @@
 'use client'
 
-import { Pool } from '@sushiswap/client'
 import { useAngleRewards } from '@sushiswap/react-query'
 import {
   Button,
@@ -16,15 +15,15 @@ import {
   TabsTrigger,
 } from '@sushiswap/ui'
 import { FC } from 'react'
+import { ExtendedPool } from 'src/lib/hooks/api/useFlairPoolGraphData'
 import { ChainId } from 'sushi/chain'
+import { isAngleEnabledChainId } from 'sushi/config'
 import { Native } from 'sushi/currency'
 import { getAddress } from 'viem'
-
-import { isAngleEnabledChainId } from 'sushi/config'
 import { DistributionDataTable } from './DistributionDataTable'
 
 interface PoolRewardDistributionsCardParams {
-  pool: Pool
+  pool: ExtendedPool
 }
 
 export const PoolRewardDistributionsCard: FC<
@@ -48,15 +47,15 @@ export const PoolRewardDistributionsCard: FC<
           {pool.token0 && pool.token1 ? (
             <LinkInternal
               href={`/pool/incentivize?chainId=${pool.chainId}&fromCurrency=${
-                pool.token0.address ===
+                pool.token0.wrapped.address ===
                 Native.onChain(pool.chainId).wrapped.address
                   ? 'NATIVE'
-                  : pool.token0.address
+                  : pool.token0.wrapped.address
               }&toCurrency=${
-                pool.token1.address ===
+                pool.token1.wrapped.address ===
                 Native.onChain(pool.chainId).wrapped.address
                   ? 'NATIVE'
-                  : pool.token1.address
+                  : pool.token1.wrapped.address
               }&feeAmount=${pool.swapFee * 10_000 * 100}`}
             >
               <Button asChild variant="link">

@@ -106,7 +106,7 @@ export const SteerBaseStrategy: SteerStrategyComponent = ({
           </Tabs>
         </Card>
       </div>
-      <div>
+      {/* <div>
         <Card>
           <CardHeader>
             <CardTitle>{SteerStrategyConfig[vault.strategy].name}</CardTitle>
@@ -171,14 +171,14 @@ export const SteerBaseStrategy: SteerStrategyComponent = ({
                 {formatPercent(vault.pool.swapFee)}
               </StatValue>
             </Stat>
-            {/* <Stat className="px-6 py-3">
-              <StatLabel size="sm">Time frame</StatLabel>
-              <StatValue size="sm">20 days</StatValue>
-            </Stat>
-            <Stat className="px-6 py-3">
-              <StatLabel size="sm">Deviation</StatLabel>
-              <StatValue size="sm">2</StatValue>
-            </Stat> */}
+            //<Stat className="px-6 py-3">
+            //  <StatLabel size="sm">Time frame</StatLabel>
+            //  <StatValue size="sm">20 days</StatValue>
+            //</Stat>
+            //<Stat className="px-6 py-3">
+            //  <StatLabel size="sm">Deviation</StatLabel>
+            //  <StatValue size="sm">2</StatValue>
+            //</Stat>
             <Stat className="px-6 py-3">
               <StatLabel size="sm">Performance fee</StatLabel>
               <StatValue size="sm">
@@ -220,7 +220,7 @@ export const SteerBaseStrategy: SteerStrategyComponent = ({
             </Stat>
           </div>
         </Card>
-      </div>
+      </div> */}
     </div>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
-import { Pool } from '@sushiswap/client'
 import { usePrices } from '@sushiswap/react-query'
+import { Pool } from '@sushiswap/rockset-client'
 import {
   Card,
   CardContent,

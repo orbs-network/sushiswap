@@ -30,6 +30,7 @@
     "@sushiswap/hooks": "workspace:*",
     "@sushiswap/nextjs-config": "workspace:*",
     "@sushiswap/react-query": "workspace:*",
+    "@sushiswap/rockset-client": "workspace:*",
     "@sushiswap/router": "workspace:*",
     "@sushiswap/router-config": "workspace:*",
     "@sushiswap/steer-sdk": "workspace:*",

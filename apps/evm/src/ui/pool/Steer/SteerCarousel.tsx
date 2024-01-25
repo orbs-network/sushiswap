@@ -1,6 +1,6 @@
 'use client'
 
-import { Pool } from '@sushiswap/client'
+import { Pool, Vault } from '@sushiswap/rockset-client'
 import { Carousel } from '@sushiswap/ui'
 import { FC, useCallback, useMemo } from 'react'
 
@@ -12,7 +12,7 @@ export const SteerCarousel: FC<{ pool: Pool }> = ({ pool }) => {
     [pool.steerVaults],
   )
   const render = useCallback(
-    (vault: Pool['steerVaults'][0]) => {
+    (vault: Vault) => {
       return <SteerPoolCard key={vault.id} pool={pool} vault={vault} />
     },
     [pool],

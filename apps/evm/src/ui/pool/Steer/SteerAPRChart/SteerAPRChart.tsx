@@ -1,12 +1,11 @@
-import { Pool } from '@sushiswap/client'
+import { Vault } from '@sushiswap/rockset-client'
 import { getSteerVaultAprTimeseries } from '@sushiswap/steer-sdk'
 import { useQuery } from '@tanstack/react-query'
 import React from 'react'
-
 import { _SteerAPRChart } from './_SteerAPRChart'
 
 interface SteerAPRChartProps {
-  vault: Pool['steerVaults'][0]
+  vault: Vault
 }
 
 export function SteerAPRChart({ vault }: SteerAPRChartProps) {

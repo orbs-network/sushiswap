@@ -1,13 +1,14 @@
 import { Protocol } from '@sushiswap/client'
+import { V2Position } from '@sushiswap/rockset-client'
 import { Card, CardHeader, CardTitle, DataTable } from '@sushiswap/ui'
 import { Slot } from '@sushiswap/ui/components/slot'
 import { useAccount } from '@sushiswap/wagmi'
 import { ColumnDef, PaginationState, Row } from '@tanstack/react-table'
 import React, { FC, ReactNode, useCallback, useMemo, useState } from 'react'
 import { SUPPORTED_CHAIN_IDS } from 'src/config'
-import { useUserPositions } from 'src/lib/hooks'
-import { PositionWithPool } from 'src/types'
-
+import { useV2Positions } from 'src/lib/flair/hooks/positions/v2/v2'
+// import { useUserPositions } from 'src/lib/hooks'
+// import { PositionWithPool } from 'src/types'
 import { usePoolFilters } from './PoolsFiltersProvider'
 import {
   APR_COLUMN,
@@ -19,12 +20,12 @@ const COLUMNS = [
   NAME_COLUMN_POSITION_WITH_POOL,
   VALUE_COLUMN,
   APR_COLUMN,
-] satisfies ColumnDef<PositionWithPool, unknown>[]
+] satisfies ColumnDef<V2Position, unknown>[]
 
 interface PositionsTableProps {
   protocol: Protocol
-  onRowClick?(row: PositionWithPool): void
-  rowLink?(row: PositionWithPool): string
+  onRowClick?(row: V2Position): void
+  rowLink?(row: V2Position): string
 }
 
 const tableState = { sorting: [{ id: 'value', desc: true }] }
@@ -41,10 +42,13 @@ export const PositionsTable: FC<PositionsTableProps> = ({
     pageSize: 10,
   })
 
-  const { data: positions, isValidating } = useUserPositions({
-    id: address,
-    chainIds: SUPPORTED_CHAIN_IDS,
-  })
+  const { data: positions, isLoading } = useV2Positions(
+    {
+      user: address!,
+      chainIds: SUPPORTED_CHAIN_IDS,
+    },
+    { enabled: !!address },
+  )
 
   const _positions = useMemo(() => {
     if (!positions) return []
@@ -60,13 +64,13 @@ export const PositionsTable: FC<PositionsTableProps> = ({
         : true,
     )
     const chainFiltered = searchFiltered.filter((el) =>
-      chainIds.includes(el.chainId),
+      chainIds.includes(el.pool.chainId),
     )
     return chainFiltered.filter((el) => el.pool?.protocol === protocol)
   }, [positions, tokenSymbols, chainIds, protocol])
 
   const rowRenderer = useCallback(
-    (row: Row<PositionWithPool>, rowNode: ReactNode) => {
+    (row: Row<V2Position>, rowNode: ReactNode) => {
       if (onRowClick)
         return (
           <Slot
@@ -92,7 +96,7 @@ export const PositionsTable: FC<PositionsTableProps> = ({
         </CardTitle>
       </CardHeader>
       <DataTable
-        loading={isValidating}
+        loading={isLoading}
         rowRenderer={rowRenderer}
         linkFormatter={rowLink}
         columns={COLUMNS}

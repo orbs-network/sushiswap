@@ -11,7 +11,11 @@ import {
   PlusIcon,
 } from '@heroicons/react/24/outline'
 import { Slot } from '@radix-ui/react-slot'
-import { GetPoolsArgs, Pool, Protocol } from '@sushiswap/client'
+import {
+  PoolsOrderBy,
+  SimplePool,
+  SimplePoolsArgs,
+} from '@sushiswap/rockset-client'
 import {
   Button,
   Card,
@@ -27,21 +31,25 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  Loader,
   SkeletonText,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@sushiswap/ui'
-import { ColumnDef, Row, SortingState, TableState } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  PaginationState,
+  Row,
+  SortingState,
+  TableState,
+} from '@tanstack/react-table'
 import Link from 'next/link'
 import React, { FC, ReactNode, useCallback, useMemo, useState } from 'react'
-import InfiniteScroll from 'react-infinite-scroll-component'
 import { Native } from 'sushi/currency'
-import { useSWRConfig } from 'swr'
 
-import { usePoolCount, usePoolsInfinite } from '@sushiswap/client/hooks'
+import { usePoolsCount } from 'src/lib/flair/hooks/simplePools/count/count'
+import { useSimplePools } from 'src/lib/flair/hooks/simplePools/simplePools'
 import { isAngleEnabledChainId } from 'sushi/config'
 import { usePoolFilters } from './PoolsFiltersProvider'
 import {
@@ -197,7 +205,7 @@ const COLUMNS = [
           <DropdownMenuContent align="end" className="w-fit">
             <DropdownMenuLabel>
               {row.original.token0.symbol} / {row.original.token1.symbol}
-              {row.original.protocol === Protocol.BENTOBOX_STABLE && (
+              {/* {row.original.protocol === Protocol.BENTOBOX_STABLE && (
                 <Chip variant="green" className="ml-2">
                   Trident Stable
                 </Chip>
@@ -206,7 +214,7 @@ const COLUMNS = [
                 <Chip variant="green" className="ml-2">
                   Trident Classic
                 </Chip>
-              )}
+              )} */}
               {row.original.protocol === 'SUSHISWAP_V2' && (
                 <Chip variant="pink" className="ml-2">
                   SushiSwap V2
@@ -288,10 +296,10 @@ const COLUMNS = [
       skeleton: <SkeletonText fontSize="lg" />,
     },
   },
-] satisfies ColumnDef<Pool, unknown>[]
+] satisfies ColumnDef<SimplePool, unknown>[]
 
 interface PositionsTableProps {
-  onRowClick?(row: Pool): void
+  onRowClick?(row: SimplePool): void
 }
 
 export const PoolsTable: FC<PositionsTableProps> = ({ onRowClick }) => {
@@ -301,46 +309,48 @@ export const PoolsTable: FC<PositionsTableProps> = ({ onRowClick }) => {
     { id: 'liquidityUSD', desc: true },
   ])
 
-  const args = useMemo<GetPoolsArgs>(() => {
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 20,
+  })
+
+  const state: Partial<TableState> = useMemo(() => {
     return {
+      sorting,
+      pagination,
+    }
+  }, [pagination, sorting])
+
+  const args = useMemo<SimplePoolsArgs>(() => {
+    return {
+      pageIndex: pagination.pageIndex,
       chainIds: chainIds,
       tokenSymbols,
       isIncentivized: farmsOnly || undefined, // will filter farms out if set to false, undefined will be filtered out by the parser
       hasEnabledSteerVault: smartPoolsOnly || undefined, // will filter smart pools out if set to false, undefined will be filtered out by the parser
       isWhitelisted: true, // can be added to filters later, need to put it here so fallback works
-      orderBy: sorting[0]?.id,
-      orderDir: sorting[0] ? (sorting[0].desc ? 'desc' : 'asc') : 'desc',
+      orderBy: sorting[0]?.id as PoolsOrderBy,
+      orderDir: sorting[0] ? (sorting[0].desc ? 'DESC' : 'ASC') : 'DESC',
       protocols,
     }
-  }, [chainIds, tokenSymbols, farmsOnly, smartPoolsOnly, sorting, protocols])
+  }, [
+    pagination,
+    chainIds,
+    tokenSymbols,
+    farmsOnly,
+    smartPoolsOnly,
+    sorting,
+    protocols,
+  ])
 
-  const {
-    data: pools,
-    isValidating,
-    error,
-    setSize,
-  } = usePoolsInfinite({ args, shouldFetch: true, swrConfig: useSWRConfig() })
+  const { data: pools, isLoading: isValidatingPools } = useSimplePools(args)
+  const { data: poolCount /*, isLoading: isValidatingCount */ } =
+    usePoolsCount(args)
 
-  console.log(error)
-  const { data: poolCount } = usePoolCount({
-    args,
-    shouldFetch: true,
-    swrConfig: useSWRConfig(),
-  })
-  const data = useMemo(() => pools?.flat() || [], [pools])
-
-  const state: Partial<TableState> = useMemo(() => {
-    return {
-      sorting,
-      pagination: {
-        pageIndex: 0,
-        pageSize: data?.length,
-      },
-    }
-  }, [data?.length, sorting])
+  const data = useMemo(() => pools ?? [], [pools])
 
   const rowRenderer = useCallback(
-    (row: Row<Pool>, rowNode: ReactNode) => {
+    (row: Row<SimplePool>, rowNode: ReactNode) => {
       if (onRowClick)
         return (
           <Slot
@@ -356,16 +366,7 @@ export const PoolsTable: FC<PositionsTableProps> = ({ onRowClick }) => {
   )
 
   return (
-    <InfiniteScroll
-      dataLength={data.length}
-      next={() => setSize((prev) => prev + 1)}
-      hasMore={data.length < (poolCount?.count || 0)}
-      loader={
-        <div className="flex justify-center w-full py-4">
-          <Loader size={16} />
-        </div>
-      }
-    >
+    <>
       <Card>
         <CardHeader>
           <CardTitle>
@@ -379,14 +380,19 @@ export const PoolsTable: FC<PositionsTableProps> = ({ onRowClick }) => {
         </CardHeader>
         <DataTable
           state={state}
+          pagination={true}
+          pageCount={
+            poolCount ? Math.ceil(poolCount?.count / pagination.pageSize) : 0
+          }
           onSortingChange={setSorting}
-          loading={!pools && isValidating}
-          linkFormatter={(row) => `/pool/${row.chainId}%3A${row.address}`}
+          onPaginationChange={setPagination}
+          loading={!pools && isValidatingPools}
+          linkFormatter={(row) => `/pool/${row.chainId}:${row.address}`}
           rowRenderer={rowRenderer}
           columns={COLUMNS}
           data={data}
         />
       </Card>
-    </InfiniteScroll>
+    </>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 
-import { Pool, Protocol } from '@sushiswap/client'
+import { Protocol } from '@sushiswap/client'
+import { PoolProtocol, SimplePool } from '@sushiswap/rockset-client'
 import { classNames } from '@sushiswap/ui'
 import { Badge } from '@sushiswap/ui/components/badge'
 import { Currency } from '@sushiswap/ui/components/currency'
@@ -11,25 +12,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@sushiswap/ui/components/tooltip'
-import { Row } from '@tanstack/react-table'
 import { FC } from 'react'
 import { useTokensFromPool } from 'src/lib/hooks'
 import { ChainId } from 'sushi/chain'
 import { formatNumber } from 'sushi/format'
 
-import { PositionWithPool } from '../../types'
-
-export const ProtocolBadge: Record<Protocol, JSX.Element> = {
-  [Protocol.BENTOBOX_STABLE]: (
-    <div className="whitespace-nowrap bg-green/20 text-green text-[10px] px-2 rounded-full">
-      Trident Stable
-    </div>
-  ),
-  [Protocol.BENTOBOX_CLASSIC]: (
-    <div className="whitespace-nowrap bg-green/20 text-green text-[10px] px-2 rounded-full">
-      Trident Classic
-    </div>
-  ),
+export const ProtocolBadge: Record<PoolProtocol, JSX.Element> = {
+  // [Protocol.BENTOBOX_STABLE]: (
+  //   <div className="whitespace-nowrap bg-green/20 text-green text-[10px] px-2 rounded-full">
+  //     Trident Stable
+  //   </div>
+  // ),
+  // [Protocol.BENTOBOX_CLASSIC]: (
+  //   <div className="whitespace-nowrap bg-green/20 text-green text-[10px] px-2 rounded-full">
+  //     Trident Classic
+  //   </div>
+  // ),
   [Protocol.SUSHISWAP_V2]: (
     <div className="whitespace-nowrap bg-pink/20 text-pink text-[10px] px-2 rounded-full">
       V2
@@ -42,10 +40,10 @@ export const ProtocolBadge: Record<Protocol, JSX.Element> = {
   ),
 }
 
-export const PoolNameCell: FC<Row<PositionWithPool>> = ({ original }) => {
-  const { token0, token1 } = useTokensFromPool(original.pool)
+export const PoolNameCell: FC<{ pool: SimplePool }> = ({ pool }) => {
+  const { token0, token1 } = useTokensFromPool(pool)
 
-  const incentives = original.pool.incentives.filter((i) => i.rewardPerDay > 0)
+  const incentives = pool.incentives.filter((i) => i.rewardPerDay > 0)
 
   return (
     <div className="flex items-center gap-5">
@@ -56,7 +54,7 @@ export const PoolNameCell: FC<Row<PositionWithPool>> = ({ original }) => {
             position="bottom-right"
             badgeContent={
               <NetworkIcon
-                chainId={original.chainId as ChainId}
+                chainId={pool.chainId as ChainId}
                 width={14}
                 height={14}
               />
@@ -83,11 +81,11 @@ export const PoolNameCell: FC<Row<PositionWithPool>> = ({ original }) => {
           />
         </span>
         <div className="flex gap-1">
-          {ProtocolBadge[original.pool.protocol]}
+          {ProtocolBadge[pool.protocol]}
           <div className="bg-gray-200 text-gray-700 dark:bg-slate-800 dark:text-slate-300 text-[10px] px-2 rounded-full">
-            {formatNumber(original.pool.swapFee * 100)}%
+            {formatNumber(pool.swapFee * 100)}%
           </div>
-          {original.pool.isIncentivized && (
+          {pool.isIncentivized && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -103,7 +101,7 @@ export const PoolNameCell: FC<Row<PositionWithPool>> = ({ original }) => {
               </Tooltip>
             </TooltipProvider>
           )}
-          {original.pool.hasEnabledSteerVault && (
+          {pool.hasEnabledSteerVault && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -123,7 +121,7 @@ export const PoolNameCell: FC<Row<PositionWithPool>> = ({ original }) => {
   )
 }
 
-export const PoolNameCellPool: FC<{ pool: Pool }> = ({ pool }) => {
+export const PoolNameCellPool: FC<{ pool: SimplePool }> = ({ pool }) => {
   const { token0, token1 } = useTokensFromPool(pool)
 
   const incentives = pool.incentives.filter((i) => i.rewardPerDay > 0)

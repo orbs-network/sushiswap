@@ -1,5 +1,9 @@
-import { Pool } from '@sushiswap/client'
 import { AngleRewardsPool } from '@sushiswap/react-query'
+import {
+  SimplePool,
+  TransactionType,
+  V2Position,
+} from '@sushiswap/rockset-client'
 import {
   NetworkIcon,
   Tooltip,
@@ -13,28 +17,13 @@ import { ConcentratedLiquidityPositionWithV3Pool } from '@sushiswap/wagmi'
 import { ColumnDef } from '@tanstack/react-table'
 import { formatDistance } from 'date-fns'
 import React from 'react'
-import {
-  formatNumber,
-  formatPercent,
-  formatUSD,
-  shortenAddress,
-} from 'sushi/format'
-
+import { formatNumber, formatUSD, shortenAddress } from 'sushi/format'
 import { PositionWithPool } from '../../types'
-import { APRHoverCard } from './APRHoverCard'
 import { ConcentratedLiquidityPositionAPRCell } from './ConcentratedLiquidityPositionAPRCell'
 import { PoolNameCell, PoolNameCellPool } from './PoolNameCell'
 import { PoolNameCellV3 } from './PoolNameCellV3'
-import {
-  Transaction,
-  TransactionType,
-  useTransactionsV2,
-} from './PoolTransactionsV2'
-import {
-  TransactionTypeV3,
-  TransactionV3,
-  useTransactionsV3,
-} from './PoolTransactionsV3'
+import { Transaction } from './PoolTransactionsV2'
+import { TransactionV3 } from './PoolTransactionsV3'
 import { PriceRangeCell } from './PriceRangeCell'
 import { RewardsV3ClaimableCell } from './RewardsV3ClaimableCell'
 import { RewardsV3NameCell } from './RewardsV3NameCell'
@@ -113,13 +102,13 @@ export const REWARDS_V3_CLAIMABLE_COLUMN: ColumnDef<AngleRewardsPool, unknown> =
     },
   }
 
-export const NETWORK_COLUMN_POOL: ColumnDef<Pool, unknown> = {
+export const NETWORK_COLUMN_POOL: ColumnDef<SimplePool, unknown> = {
   id: 'network',
   header: 'Network',
   cell: (props) => (
     <NetworkIcon
       type="naked"
-      chainId={props.row.original.chainId}
+      chainId={Number(props.row.original.chainId)}
       width={26}
       height={26}
     />
@@ -129,7 +118,7 @@ export const NETWORK_COLUMN_POOL: ColumnDef<Pool, unknown> = {
   },
 }
 
-export const NAME_COLUMN_POOL: ColumnDef<Pool, unknown> = {
+export const NAME_COLUMN_POOL: ColumnDef<SimplePool, unknown> = {
   id: 'name',
   header: 'Name',
   cell: (props) => <PoolNameCellPool pool={props.row.original} />,
@@ -149,7 +138,7 @@ export const NAME_COLUMN_POOL: ColumnDef<Pool, unknown> = {
   size: 300,
 }
 
-export const TVL_COLUMN: ColumnDef<Pool, unknown> = {
+export const TVL_COLUMN: ColumnDef<SimplePool, unknown> = {
   id: 'liquidityUSD',
   header: 'TVL',
   accessorFn: (row) => row.liquidityUSD,
@@ -164,90 +153,91 @@ export const TVL_COLUMN: ColumnDef<Pool, unknown> = {
   },
 }
 
-export const APR_COLUMN_POOL: ColumnDef<Pool, unknown> = {
-  id: 'totalApr1d',
+export const APR_COLUMN_POOL: ColumnDef<SimplePool, unknown> = {
+  id: 'feeApr1d',
   header: 'APR',
-  accessorFn: (row) => row.totalApr1d,
+  accessorFn: (row) => row.feeApr1d,
   cell: (props) => (
-    <APRHoverCard pool={props.row.original}>
-      <span className="underline decoration-dotted underline-offset-2">
-        {formatPercent(props.row.original.totalApr1d)}
-      </span>
-    </APRHoverCard>
+    // <APRHoverCard pool={props.row.original}>
+    //   <span className="underline decoration-dotted underline-offset-2">
+    //     {formatPercent(props.row.original.totalApr1d)}
+    //   </span>
+    // </APRHoverCard>
+    <></>
   ),
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
   },
 }
 
-export const VOLUME_1H_COLUMN: ColumnDef<Pool, unknown> = {
-  id: 'volume1h',
-  header: 'Volume (1h)',
-  accessorFn: (row) => row.volume1h,
-  sortingFn: ({ original: rowA }, { original: rowB }) =>
-    Number(rowA.volume1h) - Number(rowB.volume1h),
-  cell: (props) =>
-    formatUSD(props.row.original.volume1h).includes('NaN')
-      ? '$0.00'
-      : formatUSD(props.row.original.volume1h),
-  meta: {
-    skeleton: <SkeletonText fontSize="lg" />,
-  },
-}
+// export const VOLUME_1H_COLUMN: ColumnDef<Pool, unknown> = {
+//   id: 'volume1h',
+//   header: 'Volume (1h)',
+//   accessorFn: (row) => row.volume1h,
+//   sortingFn: ({ original: rowA }, { original: rowB }) =>
+//     Number(rowA.volume1h) - Number(rowB.volume1h),
+//   cell: (props) =>
+//     formatUSD(props.row.original.volume1h).includes('NaN')
+//       ? '$0.00'
+//       : formatUSD(props.row.original.volume1h),
+//   meta: {
+//     skeleton: <SkeletonText fontSize="lg" />,
+//   },
+// }
 
-export const VOLUME_1D_COLUMN: ColumnDef<Pool, unknown> = {
-  id: 'volume1d',
+export const VOLUME_1D_COLUMN: ColumnDef<SimplePool, unknown> = {
+  id: 'volumeUSD1d',
   header: 'Volume (24h)',
-  accessorFn: (row) => row.volume1d,
-  sortingFn: ({ original: rowA }, { original: rowB }) =>
-    Number(rowA.volume1d) - Number(rowB.volume1d),
+  accessorFn: (row) => row.volumeUSD1d,
+  // sortingFn: ({ original: rowA }, { original: rowB }) =>
+  //   Number(rowA.volume1d) - Number(rowB.volume1d),
   cell: (props) =>
-    formatUSD(props.row.original.volume1d).includes('NaN')
+    formatUSD(props.row.original.volumeUSD1d).includes('NaN')
       ? '$0.00'
-      : formatUSD(props.row.original.volume1d),
+      : formatUSD(props.row.original.volumeUSD1d),
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
   },
 }
 
-export const VOLUME_7D_COLUMN: ColumnDef<Pool, unknown> = {
-  id: 'volume1w',
+export const VOLUME_7D_COLUMN: ColumnDef<SimplePool, unknown> = {
+  id: 'volumeUSD1w',
   header: 'Volume (1w)',
-  accessorFn: (row) => row.volume1w,
-  sortingFn: ({ original: rowA }, { original: rowB }) =>
-    Number(rowA.volume1w) - Number(rowB.volume1w),
+  accessorFn: (row) => row.volumeUSD1w,
+  // sortingFn: ({ original: rowA }, { original: rowB }) =>
+  //   Number(rowA.volume1w) - Number(rowB.volume1w),
   cell: (props) =>
-    formatUSD(props.row.original.volume1w).includes('NaN')
+    formatUSD(props.row.original.volumeUSD1w).includes('NaN')
       ? '$0.00'
-      : formatUSD(props.row.original.volume1w),
+      : formatUSD(props.row.original.volumeUSD1w),
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
   },
 }
 
-export const VOLUME_1M_COLUMN: ColumnDef<Pool, unknown> = {
-  id: 'volume1m',
+export const VOLUME_1M_COLUMN: ColumnDef<SimplePool, unknown> = {
+  id: 'volumeUSD1m',
   header: 'Volume (1m)',
-  accessorFn: (row) => row.volume1m,
-  sortingFn: ({ original: rowA }, { original: rowB }) =>
-    Number(rowA.volume1m) - Number(rowB.volume1m),
+  accessorFn: (row) => row.volumeUSD1m,
+  // sortingFn: ({ original: rowA }, { original: rowB }) =>
+  //   Number(rowA.volume1m) - Number(rowB.volume1m),
   cell: (props) =>
-    formatUSD(props.row.original.volume1m).includes('NaN')
+    formatUSD(props.row.original.volumeUSD1m).includes('NaN')
       ? '$0.00'
-      : formatUSD(props.row.original.volume1m),
+      : formatUSD(props.row.original.volumeUSD1m),
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
   },
 }
 
-export const FEES_COLUMN: ColumnDef<Pool, unknown> = {
-  id: 'fees1d',
+export const FEES_COLUMN: ColumnDef<SimplePool, unknown> = {
+  id: 'feeUSD1d',
   header: 'Fees (24h)',
-  accessorFn: (row) => row.fees1d,
+  accessorFn: (row) => row.feeUSD1d,
   cell: (props) =>
-    formatUSD(props.row.original.fees1d).includes('NaN')
+    formatUSD(props.row.original.feeUSD1d).includes('NaN')
       ? '$0.00'
-      : formatUSD(props.row.original.fees1d),
+      : formatUSD(props.row.original.feeUSD1d),
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
   },
@@ -269,13 +259,10 @@ export const NETWORK_COLUMN: ColumnDef<PositionWithPool, unknown> = {
   },
 }
 
-export const NAME_COLUMN_POSITION_WITH_POOL: ColumnDef<
-  PositionWithPool,
-  unknown
-> = {
+export const NAME_COLUMN_POSITION_WITH_POOL: ColumnDef<V2Position, unknown> = {
   id: 'name',
   header: 'Name',
-  cell: (props) => <PoolNameCell {...props.row} />,
+  cell: (props) => <PoolNameCell pool={props.row.original.pool} />,
   meta: {
     skeleton: (
       <div className="flex items-center w-full gap-2">
@@ -291,32 +278,33 @@ export const NAME_COLUMN_POSITION_WITH_POOL: ColumnDef<
   },
 }
 
-export const APR_COLUMN: ColumnDef<PositionWithPool, unknown> = {
-  id: 'apr',
+export const APR_COLUMN: ColumnDef<V2Position, unknown> = {
+  id: 'feeApr1d',
   header: 'APR',
-  accessorFn: (row) => row.pool.totalApr1d,
+  accessorFn: (row) => row.pool.feeApr1d,
   cell: (props) => (
-    <APRHoverCard pool={props.row.original.pool}>
-      <span className="underline decoration-dotted underline-offset-2">
-        {formatPercent(props.row.original.pool.totalApr1d)}
-      </span>
-    </APRHoverCard>
+    // <APRHoverCard pool={props.row.original.pool}>
+    //   <span className="underline decoration-dotted underline-offset-2">
+    //     {formatPercent(props.row.original.pool.totalApr1d)}
+    //   </span>
+    // </APRHoverCard>
+    <></>
   ),
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
   },
 }
 
-export const VALUE_COLUMN: ColumnDef<PositionWithPool, unknown> = {
+export const VALUE_COLUMN: ColumnDef<V2Position, unknown> = {
   id: 'value',
   header: 'Value',
   accessorFn: (row) =>
-    (Number(row.balance) / Number(row.pool.totalSupply)) *
+    (Number(row.balance) / Number(row.pool.liquidity)) *
     Number(row.pool.liquidityUSD),
   cell: (props) =>
     formatUSD(
       (Number(props.row.original.balance) /
-        Number(props.row.original.pool.totalSupply)) *
+        Number(props.row.original.pool.liquidity)) *
         Number(props.row.original.pool.liquidityUSD),
     ),
   meta: {
@@ -325,12 +313,13 @@ export const VALUE_COLUMN: ColumnDef<PositionWithPool, unknown> = {
 }
 
 export const VOLUME_COLUMN: ColumnDef<PositionWithPool, unknown> = {
-  id: 'volume',
+  id: 'volumeUSD1d',
   header: 'Volume (24h)',
   cell: (props) =>
-    formatUSD(props.row.original.pool.volume1d).includes('NaN')
-      ? '$0.00'
-      : formatUSD(props.row.original.pool.volume1d),
+    // formatUSD(props.row.original.pool.volume1d).includes('NaN')
+    //   ? '$0.00'
+    //   : formatUSD(props.row.original.pool.volume1d),
+    {},
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
   },
@@ -411,27 +400,24 @@ export const POSITION_UNCLAIMED_CELL: ColumnDef<
 export const TX_SENDER_V2_COLUMN: ColumnDef<Transaction, unknown> = {
   id: 'sender',
   header: 'Maker',
-  cell: (props) => shortenAddress(props.row.original.sender),
+  cell: (props) => shortenAddress(props.row.original.maker),
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
   },
 }
 
 export const TX_AMOUNT_IN_V2_COLUMN = (
-  type: Parameters<typeof useTransactionsV2>['2']['type'],
+  type: TransactionType,
 ): ColumnDef<Transaction, unknown> => ({
   id: 'amounts_in',
-  header: type === TransactionType.Swap ? 'Amount in' : 'Token 0',
+  header: type === TransactionType.SWAPS ? 'Amount in' : 'Token 0',
   cell: ({ row }) => {
-    switch (row.original.type) {
-      case TransactionType.Swap:
-        return `${row.original.amountIn.toPrecision(2)} ${
-          row.original.tokenIn.symbol
-        }`
-      case TransactionType.Mint:
-      case TransactionType.Burn:
-        return `${row.original.amount0.toPrecision(6)} ${
-          row.original.pool.token0.symbol
+    switch (type) {
+      case TransactionType.SWAPS:
+      case TransactionType.MINTS:
+      case TransactionType.BURNS:
+        return `${row.original.amountIn.toFixed(3)} ${
+          row.original.amountIn.currency.symbol
         }`
     }
   },
@@ -441,20 +427,17 @@ export const TX_AMOUNT_IN_V2_COLUMN = (
 })
 
 export const TX_AMOUNT_OUT_V2_COLUMN = (
-  type: Parameters<typeof useTransactionsV2>['2']['type'],
+  type: TransactionType,
 ): ColumnDef<Transaction, unknown> => ({
   id: 'amount_out',
-  header: type === TransactionType.Swap ? 'Amount out' : 'Token 1',
+  header: type === TransactionType.SWAPS ? 'Amount out' : 'Token 1',
   cell: ({ row }) => {
-    switch (row.original.type) {
-      case TransactionType.Swap:
-        return `${Math.abs(row.original.amountOut).toFixed(2)} ${
-          row.original.tokenOut.symbol
-        }`
-      case TransactionType.Mint:
-      case TransactionType.Burn:
-        return `${row.original.amount1.toFixed(2)} ${
-          row.original.pool.token1.symbol
+    switch (type) {
+      case TransactionType.SWAPS:
+      case TransactionType.MINTS:
+      case TransactionType.BURNS:
+        return `${row.original.amountOut.toFixed(3)} ${
+          row.original.amountOut.currency.symbol
         }`
     }
   },
@@ -466,7 +449,7 @@ export const TX_AMOUNT_OUT_V2_COLUMN = (
 export const TX_AMOUNT_USD_V2_COLUMN: ColumnDef<Transaction, unknown> = {
   id: 'amountUSD',
   header: 'Amount (USD)',
-  cell: (props) => formatUSD(props.row.original.amountUSD),
+  cell: (props) => formatUSD(props.row.original.amountUSD || ''),
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
   },
@@ -476,7 +459,7 @@ export const TX_CREATED_TIME_V2_COLUMN: ColumnDef<Transaction, unknown> = {
   id: 'time',
   header: 'Time',
   cell: (props) =>
-    formatDistance(props.row.original.createdAtTimestamp * 1000, new Date(), {
+    formatDistance(props.row.original.timestamp * 1000, new Date(), {
       addSuffix: true,
     }),
   meta: {
@@ -484,48 +467,37 @@ export const TX_CREATED_TIME_V2_COLUMN: ColumnDef<Transaction, unknown> = {
   },
 }
 
-export const TX_TYPE_COLUMN: ColumnDef<Transaction, unknown> = {
-  id: 'type',
-  header: 'Type',
-  cell: (props) => TransactionType[props.row.original.type],
-  meta: {
-    skeleton: <SkeletonText fontSize="lg" />,
-  },
-}
+// export const TX_TYPE_COLUMN: ColumnDef<Transaction, unknown> = {
+//   id: 'type',
+//   header: 'Type',
+//   cell: (props) => TransactionType[props.row.original.type],
+//   meta: {
+//     skeleton: <SkeletonText fontSize="lg" />,
+//   },
+// }
 
 export const TX_ORIGIN_V3_COLUMN: ColumnDef<TransactionV3, unknown> = {
   id: 'sender',
   header: 'Maker',
-  cell: (props) => shortenAddress(props.row.original.origin),
+  cell: (props) => shortenAddress(props.row.original.maker),
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
   },
 }
 
 export const TX_AMOUNT_IN_V3_COLUMN = (
-  type: Parameters<typeof useTransactionsV3>['2']['type'],
+  type: TransactionType,
 ): ColumnDef<TransactionV3, unknown> => ({
   id: 'amounts_in',
-  header: type === TransactionTypeV3.Swap ? 'Amount in' : 'Token 0',
+  header: type === TransactionType.SWAPS ? 'Amount in' : 'Token 0',
   cell: (props) => {
     const row = props.row.original
-    switch (row.type) {
-      case TransactionTypeV3.Swap: {
-        const amounts =
-          row.amount0 < 0
-            ? [row.amount0, row.amount1]
-            : [row.amount1, row.amount0]
-        const tokens =
-          row.amount0 < 0
-            ? [row.pool.token0, row.pool.token1]
-            : [row.pool.token1, row.pool.token0]
-
-        return `${Math.abs(amounts[0]).toPrecision(6)} ${tokens[0].symbol}`
-      }
-      case TransactionTypeV3.Mint:
-      case TransactionTypeV3.Burn:
-      case TransactionTypeV3.Collect:
-        return `${row.amount0.toPrecision(6)} ${row.pool.token0.symbol}`
+    switch (type) {
+      case TransactionType.SWAPS:
+      case TransactionType.MINTS:
+      case TransactionType.BURNS:
+        // case TransactionType.COLLECTS:
+        return `${row.amountIn.toFixed(6)} ${row.amountIn.currency.symbol}`
     }
   },
   meta: {
@@ -534,29 +506,18 @@ export const TX_AMOUNT_IN_V3_COLUMN = (
 })
 
 export const TX_AMOUNT_OUT_V3_COLUMN = (
-  type: Parameters<typeof useTransactionsV3>['2']['type'],
+  type: TransactionType,
 ): ColumnDef<TransactionV3, unknown> => ({
   id: 'amount_out',
-  header: type === TransactionTypeV3.Swap ? 'Amount out' : 'Token 1',
+  header: type === TransactionType.SWAPS ? 'Amount out' : 'Token 1',
   cell: (props) => {
     const row = props.row.original
-    switch (row.type) {
-      case TransactionTypeV3.Swap: {
-        const amounts =
-          row.amount0 < 0
-            ? [row.amount0, row.amount1]
-            : [row.amount1, row.amount0]
-        const tokens =
-          row.amount0 < 0
-            ? [row.pool.token0, row.pool.token1]
-            : [row.pool.token1, row.pool.token0]
-
-        return `${Math.abs(amounts[1]).toFixed(2)} ${tokens[1].symbol}`
-      }
-      case TransactionTypeV3.Mint:
-      case TransactionTypeV3.Burn:
-      case TransactionTypeV3.Collect:
-        return `${row.amount1.toFixed(2)} ${row.pool.token1.symbol}`
+    switch (type) {
+      case TransactionType.SWAPS:
+      case TransactionType.MINTS:
+      case TransactionType.BURNS:
+        // case TransactionType.COLLECTS:
+        return `${row.amountOut.toFixed(6)} ${row.amountOut.currency.symbol}`
     }
   },
   meta: {
@@ -567,7 +528,7 @@ export const TX_AMOUNT_OUT_V3_COLUMN = (
 export const TX_AMOUNT_USD_V3_COLUMN: ColumnDef<TransactionV3, unknown> = {
   id: 'amountUSD',
   header: 'Amount (USD)',
-  cell: (props) => formatUSD(props.row.original.amountUSD),
+  cell: (props) => formatUSD(props.row.original.amountUSD || ''),
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
   },

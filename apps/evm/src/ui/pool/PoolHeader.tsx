@@ -1,7 +1,7 @@
 'use client'
 
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
-import { Pool as PoolV2 } from '@sushiswap/client'
+import { Pool } from '@sushiswap/rockset-client'
 import {
   Button,
   Currency,
@@ -22,13 +22,12 @@ import { unwrapToken } from 'src/lib/functions'
 import { Chain } from 'sushi/chain'
 import { Token } from 'sushi/currency'
 import { formatPercent, shortenAddress } from 'sushi/format'
-
 import { APRHoverCard } from './APRHoverCard'
 
 type PoolHeader = {
   backUrl: string
   address: string
-  pool: SushiSwapV3Pool | null | undefined | PoolV2
+  pool: Pool
   apy?: {
     fees: number | undefined
     rewards: number | undefined

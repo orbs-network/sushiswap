@@ -1,7 +1,7 @@
 'use client'
 
-import { Pool } from '@sushiswap/client'
 import { useCustomTokens } from '@sushiswap/hooks'
+import { Pool } from '@sushiswap/rockset-client'
 import { Message } from '@sushiswap/ui'
 import { useTokenWithCache } from '@sushiswap/wagmi'
 import { FC, useMemo } from 'react'

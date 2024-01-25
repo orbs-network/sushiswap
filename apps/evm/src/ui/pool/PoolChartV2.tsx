@@ -2,8 +2,7 @@
 
 import { Card } from '@sushiswap/ui'
 import React, { FC, useState } from 'react'
-import { ChainId } from 'sushi/chain'
-
+import { ID } from 'sushi'
 import { PoolChartGraph } from './PoolChartGraph'
 import { PoolChartPeriod, PoolChartPeriods } from './PoolChartPeriods'
 import { PoolChartType, PoolChartTypes } from './PoolChartTypes'
@@ -23,11 +22,10 @@ const periods = [
 ]
 
 interface PoolChartV2Props {
-  address: string
-  chainId: ChainId
+  id: ID
 }
 
-const PoolChartV2: FC<PoolChartV2Props> = ({ address, chainId }) => {
+const PoolChartV2: FC<PoolChartV2Props> = ({ id }) => {
   const [chart, setChart] = useState<typeof charts[number]>(charts[0])
   const [period, setPeriod] = useState<PoolChartPeriod>(PoolChartPeriod.Month)
 
@@ -45,12 +43,7 @@ const PoolChartV2: FC<PoolChartV2Props> = ({ address, chainId }) => {
           setPeriod={setPeriod}
         />
       </div>
-      <PoolChartGraph
-        chart={chart}
-        period={period}
-        address={address}
-        chainId={chainId}
-      />
+      <PoolChartGraph chart={chart} period={period} id={id} />
     </Card>
   )
 }

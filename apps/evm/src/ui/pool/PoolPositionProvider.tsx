@@ -1,14 +1,14 @@
 'use client'
 
-import { Pool } from '@sushiswap/client'
+import { Pool } from '@sushiswap/rockset-client'
 import { useAccount } from '@sushiswap/wagmi'
 import { useBalanceWeb3 } from '@sushiswap/wagmi'
 import { FC, ReactNode, createContext, useContext, useMemo } from 'react'
 import {
-  useGraphPool,
   useTokenAmountDollarValues,
   useUnderlyingTokenBalanceFromPool,
 } from 'src/lib/hooks'
+import { useExtendedPool } from 'src/lib/hooks/api/useFlairPoolGraphData'
 import { ChainId } from 'sushi/chain'
 import { Amount, Type } from 'sushi/currency'
 
@@ -31,9 +31,9 @@ export const PoolPositionProvider: FC<{
 }> = ({ pool, children }) => {
   const { address: account } = useAccount()
 
-  const {
-    data: { reserve0, reserve1, totalSupply, liquidityToken },
-  } = useGraphPool(pool)
+  const { reserve0, reserve1, totalSupply, liquidityToken } = useExtendedPool({
+    pool,
+  })
 
   const {
     data: balance,

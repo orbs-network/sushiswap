@@ -5,41 +5,43 @@ import { SkeletonBox } from '@sushiswap/ui/components/skeleton'
 import { SushiSwapV3ChainId } from '@sushiswap/v3-sdk'
 import React, { FC, useMemo } from 'react'
 import { Bound } from 'src/lib/constants'
-
+import { ExtendedPool } from 'src/lib/hooks/api/useFlairPoolGraphData'
 import { useConcentratedDerivedMintInfo } from './ConcentratedLiquidityProvider'
 import LiquidityChartRangeInput from './LiquidityChartRangeInput'
 import { useDensityChartData } from './LiquidityChartRangeInput/hooks'
 
 interface LiquidityDepthWidget {
+  pool: ExtendedPool
   address: string
   chainId: SushiSwapV3ChainId
 }
 
 // ID has to be set (and unique) if there are multiple charts on the same page
 export const LiquidityDepthWidget: FC<LiquidityDepthWidget> = ({
+  pool,
   address,
   chainId,
 }) => {
-  const { data: poolStats } = useConcentratedLiquidityPoolStats({
-    chainId,
-    address,
-  })
+  // const { data: poolStats } = useConcentratedLiquidityPoolStats({
+  //   chainId,
+  //   address,
+  // })
 
   const { price, invertPrice, noLiquidity } = useConcentratedDerivedMintInfo({
     account: undefined,
     chainId,
-    token0: poolStats?.token0,
-    token1: poolStats?.token1,
-    baseToken: poolStats?.token0,
-    feeAmount: poolStats?.feeAmount,
+    token0: pool?.token0,
+    token1: pool?.token1,
+    baseToken: pool?.token0,
+    feeAmount: pool?.feeAmount,
     existingPosition: undefined,
   })
 
   const { isLoading, data } = useDensityChartData({
     chainId,
-    token0: poolStats?.token0,
-    token1: poolStats?.token1,
-    feeAmount: poolStats?.feeAmount,
+    token0: pool?.token0,
+    token1: pool?.token1,
+    feeAmount: pool?.feeAmount,
   })
 
   const current = useMemo(() => {
@@ -51,12 +53,12 @@ export const LiquidityDepthWidget: FC<LiquidityDepthWidget> = ({
   return (
     <>
       {isLoading && <SkeletonBox className="w-full h-full" />}
-      {!noLiquidity && !isLoading && data && current && poolStats && (
+      {!noLiquidity && !isLoading && data && current && pool && (
         <LiquidityChartRangeInput
           chainId={chainId}
-          currencyA={poolStats.token0}
-          currencyB={poolStats.token1}
-          feeAmount={poolStats.feeAmount}
+          currencyA={pool.token0}
+          currencyB={pool.token1}
+          feeAmount={pool.feeAmount}
           ticksAtLimit={{ [Bound.LOWER]: false, [Bound.UPPER]: false }}
           price={
             price

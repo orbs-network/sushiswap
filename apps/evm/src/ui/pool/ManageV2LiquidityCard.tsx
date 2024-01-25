@@ -1,31 +1,30 @@
 'use client'
 
-import { Pool, Protocol } from '@sushiswap/client'
+import { Pool } from '@sushiswap/rockset-client'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  Message,
+  // Message,
   Separator,
   Tabs,
-  TabsContent,
+  // TabsContent,
   TabsList,
   TabsTrigger,
 } from '@sushiswap/ui'
 import Link from 'next/link'
 import { FC } from 'react'
-
-import { AddSectionLegacy } from './AddSectionLegacy'
-import { AddSectionStake } from './AddSectionStake'
-import { AddSectionTrident } from './AddSectionTrident'
-import { PoolPositionProvider } from './PoolPositionProvider'
-import { PoolPositionRewardsProvider } from './PoolPositionRewardsProvider'
-import { PoolPositionStakedProvider } from './PoolPositionStakedProvider'
-import { RemoveSectionLegacy } from './RemoveSectionLegacy'
-import { RemoveSectionTrident } from './RemoveSectionTrident'
-import { RemoveSectionUnstake } from './RemoveSectionUnstake'
+// import { AddSectionLegacy } from './AddSectionLegacy'
+// import { AddSectionStake } from './AddSectionStake'
+// import { AddSectionTrident } from './AddSectionTrident'
+// import { PoolPositionProvider } from './PoolPositionProvider'
+// import { PoolPositionRewardsProvider } from './PoolPositionRewardsProvider'
+// import { PoolPositionStakedProvider } from './PoolPositionStakedProvider'
+// import { RemoveSectionLegacy } from './RemoveSectionLegacy'
+// import { RemoveSectionTrident } from './RemoveSectionTrident'
+// import { RemoveSectionUnstake } from './RemoveSectionUnstake'
 
 interface ManageV2LiquidityCardProps {
   pool: Pool
@@ -36,7 +35,7 @@ export const ManageV2LiquidityCard: FC<ManageV2LiquidityCardProps> = ({
   pool,
   tab = 'add',
 }) => {
-  const isFarm = pool.wasIncentivized || pool.isIncentivized
+  // const isFarm = pool.wasIncentivized || pool.isIncentivized
 
   return (
     <Card>
@@ -70,7 +69,7 @@ export const ManageV2LiquidityCard: FC<ManageV2LiquidityCardProps> = ({
                 Remove
               </TabsTrigger>
             </Link>
-            {isFarm ? (
+            {/* {isFarm ? (
               <Link href={`/pool/${pool.id}/stake`} className="flex flex-1">
                 <TabsTrigger
                   testdata-id="stake-tab"
@@ -109,14 +108,14 @@ export const ManageV2LiquidityCard: FC<ManageV2LiquidityCardProps> = ({
               >
                 Unstake
               </TabsTrigger>
-            )}
+            )} */}
           </TabsList>
         </CardContent>
         <div className="px-6 pb-4">
           <Separator />
         </div>
-        <PoolPositionProvider pool={pool}>
-          <PoolPositionStakedProvider pool={pool}>
+        {/* <PoolPositionProvider pool={pool}>
+           <PoolPositionStakedProvider pool={pool}>
             <PoolPositionRewardsProvider pool={pool}>
               <TabsContent value="add">
                 <CardContent>
@@ -171,8 +170,8 @@ export const ManageV2LiquidityCard: FC<ManageV2LiquidityCardProps> = ({
                 </CardContent>
               </TabsContent>
             </PoolPositionRewardsProvider>
-          </PoolPositionStakedProvider>
-        </PoolPositionProvider>
+          </PoolPositionStakedProvider> 
+        </PoolPositionProvider> */}
       </Tabs>
     </Card>
   )

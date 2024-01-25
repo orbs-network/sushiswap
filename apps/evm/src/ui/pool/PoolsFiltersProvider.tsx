@@ -1,6 +1,7 @@
 'use client'
 
-import { Protocol, parseArgs } from '@sushiswap/client'
+import { parseArgs } from '@sushiswap/client'
+import { PoolProtocol } from '@sushiswap/rockset-client'
 import { useRouter } from 'next/navigation'
 import {
   Dispatch,
@@ -44,7 +45,7 @@ export const poolFiltersSchema = z.object({
     .string()
     .transform((protocols) =>
       protocols !== null && protocols !== ','
-        ? (protocols.split(',') as Protocol[])
+        ? (protocols.split(',') as PoolProtocol[])
         : [],
     ),
   farmsOnly: z

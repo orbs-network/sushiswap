@@ -1,4 +1,3 @@
-import { getPool } from '@sushiswap/client'
 import {
   Breadcrumb,
   CardDescription,
@@ -11,8 +10,9 @@ import { unstable_cache } from 'next/cache'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import React from 'react'
+import { getPool } from 'src/lib/flair/fetchers/pool/id/pool'
 import { unsanitize } from 'sushi/format'
-
+import { ID } from 'sushi/types'
 import { PoolHeader } from '../../../../../ui/pool/PoolHeader'
 
 export default async function Layout({
@@ -20,8 +20,8 @@ export default async function Layout({
   params,
 }: { children: React.ReactNode; params: { id: string } }) {
   const poolId = unsanitize(params.id)
-  const pool = await unstable_cache(
-    async () => getPool(poolId),
+  const { data: pool } = await unstable_cache(
+    async () => getPool({ id: poolId as ID }),
     ['pool', poolId],
     {
       revalidate: 60 * 15,

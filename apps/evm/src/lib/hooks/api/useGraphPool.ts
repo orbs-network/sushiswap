@@ -1,7 +1,7 @@
 'use client'
 
-import { Pool } from '@sushiswap/client'
 import { Pair } from '@sushiswap/graph-client'
+import { Pool } from '@sushiswap/rockset-client'
 import { useMemo } from 'react'
 import { Amount } from 'sushi/currency'
 import useSWR from 'swr'
