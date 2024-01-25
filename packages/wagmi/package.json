@@ -71,7 +71,7 @@
     "@uniswap/v3-periphery": "1.4.1",
     "next-themes": "0.2.1",
     "sushi": "workspace:*",
-    "zod": "3.21.4"
+    "zod": "3.22.4"
   },
   "devDependencies": {
     "@sentry/nextjs": "7.92.0",
