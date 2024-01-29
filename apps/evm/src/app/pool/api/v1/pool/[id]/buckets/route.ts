@@ -4,8 +4,8 @@ import {
   processPoolBucket,
 } from '@sushiswap/rockset-client'
 import { createClient } from '@sushiswap/rockset-client/client'
-import { CORS } from '../../../../cors'
 import { NextRequest, NextResponse } from 'next/server'
+import { CORS } from '../../../../cors'
 
 export async function GET(
   request: NextRequest,
@@ -27,7 +27,7 @@ export async function GET(
       SELECT 
         entityId as id,
         timeBucket,
-        timestamp,
+        bucketTimestamp,
         granularity,
         volumeUSD,
         liquidityUSD,
@@ -39,7 +39,7 @@ export async function GET(
         AND entityType = 'PoolStat'
         AND granularity = :granularity
         AND poolId = :id
-			ORDER BY timestamp DESC
+			ORDER BY bucketTimestamp DESC
       LIMIT 100
       `,
       parameters: [
@@ -61,12 +61,12 @@ export async function GET(
 
   const processedBuckets = processArray.filterErrors(results, processPoolBucket)
 
-  return NextResponse.json(processedBuckets, { 
+  return NextResponse.json(processedBuckets, {
     headers: {
       ...CORS,
       'Cache-Control': 'public, s-maxage=60',
       'CDN-Cache-Control': 'public, s-maxage=60',
       'Vercel-CDN-Cache-Control': 'public, s-maxage=3600',
-      } 
-    })
+    },
+  })
 }
