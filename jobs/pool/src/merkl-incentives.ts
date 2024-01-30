@@ -43,57 +43,61 @@ type ChainData = {
 }
 
 type Pool = {
-  amm: number;
-  ammAlgo: number;
-  ammAlgoName: string;
-  ammName: string;
-  aprs: Record<string, number>; // Changed from array to Record
-  chainId: number;
-  decimalsToken0: number;
-  decimalsToken1: number;
-  disputeLive: boolean;
-  distributionData: MerklDistribution[];
-  endOfDisputePeriod: number;
-  meanAPR: number;
-  pool: string;
-  poolBalanceToken0: number;
-  poolBalanceToken1: number;
-  poolFee: number;
-  poolTotalLiquidity: number;
-  rewardsPerToken: Record<string, unknown>; // Update this type based on the actual structure
-  symbolToken0: string;
-  symbolToken1: string;
-  tick: number;
-  token0: string;
-  token1: string;
-  tvl: number;
-};
+  amm: number
+  ammAlgo: number
+  ammAlgoName: string
+  ammName: string
+  aprs: Record<string, number> // Changed from array to Record
+  chainId: number
+  decimalsToken0: number
+  decimalsToken1: number
+  disputeLive: boolean
+  distributionData: MerklDistribution[]
+  endOfDisputePeriod: number
+  meanAPR: number
+  pool: string
+  poolBalanceToken0: number
+  poolBalanceToken1: number
+  poolFee: number
+  poolTotalLiquidity: number
+  rewardsPerToken: Record<string, unknown> // Update this type based on the actual structure
+  symbolToken0: string
+  symbolToken1: string
+  tick: number
+  token0: string
+  token1: string
+  tvl: number
+}
 
 type MerklDistribution = {
-  amount: number;
-  apr: number;
-  blacklist: string[];
-  breakdown: Record<string, unknown>; // Adjust the type based on the actual structure
-  decimalsRewardToken: number;
-  endTimestamp: number;
-  id: string;
-  isBoosted: boolean;
-  isLive: boolean;
-  isMock: boolean;
-  isOutOfRangeIncentivized: boolean;
-  propFees: number;
-  propToken0: number;
-  propToken1: number;
-  rewardToken: string;
-  startTimestamp: number;
-  symbolRewardToken: string;
-  unclaimed: number;
-  whitelist: string[];
-};
-
+  amount: number
+  apr: number
+  blacklist: string[]
+  breakdown: Record<string, unknown> // Adjust the type based on the actual structure
+  decimalsRewardToken: number
+  endTimestamp: number
+  id: string
+  isBoosted: boolean
+  isLive: boolean
+  isMock: boolean
+  isOutOfRangeIncentivized: boolean
+  propFees: number
+  propToken0: number
+  propToken1: number
+  rewardToken: string
+  startTimestamp: number
+  symbolRewardToken: string
+  unclaimed: number
+  whitelist: string[]
+}
 
 type PriceResponse = {
   [token: string]: number
+}
+
+
+type PriceMap = {
+  [chainId: number]: PriceResponse
 }
 
 type TokenSuccess = {
@@ -138,7 +142,14 @@ export async function execute() {
           ),
         ),
       )
-    ).reduce((acc, prices) => Object.assign(acc, prices), {})
+    ).reduce((acc: PriceMap, prices: PriceResponse, index: number) => {
+      const chainId = MERKL_SUPPORTED_NETWORKS[index];
+      acc[chainId] = Object.keys(prices).reduce((result, key) => {
+        result[key.toLowerCase()] = prices[key];
+        return result;
+      }, {} as PriceResponse);
+      return acc;
+    }, {});
 
     // TRANSFORM
     const { incentivesToCreate, incentivesToUpdate, tokens } = await transform(
@@ -179,7 +190,7 @@ async function extract() {
 
 async function transform(
   response: MerklResponse,
-  prices: PriceResponse,
+  prices: PriceMap,
 ): Promise<{
   incentivesToCreate: Prisma.IncentiveCreateManyInput[]
   incentivesToUpdate: Prisma.IncentiveCreateManyInput[]
@@ -190,21 +201,25 @@ async function transform(
   const rewardTokens: Map<string, { chainId: ChainId; address: string }> =
     new Map()
 
-    const pools: { address: string; pool: Pool }[] = [];
+  const pools: { address: string; pool: Pool }[] = []
 
-    for (const [chainId, value] of Object.entries(response)) {
-      if ((MERKL_SUPPORTED_NETWORKS as number[]).includes(Number(chainId))) {
-        const chainPools = Object.entries(value.pools).map(([address, pool]) => ({
-          address,
-          pool,
-        }));
-        pools.push(...chainPools);
-      }
+  for (const [chainId, value] of Object.entries(response)) {
+    if ((MERKL_SUPPORTED_NETWORKS as number[]).includes(Number(chainId))) {
+      const chainPools = Object.entries(value.pools).map(([address, pool]) => ({
+        address,
+        pool,
+      }))
+      pools.push(...chainPools)
     }
-    
-    const sushiPools = pools.filter((item) => item.pool.ammName === 'SushiSwapV3');
-    
-  if (response === undefined || sushiPools === undefined || sushiPools.length === 0) {
+  }
+
+  const sushiPools = pools.filter((item) => item.pool.ammName === 'SushiSwapV3')
+
+  if (
+    response === undefined ||
+    sushiPools === undefined ||
+    sushiPools.length === 0
+  ) {
     return { incentivesToCreate: [], incentivesToUpdate: [], tokens: [] }
   }
   sushiPools.forEach(({ address, pool }) => {
@@ -234,7 +249,7 @@ async function transform(
           return acc + amountPerDay
         }, 0)
 
-        const price = prices[token.toLowerCase()] ?? 0
+        const price = prices[pool.chainId][token.toLowerCase()] ?? 0
         const rewardPerYearUSD = 365 * rewardPerDay * price
         const apr = pool.tvl ? rewardPerYearUSD / pool.tvl : 0
 
