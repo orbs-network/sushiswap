@@ -160,12 +160,11 @@ export const APR_COLUMN_POOL: ColumnDef<SimplePool, unknown> = {
   header: 'APR',
   accessorFn: (row) => row.feeApr1d,
   cell: (props) => (
-    // <APRHoverCard pool={props.row.original}>
-    //   <span className="underline decoration-dotted">
-    //     {formatPercent(props.row.original.feeApr1d)}
-    //   </span>
-    // </APRHoverCard>
-    <></>
+    <APRHoverCard pool={props.row.original}>
+      <span className="underline decoration-dotted">
+        {formatPercent(props.row.original.feeApr1d)}
+      </span>
+    </APRHoverCard>
   ),
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
@@ -198,7 +197,6 @@ export const VOLUME_7D_COLUMN: ColumnDef<SimplePool, unknown> = {
   },
 }
 
-
 export const VOLUME_1M_COLUMN: ColumnDef<SimplePool, unknown> = {
   id: 'volumeUSD1m',
   header: 'Volume (30d)',
@@ -211,7 +209,6 @@ export const VOLUME_1M_COLUMN: ColumnDef<SimplePool, unknown> = {
     skeleton: <SkeletonText fontSize="lg" />,
   },
 }
-
 
 export const FEES_COLUMN: ColumnDef<SimplePool, unknown> = {
   id: 'feeUSD1d',
@@ -266,12 +263,11 @@ export const APR_COLUMN: ColumnDef<V2Position, unknown> = {
   header: 'APR',
   accessorFn: (row) => row.pool.feeApr1d,
   cell: (props) => (
-    // <APRHoverCard pool={props.row.original.pool}>
-    //   <span className="underline decoration-dotted">
-    //     {formatPercent(props.row.original.pool.feeApr1d)}
-    //   </span>
-    // </APRHoverCard>
-    <></>
+    <APRHoverCard pool={props.row.original.pool}>
+      <span className="underline decoration-dotted">
+        {formatPercent(props.row.original.pool.feeApr1d)}
+      </span>
+    </APRHoverCard>
   ),
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
