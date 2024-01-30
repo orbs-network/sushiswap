@@ -10,9 +10,10 @@ import {
 import { FC } from 'react'
 import { formatUSD } from 'sushi'
 
+import { Pool } from '@sushiswap/rockset-client'
 import { PoolPositionDesktop } from './PoolPositionDesktop'
 import { usePoolPosition } from './PoolPositionProvider'
-import { Pool } from '@sushiswap/rockset-client'
+import { PoolPositionStakedDesktop } from './PoolPositionStakedDesktop'
 
 interface PoolPositionProps {
   pool: Pool
@@ -29,6 +30,7 @@ export const PoolPosition: FC<PoolPositionProps> = ({ pool }) => {
       </CardHeader>
       <CardContent>
         <PoolPositionDesktop pool={pool} />
+        <PoolPositionStakedDesktop pool={pool} />
       </CardContent>
     </Card>
   )

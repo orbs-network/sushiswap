@@ -14,6 +14,7 @@
     "declaration": false,
     "declarationMap": false,
     "sourceMap": false,
-    "target": "ESNext"
+    "target": "ESNext",
+    "moduleResolution": "Bundler",
   }
 }

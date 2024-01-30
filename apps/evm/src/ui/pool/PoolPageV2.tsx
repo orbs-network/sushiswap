@@ -6,6 +6,11 @@ import { Pool } from '@sushiswap/rockset-client'
 import { FC } from 'react'
 import { PoolChartV2 } from './PoolChartV2'
 import { PoolComposition } from './PoolComposition'
+import { PoolMyRewards } from './PoolMyRewards'
+import { PoolPosition } from './PoolPosition'
+import { PoolPositionProvider } from './PoolPositionProvider'
+import { PoolPositionRewardsProvider } from './PoolPositionRewardsProvider'
+import { PoolPositionStakedProvider } from './PoolPositionStakedProvider'
 import { PoolRewards } from './PoolRewards'
 import { PoolStats } from './PoolStats'
 import { UnknownTokenAlert } from './UnknownTokenAlert'
@@ -25,14 +30,14 @@ export const PoolPageV2: FC<PoolPageV2> = ({ pool, tab }) => {
             <ManageV2LiquidityCard pool={pool} tab={tab} />
           </div>
           <div className="flex flex-col gap-6">
-            {/* <PoolPositionProvider pool={pool}>
+            <PoolPositionProvider pool={pool}>
               <PoolPositionStakedProvider pool={pool}>
                 <PoolPositionRewardsProvider pool={pool}>
                   <PoolPosition pool={pool} />
                   <PoolMyRewards pool={pool} />
                 </PoolPositionRewardsProvider>
               </PoolPositionStakedProvider>
-            </PoolPositionProvider> */}
+            </PoolPositionProvider>
           </div>
         </div>
         <div className="py-4">
