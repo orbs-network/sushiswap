@@ -2147,6 +2147,9 @@ importers:
       '@sushiswap/react-query':
         specifier: workspace:*
         version: link:../react-query
+      '@sushiswap/rockset-client':
+        specifier: workspace:*
+        version: link:../rockset-client
       '@sushiswap/router':
         specifier: workspace:*
         version: link:../router

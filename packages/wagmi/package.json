@@ -55,6 +55,7 @@
     "@sushiswap/graph-config": "workspace:*",
     "@sushiswap/hooks": "workspace:*",
     "@sushiswap/react-query": "workspace:*",
+    "@sushiswap/rockset-client": "workspace:*",
     "@sushiswap/router": "workspace:*",
     "@sushiswap/router-config": "workspace:*",
     "@sushiswap/steer-sdk": "workspace:*",

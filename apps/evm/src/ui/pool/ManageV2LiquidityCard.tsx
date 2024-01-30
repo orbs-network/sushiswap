@@ -16,10 +16,12 @@ import {
 import Link from 'next/link'
 import { FC } from 'react'
 
-import { PoolPositionProvider } from './PoolPositionProvider'
 import { Pool } from '@sushiswap/rockset-client'
-
-
+import { AddSectionLegacy } from './AddSectionLegacy'
+import { AddSectionStake } from './AddSectionStake'
+import { PoolPositionProvider } from './PoolPositionProvider'
+import { RemoveSectionLegacy } from './RemoveSectionLegacy'
+import { RemoveSectionUnstake } from './RemoveSectionUnstake'
 
 interface ManageV2LiquidityCardProps {
   pool: Pool
@@ -64,26 +66,84 @@ export const ManageV2LiquidityCard: FC<ManageV2LiquidityCardProps> = ({
                 Remove
               </TabsTrigger>
             </Link>
+            {isFarm ? (
+              <Link href={`/pool/${pool.id}/stake`} className="flex flex-1">
+                <TabsTrigger
+                  testdata-id="stake-tab"
+                  value="stake"
+                  className="flex flex-1"
+                >
+                  Stake
+                </TabsTrigger>
+              </Link>
+            ) : (
+              <TabsTrigger
+                testdata-id="stake-tab"
+                disabled
+                value="stake"
+                className="flex flex-1"
+              >
+                Stake
+              </TabsTrigger>
+            )}
+            {isFarm ? (
+              <Link href={`/pool/${pool.id}/unstake`} className="flex flex-1">
+                <TabsTrigger
+                  testdata-id="unstake-tab"
+                  value="unstake"
+                  className="flex flex-1"
+                >
+                  Unstake
+                </TabsTrigger>
+              </Link>
+            ) : (
+              <TabsTrigger
+                testdata-id="unstake-tab"
+                disabled
+                value="unstake"
+                className="flex flex-1"
+              >
+                Unstake
+              </TabsTrigger>
+            )}
           </TabsList>
         </CardContent>
         <div className="px-6 pb-4">
           <Separator />
         </div>
         <PoolPositionProvider pool={pool}>
-          {/* <PoolPositionStakedProvider pool={pool}>
-            <PoolPositionRewardsProvider pool={pool}>
-              <TabsContent value="add">
-                <CardContent>
-                    <AddSectionLegacy pool={pool} />
-                </CardContent>
-              </TabsContent>
-              <TabsContent value="remove">
-                <CardContent>
-                    <RemoveSectionLegacy pool={pool} />
-                </CardContent>
-              </TabsContent>
-            </PoolPositionRewardsProvider>
-          </PoolPositionStakedProvider> */}
+          <TabsContent value="add">
+            <CardContent>
+              <AddSectionLegacy pool={pool} />
+            </CardContent>
+          </TabsContent>
+          <TabsContent value="remove">
+            <CardContent>
+              <RemoveSectionLegacy pool={pool} />
+            </CardContent>
+          </TabsContent>
+          <TabsContent value="stake">
+            <CardContent>
+              {isFarm ? (
+                <AddSectionStake pool={pool} />
+              ) : (
+                <Message variant="warning" size="sm" className="text-center">
+                  No farms available for this pool
+                </Message>
+              )}
+            </CardContent>
+          </TabsContent>
+          <TabsContent value="unstake">
+            <CardContent>
+              {isFarm ? (
+                <RemoveSectionUnstake pool={pool} />
+              ) : (
+                <Message variant="warning" size="sm" className="text-center">
+                  No farms available for this pool
+                </Message>
+              )}
+            </CardContent>
+          </TabsContent>
         </PoolPositionProvider>
       </Tabs>
     </Card>

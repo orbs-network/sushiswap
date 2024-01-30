@@ -1,6 +1,6 @@
 'use client'
 
-import { ChefType } from '@sushiswap/client'
+import { IncentiveType } from '@sushiswap/rockset-client'
 import { useMemo } from 'react'
 import { Amount, Token } from 'sushi/currency'
 import { Address, useContractRead, useContractReads } from 'wagmi'
@@ -13,7 +13,7 @@ interface UseRewarderPayload {
   rewardTokens: Token[]
   rewarderAddresses: string[]
   types: RewarderType[]
-  chef: ChefType
+  chef: IncentiveType
   enabled?: boolean
 }
 
