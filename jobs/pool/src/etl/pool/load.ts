@@ -373,7 +373,9 @@ export async function upsertPools(pools: Prisma.SushiPoolCreateManyInput[]) {
       END,`
     : Prisma.empty
 
-  const query = Prisma.sql`
+  const query =
+    poolsToUpdate.length &&
+    Prisma.sql`
       UPDATE SushiPool
       SET
         reserve0 = CASE
