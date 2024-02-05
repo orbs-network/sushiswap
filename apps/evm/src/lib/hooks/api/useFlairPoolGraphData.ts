@@ -55,7 +55,10 @@ export const useExtendedPool = ({ pool }: { pool: Pool }) => {
       token0,
       token1,
       liquidityToken,
-      feeAmount: pool.protocol === PoolProtocol.SUSHISWAP_V3 ? Math.ceil(pool.swapFee * 10000000) : pool.swapFee,
+      feeAmount:
+        pool.protocol === PoolProtocol.SUSHISWAP_V3
+          ? Math.ceil(pool.swapFee * 1000000)
+          : pool.swapFee,
     }
   }, [pool])
 }
