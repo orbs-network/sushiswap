@@ -152,12 +152,17 @@ async function extractChain(chainId: SteerChainId) {
 }
 
 const StrategyTypes: Record<string, SteerStrategy> = {
+  'Static Super Wide Strategy': SteerStrategy.SuperWide,
   'Classic Rebalance Strategy': SteerStrategy.ClassicRebalance,
+  'Classic Rebalance Strategy V2': SteerStrategy.ClassicRebalance,
   'Delta Neutral - Stables': SteerStrategy.DeltaNeutralStables,
+  'Stable Expansion Strategy': SteerStrategy.ElasticExpansion,
   'Elastic Expansion Strategy': SteerStrategy.ElasticExpansion,
+  'Elastic Expansion Strategy V2': SteerStrategy.ElasticExpansion,
   'High Low Channel Strategy': SteerStrategy.HighLowChannel,
   'High Low Channel Strategy - Medium Range': SteerStrategy.HighLowChannel,
   'High Low Channel Strategy - Narrow Range': SteerStrategy.HighLowChannel,
+  'High Low Channel Strategy V2': SteerStrategy.HighLowChannel,
   'Moving Volatility Channel': SteerStrategy.MovingVolatilityChannel,
   'Moving Volatility Channel Strategy': SteerStrategy.MovingVolatilityChannel,
   'Moving Volatility Channel Strategy - Medium':
@@ -165,6 +170,10 @@ const StrategyTypes: Record<string, SteerStrategy> = {
   'Moving Volatility Strategy V2': SteerStrategy.MovingVolatilityChannel,
   'Moving Volatility Strategy V2.': SteerStrategy.MovingVolatilityChannel,
   'Channel Multiplier Strategy': SteerStrategy.ChannelMultiplier,
+  'Algebra Channel Multiplier': SteerStrategy.ChannelMultiplier,
+  'MIM-USDC Stable Strategy': SteerStrategy.StaticStable,
+  'Relative Static Stable Strategy': SteerStrategy.StaticStable,
+  'Generic Static Stable Strategy': SteerStrategy.StaticStable,
   'Static Stable Strategy': SteerStrategy.StaticStable,
   'Static Stable Strategy ': SteerStrategy.StaticStable,
   'Static Stable 1% Strategy': SteerStrategy.StaticStable,
@@ -187,7 +196,10 @@ function transform(
         ? StrategyTypes[vault.payload.strategyConfigData.name]
         : null
 
-      if (!strategyType) return []
+      if (!strategyType) {
+        console.log(vault.payload?.strategyConfigData.name)
+        return []
+      }
 
       const lowTicks = vault.positions.flatMap((position) => position.lowerTick)
       const lowestTick = Math.max(
