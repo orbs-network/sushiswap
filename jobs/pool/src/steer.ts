@@ -199,7 +199,6 @@ function transform(
         : null
 
       if (!strategyType) {
-        console.log(vault.payload?.strategyConfigData.name)
         return []
       }
 
