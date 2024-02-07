@@ -169,6 +169,8 @@ const StrategyTypes: Record<string, SteerStrategy> = {
     SteerStrategy.MovingVolatilityChannel,
   'Moving Volatility Strategy V2': SteerStrategy.MovingVolatilityChannel,
   'Moving Volatility Strategy V2.': SteerStrategy.MovingVolatilityChannel,
+  'Moving Volatility Channel Strategy V2':
+    SteerStrategy.MovingVolatilityChannel,
   'Channel Multiplier Strategy': SteerStrategy.ChannelMultiplier,
   'Algebra Channel Multiplier': SteerStrategy.ChannelMultiplier,
   'MIM-USDC Stable Strategy': SteerStrategy.StaticStable,
@@ -197,6 +199,7 @@ function transform(
         : null
 
       if (!strategyType) {
+        console.log(vault.payload?.strategyConfigData.name)
         return []
       }
 
