@@ -69,7 +69,8 @@ const tokens = loadAllTokens()
 
 const instance = autocannon(
   {
-    url: 'http://localhost:1338',
+    url: 'http://stagin.sushi.com',
+    duration: 120,
     requests: [
       // {
       //   method: 'GET',
@@ -81,7 +82,7 @@ const instance = autocannon(
           const [from, to] = getRandomPair(tokens.length, TEST_MODE)
           const tokenIn = tokens[from]
           const tokenOut = tokens[to]
-          const amount = BigInt(SWAP_AMOUNT * 10 ** tokenOut.decimals)
+          const amount = BigInt(SWAP_AMOUNT * 10 ** tokenIn.decimals)
           return {
             ...req,
             path: `/swap/v1/${chainId}?chainId=${chainId}&tokenIn=${

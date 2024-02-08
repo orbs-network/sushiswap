@@ -30,8 +30,9 @@ config:
     timeout: 10
   phases:
     - name: Warm up the API
-      duration: 120
-      arrivalRate: 50
+      duration: 90
+      arrivalRate: 200
+      maxVusers: 200
 
   processor: "./processor.js"
   # Load & configure a couple of useful plugins

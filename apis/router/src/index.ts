@@ -24,9 +24,10 @@ import { priceByAddressHandler, pricesHandler } from './handlers/prices'
 import { swapV3_2 } from './handlers/swap'
 import tokenHandler from './handlers/token'
 
+import process from 'node:process'
 // import overloadProtection from 'overload-protection'
 // import eventLoopLag from 'event-loop-lag'
-// import pidusage from 'pidusage'
+import pidusage from 'pidusage'
 import requestStatistics from './request-statistics'
 
 async function start() {
@@ -72,51 +73,61 @@ async function start() {
 
   // const lag = eventLoopLag(1_000)
 
-  // const cpuPoints: number[] = []
-  // const cpuSma = 0
-  // const cpuUsage = async (time: number) => {
-  //   setTimeout(async () => {
-  //     await (async () => {
-  //       const { cpu } = await pidusage(process.pid)
-  //       cpuPoints.push(cpu)
-  //       if (cpuPoints.length > 60) {
-  //         cpuPoints.shift()
-  //       }
-  //       cpuSma = cpuPoints.reduce((a, b) => a + b, 0) / cpuPoints.length
-  //     })()
-  //     cpuUsage(time)
-  //   }, time)
+  // const rps = {
+  //   counter: 0,
+  //   timestamp: Date.now(),
+  //   average: 0,
+  //   start: (time: number) => {
+  //     setTimeout(() => {
+  //       const now = Date.now()
+  //       const seconds = (now - rps.timestamp) / 1_000
+  //       const average = rps.counter / seconds
+  //       console.log(`RPS: ${average}`)
+  //       rps.timestamp = now
+  //       rps.counter = 0
+  //       rps.average = average
+  //       rps.start(time)
+  //     }, time)
+  //   },
   // }
+  // rps.start(1_000)
 
-  // cpuUsage(1_000)
-
-  const rps = {
-    counter: 0,
-    timestamp: Date.now(),
-    average: 0,
+  const cpu: {
+    sma: number
+    last: number
+    points: number[]
+    start: (time: number) => void
+  } = {
+    sma: 0,
+    points: [],
+    last: 0,
     start: (time: number) => {
-      setTimeout(() => {
-        const now = Date.now()
-
-        const seconds = (now - rps.timestamp) / 1_000
-
-        const average = rps.counter / seconds
-
-        console.log(`RPS: ${average}`)
-        rps.timestamp = now
-        rps.counter = 0
-        rps.average = average
-        rps.start(time)
+      setTimeout(async () => {
+        await (async () => {
+          const pid = await pidusage(process.pid)
+          cpu.points.push(pid.cpu)
+          if (cpu.points.length > 60) {
+            cpu.points.shift()
+          }
+          cpu.last = pid.cpu
+          cpu.sma = cpu.points.reduce((a, b) => a + b, 0) / cpu.points.length
+        })()
+        cpu.start(time)
       }, time)
     },
   }
-  rps.start(1_000)
+  cpu.start(1_000)
 
   const protection = (_req: Request, res: Response, next: NextFunction) => {
-    if (rps.counter > 100) {
-      return res.setHeader('Retry-After', 10).status(503).end()
+    // if (rps.counter > 200) {
+    //   return res.setHeader('Retry-After', 10).status(503).end()
+    // }
+    // rps.counter++
+
+    // @ts-expect-error
+    if (process.getActiveResourcesInfo().length > 1000) {
+      return res.status(503).send()
     }
-    rps.counter++
     return next()
   }
 
