@@ -102,7 +102,7 @@ async function start() {
 
         const average = rps.counter / seconds
 
-        // console.log(`RPS: ${average}`)
+        console.log(`RPS: ${average}`)
         rps.timestamp = now
         rps.counter = 0
         rps.average = average

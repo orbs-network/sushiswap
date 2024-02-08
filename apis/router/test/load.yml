@@ -1,4 +1,16 @@
 config:
+
+  # payload:
+  #   path: "tokens-1.csv"
+  #   fields:
+  #     - "address"
+  #     - "name"
+  #     - "symbol"
+  #     - "decimals"
+  #   loadAll: true
+  #   cast: false
+  #   skipHeader: true
+  #   name: tokens
   # This is a test server run by team Artillery
   # It's designed to be highly scalable
 
@@ -19,7 +31,7 @@ config:
   phases:
     - name: Warm up the API
       duration: 120
-      arrivalRate: 30
+      arrivalRate: 50
 
   processor: "./processor.js"
   # Load & configure a couple of useful plugins
