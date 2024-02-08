@@ -37,9 +37,12 @@ data:
         ~^/(\w+)/(\w+)/(\d+) router-$3;
       }
       
+      # limit_req_zone $binary_remote_addr zone=ip:10m rate=5r/s;
+
       server { 
         listen 80;
         location / {
+          # limit_req zone=ip burst=30 nodelay;
           proxy_http_version 1.1;
           proxy_set_header "Connection" "";
           proxy_pass http://$proxy_pass;

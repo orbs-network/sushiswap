@@ -19,7 +19,7 @@ config:
   phases:
     - name: Warm up the API
       duration: 120
-      arrivalRate: 5000
+      arrivalRate: 30
 
   processor: "./processor.js"
   # Load & configure a couple of useful plugins
@@ -43,7 +43,5 @@ scenarios:
       - function: "setQuery"
       - get:
           url: "/swap/v1/1?chainId={{ query.chainId }}&tokenIn={{ query.tokenIn }}&tokenOut={{ query.tokenOut }}&amount={{ query.amount }}"
-          headers:
-            Keep-Alive: "timeout=5, max=1000"
           expect:
             - statusCode: [200, 503]

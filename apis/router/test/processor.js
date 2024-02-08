@@ -13,8 +13,6 @@ const SWAP_AMOUNT = 10
 const chainId = 1
 const tokensFile = './tokens-1'
 
-const delay = async (ms) => new Promise((res) => setTimeout(res, ms))
-
 function loadAllTokens() {
   const fileName = path.resolve(__dirname, tokensFile)
   const file = fs.readFileSync(fileName, 'utf8')
