@@ -70,7 +70,7 @@ function setQuery(context, _, done) {
   const [from, to] = getRandomPair(tokens.length, TEST_MODE)
   const tokenIn = tokens[from]
   const tokenOut = tokens[to]
-  const amount = BigInt(SWAP_AMOUNT * 10 ** tokenOut.decimals)
+  const amount = BigInt(SWAP_AMOUNT * 10 ** tokenIn.decimals)
   context.vars['query'] = {
     ...context.vars['query'],
     chainId: chainId.toString(),
