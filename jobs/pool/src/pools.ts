@@ -85,7 +85,7 @@ export async function execute(protocol: Protocol) {
     const { tokens, pools } = transform(exchanges)
 
     // LOAD
-    const batchSize = 300
+    const batchSize = 250
 
     for (let i = 0; i < tokens.length; i += batchSize) {
       const batch = tokens.slice(i, i + batchSize)
@@ -249,6 +249,10 @@ async function extract(protocol: Protocol) {
     }
 
     const pairs = await fetchPairs(sdk, subgraph, blocks)
+    if (pairs === undefined) {
+      console.warn('No pairs found, skipping')
+      continue
+    }
     console.log(`${subgraph.name}, batches: ${pairs.currentPools.length}`)
     result.push({ chainId: subgraph.chainId, data: pairs })
   }
@@ -297,8 +301,20 @@ async function fetchPairs(sdk: Sdk, config: SubgraphConfig, blocks: Blocks) {
         ? fetchLegacyOrTridentPairs(sdk, config, blocks.twoMonth)
         : ([] as PairsQuery[]),
     ])
+
     console.log(
-      `${config.name} results by timeframe\n  * current: ${currentPools.length}\n * 1h: ${pools1h.length}\n * 2h: ${pools2h.length}\n * 1d: ${pools1d.length}\n * 2d: ${pools2d.length}\n * 1w: ${pools1w.length}\n * 2w: ${pools2w.length}\n * 1m: ${pools1m.length}\n * 2m: ${pools2m.length}`,
+      `${config.name} results by timeframe
+      * current: ${currentPools
+        .map((p) => p.pairs.length)
+        .reduce((a, b) => a + b, 0)}
+      * 1h: ${pools1h.map((p) => p.pairs.length).reduce((a, b) => a + b, 0)}
+      * 2h: ${pools2h.map((p) => p.pairs.length).reduce((a, b) => a + b, 0)}
+      * 1d: ${pools1d.map((p) => p.pairs.length).reduce((a, b) => a + b, 0)}
+      * 2d: ${pools2d.map((p) => p.pairs.length).reduce((a, b) => a + b, 0)}
+      * 1w: ${pools1w.map((p) => p.pairs.length).reduce((a, b) => a + b, 0)}
+      * 2w: ${pools2w.map((p) => p.pairs.length).reduce((a, b) => a + b, 0)}
+      * 1m: ${pools1m.map((p) => p.pairs.length).reduce((a, b) => a + b, 0)}
+      * 2m: ${pools2m.map((p) => p.pairs.length).reduce((a, b) => a + b, 0)}`,
     )
     return {
       currentPools,
@@ -349,8 +365,20 @@ async function fetchPairs(sdk: Sdk, config: SubgraphConfig, blocks: Blocks) {
         ? fetchV3Pools(sdk, config, blocks.twoMonth)
         : ([] as V3PoolsQuery[]),
     ])
+
     console.log(
-      `${config.name} results by timeframe\n * current: ${currentPools.length}\n * 1h: ${pools1h.length}\n * 2h: ${pools2h.length}\n * 1d: ${pools1d.length}\n * 2d: ${pools2d.length}\n * 1w: ${pools1w.length}\n * 2w: ${pools2w.length}\n * 1m: ${pools1m.length}\n * 2m: ${pools2m.length}`,
+      `${config.name} results by timeframe
+      * current: ${currentPools
+        .map((p) => p.pools.length)
+        .reduce((a, b) => a + b, 0)}
+      1h: ${pools1h.map((p) => p.pools.length).reduce((a, b) => a + b, 0)}
+      2h: ${pools2h.map((p) => p.pools.length).reduce((a, b) => a + b, 0)}
+      1d: ${pools1d.map((p) => p.pools.length).reduce((a, b) => a + b, 0)}
+      2d: ${pools2d.map((p) => p.pools.length).reduce((a, b) => a + b, 0)}
+      1w: ${pools1w.map((p) => p.pools.length).reduce((a, b) => a + b, 0)}
+      2w: ${pools2w.map((p) => p.pools.length).reduce((a, b) => a + b, 0)}
+      1m: ${pools1m.map((p) => p.pools.length).reduce((a, b) => a + b, 0)}
+      2m: ${pools2m.map((p) => p.pools.length).reduce((a, b) => a + b, 0)}`,
     )
     return {
       currentPools,
