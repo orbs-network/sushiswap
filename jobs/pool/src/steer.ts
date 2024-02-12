@@ -87,6 +87,10 @@ async function extractChain(chainId: SteerChainId) {
     pools.push(...poolsChunk)
   }
 
+  if (chainId === 42161) {
+    console.log(vaults.map((vault) => vault.id))
+  }
+
   const vaultsWithPayloads = await Promise.allSettled(
     vaults.map(async (vault) => {
       const poolId = `${chainId}:${vault.pool.toLowerCase()}`
