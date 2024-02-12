@@ -50,7 +50,7 @@ model Token {
   derivedNative Decimal?
 
   generatedAt DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @updatedAt @db.DateTime(0)
 
   pools0          Pool[]        @relation("token0")
   pools1          Pool[]        @relation("token1")
@@ -93,7 +93,7 @@ model Pool {
   liquidityUSD Decimal
 
   generatedAt DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @updatedAt @db.DateTime(0)
 
   @@index(fields: [id])
   @@index(fields: [isWhitelisted])
@@ -175,7 +175,7 @@ model SushiPool {
   createdAtBlockNumber BigInt   @db.UnsignedBigInt
   isBlacklisted        Boolean  @default(false)
   generatedAt          DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  updatedAt            DateTime @updatedAt @db.DateTime(0)
 
   @@index(fields: [id])
   @@index(fields: [chainId])
@@ -288,7 +288,7 @@ model SteerVault {
   manager                 String
 
   generatedAt             DateTime @default(now())
-  updatedAt               DateTime    @updatedAt
+  updatedAt               DateTime @updatedAt @db.DateTime(0)
 
   @@index(fields: [id])
   @@index(fields: [chainId])
