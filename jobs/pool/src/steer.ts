@@ -9,7 +9,7 @@ import {
   getSteerVaultAprs,
 } from '@sushiswap/steer-sdk'
 import { TickMath } from '@sushiswap/v3-sdk'
-import { isPromiseFulfilled } from 'sushi'
+import { isPromiseFulfilled, isPromiseRejected } from 'sushi'
 import { getIdFromChainIdAddress } from 'sushi/format'
 
 import { getBuiltGraphSDK } from '../.graphclient/index.js'
@@ -87,13 +87,6 @@ async function extractChain(chainId: SteerChainId) {
     pools.push(...poolsChunk)
   }
 
-  if (chainId === 42161) {
-    console.dir(
-      vaults.map((vault) => vault.id),
-      { maxArrayLength: null },
-    )
-  }
-
   const vaultsWithPayloads = await Promise.allSettled(
     vaults.map(async (vault) => {
       const poolId = `${chainId}:${vault.pool.toLowerCase()}`
@@ -151,6 +144,13 @@ async function extractChain(chainId: SteerChainId) {
       }
     }),
   )
+
+  if (chainId === 42161) {
+    console.log(
+      vaultsWithPayloads.filter(isPromiseRejected).map((a) => a.reason),
+      { maxArrayLength: null },
+    )
+  }
 
   return {
     chainId,
