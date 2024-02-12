@@ -145,11 +145,6 @@ async function extractChain(chainId: SteerChainId) {
     }),
   )
 
-  console.dir(
-    vaultsWithPayloads.filter(isPromiseFulfilled).map((a) => a.value.id),
-    { maxArrayLength: null },
-  )
-
   return {
     chainId,
     vaults: vaultsWithPayloads.filter(isPromiseFulfilled).map((r) => r.value),
@@ -204,12 +199,6 @@ function transform(
         : null
 
       if (!strategyType) {
-        console.log(
-          'fail',
-          vault.id,
-          vault?.payload?.strategyConfigData.name,
-          vault.payload,
-        )
         return []
       }
 
