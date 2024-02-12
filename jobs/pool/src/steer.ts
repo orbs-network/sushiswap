@@ -5,6 +5,7 @@ import {
   SteerChainId,
 } from '@sushiswap/graph-config'
 import {
+  getSteerStrategiesPayloads,
   getSteerStrategyPayload,
   getSteerVaultAprs,
 } from '@sushiswap/steer-sdk'
@@ -87,10 +88,23 @@ async function extractChain(chainId: SteerChainId) {
     pools.push(...poolsChunk)
   }
 
+  const payloadIpfsHashes = vaults.map((vault) => vault.payloadIpfs)
+  const payloads: Awaited<ReturnType<typeof getSteerStrategiesPayloads>> = []
+
+  while (payloadIpfsHashes.length > 0) {
+    const payloadIpfsHashesChunk = payloadIpfsHashes.splice(0, 10)
+    const payloadsChunk = await getSteerStrategiesPayloads({
+      payloadHashes: payloadIpfsHashesChunk,
+    })
+    payloads.push(...payloadsChunk)
+  }
+
   const vaultsWithPayloads = await Promise.allSettled(
-    vaults.map(async (vault) => {
+    vaults.map(async (vault, i) => {
       const poolId = `${chainId}:${vault.pool.toLowerCase()}`
       const pool = pools.find((pool) => pool.id === poolId)
+
+      const payload = payloads[i]
 
       const token0Price = prices[vault.token0] || 0
       const token1Price = prices[vault.token1] || 0
@@ -112,14 +126,12 @@ async function extractChain(chainId: SteerChainId) {
       const reserveUSD = reserve0USD + reserve1USD
       const feesUSD = Number(fees0USD) + Number(fees1USD)
 
-      const [payloadP, aprP] = await Promise.allSettled([
-        getSteerStrategyPayload({ payloadHash: vault.payloadIpfs }),
+      const [aprP] = await Promise.allSettled([
         getSteerVaultAprs({
           vaultId: getIdFromChainIdAddress(chainId, vault.id as `0x${string}`),
         }),
       ])
 
-      const payload = isPromiseFulfilled(payloadP) ? payloadP.value : null
       const {
         apr: annualPercentageYield,
         apr1d: annualPercentageDailyYield,
