@@ -1,5 +1,15 @@
 import { ChainId } from 'sushi/chain'
 
+const MAX_FIRST_PARTIAL: Partial<Record<ChainId, number>> = {
+  [ChainId.METIS]: 100,
+}
+
+export const MAX_FIRST = new Proxy(MAX_FIRST_PARTIAL, {
+  get: (target, name: any) => {
+    return name in target ? target[name as ChainId] : 1000
+  },
+}) as Record<ChainId, number>
+
 export const TRIDENT_ENABLED_NETWORKS = [
   ChainId.OPTIMISM,
   ChainId.POLYGON,
@@ -11,7 +21,7 @@ export const TRIDENT_ENABLED_NETWORKS = [
   ChainId.BSC,
 ] as const
 
-export type TridentChainId = typeof TRIDENT_ENABLED_NETWORKS[number]
+export type TridentChainId = (typeof TRIDENT_ENABLED_NETWORKS)[number]
 
 export const SUSHISWAP_ENABLED_NETWORKS = [
   ChainId.ARBITRUM,
@@ -42,7 +52,7 @@ export const SUSHISWAP_ENABLED_NETWORKS = [
   // ChainId.OKEX
 ] as const
 
-export type SushiSwapChainId = typeof SUSHISWAP_ENABLED_NETWORKS[number]
+export type SushiSwapChainId = (typeof SUSHISWAP_ENABLED_NETWORKS)[number]
 
 export const SUSHISWAP_V3_ENABLED_NETWORKS = [
   ChainId.ETHEREUM,
@@ -70,7 +80,7 @@ export const SUSHISWAP_V3_ENABLED_NETWORKS = [
   ChainId.HAQQ,
   ChainId.ZETACHAIN,
 ]
-export type SushiSwapV3ChainId = typeof SUSHISWAP_V3_ENABLED_NETWORKS[number]
+export type SushiSwapV3ChainId = (typeof SUSHISWAP_V3_ENABLED_NETWORKS)[number]
 
 export const SWAP_ENABLED_NETWORKS = Array.from(
   new Set([
@@ -440,7 +450,7 @@ export const STEER_ENABLED_NETWORKS = [
   ChainId.SCROLL,
 ] as const
 
-export type SteerChainId = typeof STEER_ENABLED_NETWORKS[number]
+export type SteerChainId = (typeof STEER_ENABLED_NETWORKS)[number]
 
 export const STEER_SUBGRAPH_URL: Record<SteerChainId, string> = {
   [ChainId.POLYGON]:

@@ -1,5 +1,6 @@
 import { Prisma, Protocol, createClient } from '@sushiswap/database'
 import {
+  MAX_FIRST,
   SECONDS_BETWEEN_BLOCKS,
   SUBGRAPH_HOST,
   SUSHISWAP_ENABLED_NETWORKS,
@@ -146,7 +147,7 @@ function createSubgraphConfig(protocol: Protocol) {
     protocol === Protocol.BENTOBOX_STABLE
   ) {
     return TRIDENT_ENABLED_NETWORKS.map((chainId) => {
-      const _chainId = chainId as typeof TRIDENT_ENABLED_NETWORKS[number]
+      const _chainId = chainId as (typeof TRIDENT_ENABLED_NETWORKS)[number]
       return {
         chainId,
         host: SUBGRAPH_HOST[_chainId],
@@ -412,7 +413,7 @@ async function fetchLegacyOrTridentPairs(
     const block = blockNumber ? { number: blockNumber } : null
     const request = await sdk
       .Pairs({
-        first: 1000,
+        first: MAX_FIRST[config.chainId],
         where,
         block,
       })
@@ -423,7 +424,7 @@ async function fetchLegacyOrTridentPairs(
         return undefined
       })
     const newCursor =
-      request?.pairs.length === 1000
+      request?.pairs.length === MAX_FIRST[config.chainId]
         ? request?.pairs[request.pairs.length - 1]?.id
         : ''
     cursor = newCursor
@@ -452,7 +453,7 @@ async function fetchV3Pools(
 
     const request = await sdk
       .V3Pools({
-        first: 1000,
+        first: MAX_FIRST[config.chainId],
         where,
         block,
       })
@@ -463,7 +464,7 @@ async function fetchV3Pools(
         return undefined
       })
     const newCursor =
-      request?.pools.length === 1000
+      request?.pools.length === MAX_FIRST[config.chainId]
         ? request?.pools[request.pools.length - 1]?.id
         : ''
     cursor = newCursor
