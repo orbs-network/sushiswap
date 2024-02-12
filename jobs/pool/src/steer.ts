@@ -88,7 +88,10 @@ async function extractChain(chainId: SteerChainId) {
   }
 
   if (chainId === 42161) {
-    console.log(vaults.map((vault) => vault.id))
+    console.dir(
+      vaults.map((vault) => vault.id),
+      { maxArrayLength: null },
+    )
   }
 
   const vaultsWithPayloads = await Promise.allSettled(
