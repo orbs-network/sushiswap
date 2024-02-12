@@ -204,7 +204,12 @@ function transform(
         : null
 
       if (!strategyType) {
-        console.log('fail', vault.id)
+        console.log(
+          'fail',
+          vault.id,
+          vault?.payload?.strategyConfigData.name,
+          vault.payload,
+        )
         return []
       }
 
