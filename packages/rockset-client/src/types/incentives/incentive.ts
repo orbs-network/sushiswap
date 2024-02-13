@@ -2,6 +2,9 @@ import { z } from 'zod'
 import { cz } from '../misc/zodObjects.js'
 
 export enum IncentiveType {
+  MASTERCHEFV1 = 'masterChefV1',
+  MASTERCHEFV2 = 'masterChefV2',
+  MINICHEF = 'miniChef',
   MERKL = 'merkl',
 }
 
@@ -16,7 +19,9 @@ export const incentiveOutputSchema = z.object({
   type: z.string().transform((type) => type as IncentiveType),
 })
 
-export const transformIncentive = (input: typeof incentiveOutputSchema['_output']) => {
+export const transformIncentive = (
+  input: typeof incentiveOutputSchema['_output'],
+) => {
   return input
 }
 

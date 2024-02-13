@@ -1,6 +1,6 @@
 'use client'
 
-import { ChefType } from '@sushiswap/client'
+import { IncentiveType } from '@sushiswap/rockset-client'
 import { useMemo } from 'react'
 import { Amount, Token } from 'sushi/currency'
 import { Address, useContractRead, useContractReads } from 'wagmi'
@@ -13,7 +13,8 @@ interface UseRewarderPayload {
   rewardTokens: Token[]
   rewarderAddresses: string[]
   types: RewarderType[]
-  chef: ChefType
+  chef: IncentiveType
+  enabled?: boolean
 }
 
 interface UseRewarderData
@@ -36,6 +37,7 @@ export const useRewarder: UseRewarder = ({
   types,
   farmId,
   chef,
+  enabled,
 }) => {
   const config = getMasterChefContractConfig(chainId, chef)
 
@@ -141,7 +143,7 @@ export const useRewarder: UseRewarder = ({
     watch: true,
     keepPreviousData: true,
     allowFailure: true,
-    enabled: !!account,
+    enabled: !!account && !!enabled,
     select: (results) => results.map((r) => r.result),
   })
 

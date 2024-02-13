@@ -63,8 +63,8 @@ export const PoolChartGraph: FC<PoolChartProps> = ({ chart, period, id }) => {
     const currentDate = Math.round(Date.now())
     const [x, y] = data.reduce<[number[], number[]]>(
       (acc, cur) => {
-        if (cur.timestamp * 1000 >= currentDate - chartPeriods[period]) {
-          acc[0].push(cur.timestamp)
+        if (cur.bucketTimestamp * 1000 >= currentDate - chartPeriods[period]) {
+          acc[0].push(cur.bucketTimestamp)
           if (chart === PoolChartType.Fees) {
             acc[1].push(Number(cur.feeUSD))
           } else if (chart === PoolChartType.Volume) {

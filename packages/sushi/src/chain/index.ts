@@ -9,6 +9,7 @@ const EIP3091_OVERRIDE = [
   ChainId.OPTIMISM,
   ChainId.BOBA,
   ChainId.BASE,
+  ChainId.FILECOIN,
 ] as number[]
 
 type Data = typeof RAW[number]
@@ -102,6 +103,32 @@ export class Chain implements Chain {
     }
 
     // process explorer overrides etc...
+    if (data.chainId === ChainId.SCROLL) {
+      this.explorers?.sort((explorer) =>
+        explorer.name === 'Scrollscan' ? -1 : 1,
+      )
+    } else if (data.chainId === ChainId.ARBITRUM_NOVA) {
+      this.explorers = [
+        {
+          name: 'Arbitrum Nova Explorer',
+          url: 'https://nova.arbiscan.io',
+          standard: 'EIP3091',
+        },
+        ...(this.explorers ?? []),
+      ]
+    } else if (data.chainId === ChainId.FILECOIN) {
+      this.name = 'Filecoin'
+      this.explorers?.sort((explorer) => (explorer.name === 'Filfox' ? -1 : 1))
+    } else if (data.chainId === ChainId.ZETACHAIN) {
+      this.name = 'ZetaChain'
+      this.explorers = [
+        {
+          name: 'ZetaChain Mainnet Explorer',
+          url: 'https://explorer.zetachain.com',
+          standard: 'EIP3091',
+        },
+      ]
+    }
   }
   getTxUrl(txHash: string): string {
     if (!this.explorers) return ''

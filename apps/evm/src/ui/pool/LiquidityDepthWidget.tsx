@@ -63,6 +63,8 @@ export const LiquidityDepthWidget: FC<LiquidityDepthWidget> = ({
                 )
               : undefined
           }
+          weightLockedCurrencyBase={undefined}
+          priceRange={undefined}
           priceLower={undefined}
           priceUpper={undefined}
           interactive={false}

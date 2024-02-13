@@ -1,6 +1,6 @@
 'use client'
 
-import { ChefType } from '@sushiswap/client'
+import { IncentiveType } from '@sushiswap/rockset-client'
 import { createErrorToast, createToast } from '@sushiswap/ui/components/toast'
 import { useCallback, useMemo } from 'react'
 import { masterChefV1Abi, masterChefV2Abi, miniChefV2Abi } from 'sushi/abi'
@@ -17,7 +17,7 @@ import { getMasterChefContractConfig } from './use-master-chef-contract'
 
 interface UseMasterChefWithdrawParams {
   chainId: number
-  chef: ChefType
+  chef: IncentiveType
   pid: number
   amount?: Amount<Token>
   enabled?: boolean
@@ -72,21 +72,21 @@ export const useMasterChefWithdraw: UseMasterChefWithdraw = ({
     if (getMasterChefContractConfig(chainId, chef)?.address) {
       let data
       switch (chef) {
-        case ChefType.MasterChefV1:
+        case IncentiveType.MASTERCHEFV1:
           data = encodeFunctionData({
             abi: masterChefV1Abi,
             functionName: 'withdraw',
             args: [BigInt(pid), BigInt(amount.quotient.toString())],
           })
           break
-        case ChefType.MasterChefV2:
+        case IncentiveType.MASTERCHEFV2:
           data = encodeFunctionData({
             abi: masterChefV2Abi,
             functionName: 'withdraw',
             args: [BigInt(pid), BigInt(amount.quotient.toString()), address],
           })
           break
-        case ChefType.MiniChef:
+        case IncentiveType.MINICHEF:
           data = encodeFunctionData({
             abi: miniChefV2Abi,
             functionName: 'withdrawAndHarvest',

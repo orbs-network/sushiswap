@@ -1,6 +1,6 @@
 'use client'
 
-import { ChefType } from '@sushiswap/client'
+import { IncentiveType } from '@sushiswap/rockset-client'
 import { createErrorToast, createToast } from '@sushiswap/ui/components/toast'
 import { useCallback, useMemo } from 'react'
 import { masterChefV1Abi, masterChefV2Abi } from 'sushi/abi'
@@ -18,7 +18,7 @@ import { useMasterChefContract } from './use-master-chef-contract'
 
 interface UseMasterChefDepositParams {
   chainId: number
-  chef: ChefType
+  chef: IncentiveType
   pid: number
   amount?: Amount<Token>
   enabled?: boolean
@@ -72,7 +72,7 @@ export const useMasterChefDeposit: UseMasterChefDeposit = ({
     if (!address || !chainId || !amount || !contract) return
 
     let data
-    if (chef === ChefType.MasterChefV1) {
+    if (chef === IncentiveType.MASTERCHEFV1) {
       data = encodeFunctionData({
         abi: masterChefV1Abi,
         functionName: 'deposit',

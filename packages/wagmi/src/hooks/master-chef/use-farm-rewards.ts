@@ -1,6 +1,6 @@
 'use client'
 
-import { ChefType } from '@sushiswap/client'
+import { IncentiveType } from '@sushiswap/rockset-client'
 import { UseQueryOptions, useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { chainShortName } from 'sushi/chain'
@@ -19,7 +19,7 @@ export interface Farm<T> {
   id: number
   feeApy: number | null
   incentives: Incentive<T>[]
-  chefType: ChefType
+  incentiveType: IncentiveType
   poolType: PoolType
 }
 

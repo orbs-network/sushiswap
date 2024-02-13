@@ -1,6 +1,6 @@
 'use client'
 
-import { ChefType } from '@sushiswap/client'
+import { IncentiveType } from '@sushiswap/rockset-client'
 import { masterChefV1Abi, masterChefV2Abi, miniChefAbi } from 'sushi/abi'
 import { ChainId } from 'sushi/chain'
 import { getContract } from 'viem'
@@ -69,21 +69,21 @@ export const getMiniChefContractConfig = (
 
 export const getMasterChefContractConfig = (
   chainId: number,
-  chef: ChefType,
+  chef: IncentiveType,
 ) => {
-  if (chef === ChefType.MasterChefV1)
+  if (chef === IncentiveType.MASTERCHEFV1)
     return _getMasterChefContractConfig(
       chainId as keyof typeof MASTERCHEF_ADDRESS,
     )
-  if (chef === ChefType.MasterChefV2)
+  if (chef === IncentiveType.MASTERCHEFV2)
     return getMasterChefContractV2Config(
       chainId as keyof typeof MASTERCHEF_V2_ADDRESS,
     )
-  if (chef === ChefType.MiniChef)
+  if (chef === IncentiveType.MINICHEF)
     return getMiniChefContractConfig(chainId as keyof typeof MINICHEF_ADDRESS)
 }
 
-export function useMasterChefContract(chainId: number, chef: ChefType) {
+export function useMasterChefContract(chainId: number, chef: IncentiveType) {
   const publicClient = usePublicClient({ chainId })
 
   // @ts-ignore - Workaround for TS#4058

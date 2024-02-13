@@ -1,6 +1,6 @@
 'use client'
 
-import { ChefType } from '@sushiswap/client'
+import { IncentiveType } from '@sushiswap/rockset-client'
 import { createErrorToast, createToast } from '@sushiswap/ui/components/toast'
 import { useCallback, useMemo } from 'react'
 import { ChainId } from 'sushi/chain'
@@ -37,7 +37,7 @@ interface UseMasterChefReturn
 
 interface UseMasterChefParams {
   chainId: number
-  chef: ChefType
+  chef: IncentiveType
   pid: number
   token: Token
   enabled?: boolean
@@ -69,18 +69,18 @@ export const useMasterChef: UseMasterChef = ({
           abi: erc20ABI,
           functionName: 'balanceOf',
           args: [
-            (chef === ChefType.MasterChefV1
+            (chef === IncentiveType.MASTERCHEFV1
               ? MASTERCHEF_ADDRESS[chainId]
               : MASTERCHEF_V2_ADDRESS[chainId]) as Address,
           ],
         } as const,
         {
           chainId: ChainId.ETHEREUM,
-          address: (chef === ChefType.MasterChefV1
+          address: (chef === IncentiveType.MASTERCHEFV1
             ? MASTERCHEF_ADDRESS[chainId]
             : MASTERCHEF_V2_ADDRESS[chainId]) as Address,
           abi: [
-            chef === ChefType.MasterChefV1
+            chef === IncentiveType.MASTERCHEFV1
               ? ({
                   inputs: [
                     { internalType: 'uint256', name: '', type: 'uint256' },
@@ -256,7 +256,7 @@ export const useMasterChef: UseMasterChef = ({
   const prepare = useMemo<UsePrepareSendTransactionConfig>(() => {
     if (!address || !chainId || !data || !contract) return
     switch (chef) {
-      case ChefType.MasterChefV1:
+      case IncentiveType.MASTERCHEFV1:
         return {
           account: address,
           to: contract.address,
@@ -266,7 +266,7 @@ export const useMasterChef: UseMasterChef = ({
             args: [BigInt(pid), 0n],
           }),
         }
-      case ChefType.MasterChefV2: {
+      case IncentiveType.MASTERCHEFV2: {
         if (
           pendingSushi &&
           sushiBalance &&

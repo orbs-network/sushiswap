@@ -19,7 +19,7 @@ import {
 import { FC } from 'react'
 import { getAddress } from 'viem'
 
-import { isAngleEnabledChainId } from '../../config'
+import { isAngleEnabledChainId } from 'sushi/config'
 import { DistributionDataTable } from './DistributionDataTable'
 import { ExtendedPool } from 'src/lib/hooks/api/useFlairPoolGraphData'
 

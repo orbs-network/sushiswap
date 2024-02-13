@@ -19,9 +19,9 @@ import {
 import { SushiSwapV3Pool } from '@sushiswap/v3-sdk'
 import React, { FC, useMemo } from 'react'
 import { unwrapToken } from 'src/lib/functions'
+import { formatPercent, shortenAddress } from 'sushi'
 import { Chain } from 'sushi/chain'
 import { Token } from 'sushi/currency'
-import { formatPercent, shortenAddress } from 'sushi'
 import { APRHoverCard } from './APRHoverCard'
 
 type PoolHeader = {
@@ -147,7 +147,7 @@ export const PoolHeader: FC<PoolHeader> = ({
           ) : null}
           <div className="flex items-center gap-1.5">
             <span className="font-semibold tracking-tighter">Fee</span>
-            {pool.swapFee * 1000}%
+            {pool.swapFee * 100}%
           </div>
           <div className="flex items-center gap-1.5">
             <span className="font-semibold tracking-tighter">Network</span>

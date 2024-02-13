@@ -175,7 +175,7 @@ export class Router {
   }
 
   static findBestRoute(
-    poolCodesMap: Map<string, PoolCode>,
+    poolCodes: Map<string, PoolCode> | PoolCode[],
     chainId: ChainId,
     fromToken: Type,
     amountIn: bigint,
@@ -197,15 +197,23 @@ export class Router {
       },
     ]
 
-    let poolCodes = Array.from(poolCodesMap.values())
+    let poolCodesMap: Map<string, PoolCode>
+    if (poolCodes instanceof Map) poolCodesMap = poolCodes
+    else {
+      poolCodesMap = new Map()
+      poolCodes.forEach((p) => poolCodesMap.set(p.pool.uniqueID(), p))
+    }
+
+    let poolCodesList =
+      poolCodes instanceof Map ? Array.from(poolCodes.values()) : poolCodes
     if (providers) {
-      poolCodes = poolCodes.filter((pc) =>
+      poolCodesList = poolCodesList.filter((pc) =>
         [...providers, LiquidityProviders.NativeWrap].includes(
           pc.liquidityProvider,
         ),
       )
     }
-    let pools = Array.from(poolCodes).map((pc) => pc.pool)
+    let pools = Array.from(poolCodesList).map((pc) => pc.pool)
 
     if (poolFilter) pools = pools.filter(poolFilter)
 
@@ -315,6 +323,7 @@ export class Router {
     RPAddr: Address,
     permits: PermitData[] = [],
     maxPriceImpact = 0.005,
+    source = RouterLiquiditySource.Sender,
   ): RPParams {
     const tokenIn =
       fromToken instanceof Token
@@ -340,6 +349,7 @@ export class Router {
         to,
         poolCodesMap,
         permits,
+        source,
       ) as Hex,
       value: fromToken instanceof Token ? undefined : route.amountInBI,
     }
@@ -362,7 +372,7 @@ export class Router {
     route.legs.forEach((l, i) => {
       res += `${shiftSub}${i + 1}. ${l.tokenFrom.symbol} ${Math.round(
         l.absolutePortion * 100,
-      )}% -> [${poolCodesMap.get(l.poolAddress)?.poolName}] -> ${
+      )}% -> [${poolCodesMap.get(l.uniqueId)?.poolName}] -> ${
         l.tokenTo.symbol
       }\n`
       //console.log(l.poolAddress, l.assumedAmountIn, l.assumedAmountOut)

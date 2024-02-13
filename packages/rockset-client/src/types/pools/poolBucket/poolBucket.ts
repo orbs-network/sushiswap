@@ -8,7 +8,7 @@ export const poolBucketOutputSchema = z.object({
   granularity: z.string(),
   liquidityUSD: z.number().nullable(),
   timeBucket: z.string(),
-  timestamp: z.number(),
+  bucketTimestamp: z.number(),
   volumeUSD: z.number().nullable(),
 })
 

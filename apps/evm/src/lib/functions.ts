@@ -24,10 +24,8 @@ import {
 
 import { Bound } from './constants'
 import { useTicks } from './hooks'
-import { TickProcessed } from './hooks/useConcentratedActiveLiquidity'
 import { Incentive } from '@sushiswap/rockset-client'
-
-
+import { TickProcessed } from './pool'
 
 export const isSushiSwapV2Pool = (
   pool: SushiSwapV2Pool | null,

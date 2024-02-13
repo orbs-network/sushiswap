@@ -49,7 +49,7 @@ export const PoolPositionProvider: FC<{
     reserve0,
     reserve1,
     totalSupply,
-    balance,
+    balance: account ? balance : Amount.fromRawAmount(liquidityToken, 0),
   })
 
   const [underlying0, underlying1] = underlying
@@ -67,7 +67,7 @@ export const PoolPositionProvider: FC<{
           value1,
           underlying0,
           underlying1,
-          isLoading,
+          isLoading: isLoading && !underlying0 && !underlying1,
           isError,
         }),
         [balance, isError, isLoading, underlying0, underlying1, value0, value1],
