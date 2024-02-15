@@ -85,15 +85,6 @@ export async function upsertVaults(vaults: Prisma.SteerVaultCreateManyInput[]) {
         )}
         ELSE apr
       END,
-      apr1w = CASE
-      ${Prisma.join(
-        vaultsToUpdate.map(
-          (update) => Prisma.sql`WHEN id = ${update.id} THEN ${update.apr1w}`,
-        ),
-        ' ',
-      )}
-        ELSE apr1w
-      END,
       apr1d = CASE
         ${Prisma.join(
           vaultsToUpdate.map(
@@ -102,6 +93,15 @@ export async function upsertVaults(vaults: Prisma.SteerVaultCreateManyInput[]) {
           ' ',
         )}
         ELSE apr1d
+      END,
+      apr1w = CASE
+      ${Prisma.join(
+        vaultsToUpdate.map(
+          (update) => Prisma.sql`WHEN id = ${update.id} THEN ${update.apr1w}`,
+        ),
+        ' ',
+      )}
+        ELSE apr1w
       END,
       apr1m = CASE
         ${Prisma.join(
@@ -390,6 +390,11 @@ export async function deprecateVaults(vaultIds: string[]) {
 
   const deprecated = await client.steerVault.updateMany({
     data: {
+      apr: 0,
+      apr1d: 0,
+      apr1w: 0,
+      apr1m: 0,
+      apr1y: 0,
       isDeprecated: true,
       isEnabled: false,
     },
