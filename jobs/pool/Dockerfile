@@ -2,7 +2,7 @@ FROM node:18-alpine
 
 # Install git and pnpm
 RUN apk add --no-cache git libc6-compat grep
-RUN npm install -g pnpm@8.9.2 turbo@1.10.15
+RUN npm install -g pnpm@8.15.3 turbo@1.10.15
 
 # Do ARG stuff
 ARG SCRIPT_PATH="./"
