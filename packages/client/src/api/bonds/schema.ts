@@ -48,6 +48,7 @@ export const BondSchema = z.object({
   owner: address(),
   capacity: bigint(),
   capacityInQuote: z.boolean(),
+  hasClosed: z.boolean(),
   start: bigint().nullable(),
   conclusion: bigint().nullable(),
   vesting: bigint(),
@@ -65,4 +66,19 @@ export const BondSchema = z.object({
   scale: bigint().nullable(),
   averageBondPrice: z.coerce.number(),
   bondsIssued: bigint(),
+})
+
+export const BondPositionSchema = z.object({
+  owner: address(),
+  chainId: chainId(),
+
+  balance: bigint(),
+
+  bondToken: z.object({
+    id: z.string(),
+    expiry: bigint(),
+    type: z.string(),
+    teller: z.string(),
+    underlying: token(),
+  }),
 })

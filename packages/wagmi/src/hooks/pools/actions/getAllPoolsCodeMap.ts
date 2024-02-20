@@ -1,9 +1,10 @@
-import { DataFetcher, LiquidityProviders, PoolCode } from '@sushiswap/router'
 import {
   isRouteProcessor3ChainId,
   isRouteProcessor3_1ChainId,
   isRouteProcessor3_2ChainId,
+  isRouteProcessor4ChainId,
 } from 'sushi/config'
+import { DataFetcher, LiquidityProviders, PoolCode } from 'sushi/router'
 
 import { UsePoolsParams } from '../types'
 
@@ -23,6 +24,7 @@ export const getAllPoolsCodeMap = async ({
     LiquidityProviders.Trident,
   ]
   if (
+    isRouteProcessor4ChainId(chainId) ||
     isRouteProcessor3_2ChainId(chainId) ||
     isRouteProcessor3_1ChainId(chainId) ||
     isRouteProcessor3ChainId(chainId)
@@ -50,7 +52,9 @@ export const getAllPoolsCodeMap = async ({
     LiquidityProviders.LaserSwap, // thundercore
   ]
 
-  const testLiquidityProviders = [...sushiLiquidityProviders]
+  const testLiquidityProviders = [...sushiLiquidityProviders].filter(
+    (p) => p !== LiquidityProviders.Trident,
+  )
 
   const dataFetcher = DataFetcher.onChain(chainId)
   // console.log('dataFetcher startDataFetching')

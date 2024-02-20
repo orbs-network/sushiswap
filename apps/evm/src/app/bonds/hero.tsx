@@ -18,9 +18,9 @@ export const Hero: FC = () => {
               className: 'max-w-[500px]',
             })}
           >
-            Acquire vested tokens at a discount in comparison to current market
-            price. Discounted tokens are released according to their individual
-            vesting schedule per bond market.
+            Acquire tokens at a discount from the current market price. Tokens
+            will be released according to their vesting schedule per bond
+            market.
           </p>
         </div>
         <div className="flex flex-col sm:flex-row w-full sm:w-[unset] gap-4">
@@ -31,7 +31,9 @@ export const Hero: FC = () => {
             iconPosition="end"
             icon={ArrowTopRightOnSquareIcon}
           >
-            <LinkInternal href="#todo">Learn More</LinkInternal>
+            <LinkInternal href="https://www.sushi.com/blog/faq-sushi-bonds">
+              Learn More
+            </LinkInternal>
           </Button>
         </div>
       </div>
@@ -52,7 +54,7 @@ export const Hero: FC = () => {
         <div className="flex flex-col items-center gap-1 lg:items-end">
           <span className="font-semibold lg:text-sm">Need Help?</span>
           <Button icon={DiscordIcon} variant="link" size="sm" asChild>
-            <LinkExternal href="https://discord.gg/NVPXN4e">
+            <LinkExternal href="https://sushi.com/discord">
               Join our discord
             </LinkExternal>
           </Button>

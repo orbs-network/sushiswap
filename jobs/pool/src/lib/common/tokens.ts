@@ -7,7 +7,7 @@ import {
 } from '@sushiswap/graph-config'
 import { isSushiSwapChain, isTridentChain } from '@sushiswap/graph-config'
 import { Address, erc20ABI, readContracts } from '@wagmi/core'
-import { ChainId } from 'sushi/chain'
+import { Chain, ChainId } from 'sushi/chain'
 
 import { divBigIntToNumber } from './utils.js'
 
@@ -147,9 +147,16 @@ export async function getTokenBalancesOf(
       const balance = balancesOf[i].result
       const decimal = decimals[i].result
 
-      if (balance === null || decimal === null) {
+      if (
+        balance === null ||
+        balance === undefined ||
+        decimal === null ||
+        decimal === undefined
+      ) {
         console.log(
-          `Balance / decimal fetch failed for ${token} on ${ChainId[chainId]}`,
+          `Balance / decimal fetch failed for ${token} on ${
+            Chain.from(chainId)?.shortName
+          }`,
         )
         return null
       }

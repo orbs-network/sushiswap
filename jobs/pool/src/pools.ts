@@ -1,7 +1,6 @@
 import { Prisma, Protocol, createClient } from '@sushiswap/database'
 import {
   MAX_FIRST,
-  SECONDS_BETWEEN_BLOCKS,
   SUBGRAPH_HOST,
   SUSHISWAP_ENABLED_NETWORKS,
   SUSHISWAP_SUBGRAPH_NAME,
@@ -522,10 +521,10 @@ function transform(
 }
 
 export const isV2Query = (data: V2Data | V3Data): data is V2Data =>
-  data.currentPools.some((d) => d?.pairs !== undefined)
+  data.currentPools.some((d) => (d as PairsQuery)?.pairs !== undefined)
 
 export const isV3Query = (data: V2Data | V3Data): data is V3Data =>
-  data.currentPools.some((d) => d?.pools !== undefined)
+  data.currentPools.some((d) => (d as V3PoolsQuery)?.pools !== undefined)
 
 function transformLegacyOrTrident(queryResult: {
   chainId: ChainId
@@ -711,16 +710,16 @@ function transformLegacyOrTrident(queryResult: {
         )
 
         const fees1h = oneHourData.has(pair.id)
-          ? currentFeesUSD - oneHourData.get(pair.id).feesUSD
+          ? currentFeesUSD - oneHourData.get(pair.id)!.feesUSD
           : currentFeesUSD
         const fees1d = oneDayData.has(pair.id)
-          ? currentFeesUSD - oneDayData.get(pair.id).feesUSD
+          ? currentFeesUSD - oneDayData.get(pair.id)!.feesUSD
           : currentFeesUSD
         const fees1w = oneWeekData.has(pair.id)
-          ? currentFeesUSD - oneWeekData.get(pair.id).feesUSD
+          ? currentFeesUSD - oneWeekData.get(pair.id)!.feesUSD
           : currentFeesUSD
         const fees1m = oneMonthData.has(pair.id)
-          ? currentFeesUSD - oneMonthData.get(pair.id).feesUSD
+          ? currentFeesUSD - oneMonthData.get(pair.id)!.feesUSD
           : currentFeesUSD
         const feesChange1h = calculatePercentageChange(
           currentFeesUSD,
@@ -743,16 +742,16 @@ function transformLegacyOrTrident(queryResult: {
           twoMonthData.get(pair.id)?.feesUSD ?? 0,
         )
         const volume1h = oneHourData.has(pair.id)
-          ? currentVolumeUSD - oneHourData.get(pair.id).volumeUSD
+          ? currentVolumeUSD - oneHourData.get(pair.id)!.volumeUSD
           : currentVolumeUSD
         const volume1d = oneDayData.has(pair.id)
-          ? currentVolumeUSD - oneDayData.get(pair.id).volumeUSD
+          ? currentVolumeUSD - oneDayData.get(pair.id)!.volumeUSD
           : currentVolumeUSD
         const volume1w = oneWeekData.has(pair.id)
-          ? currentVolumeUSD - oneWeekData.get(pair.id).volumeUSD
+          ? currentVolumeUSD - oneWeekData.get(pair.id)!.volumeUSD
           : currentVolumeUSD
         const volume1m = oneMonthData.has(pair.id)
-          ? currentVolumeUSD - oneMonthData.get(pair.id).volumeUSD
+          ? currentVolumeUSD - oneMonthData.get(pair.id)!.volumeUSD
           : currentVolumeUSD
         const volumeChange1h = calculatePercentageChange(
           currentVolumeUSD,
@@ -775,18 +774,18 @@ function transformLegacyOrTrident(queryResult: {
           twoMonthData.get(pair.id)?.volumeUSD ?? 0,
         )
         const liquidityUSDChange1h = oneHourData.get(pair.id)?.liquidityUSD
-          ? currentLiquidityUSD / oneHourData.get(pair.id)?.liquidityUSD - 1
+          ? currentLiquidityUSD / oneHourData.get(pair.id)!.liquidityUSD - 1
           : 0
         const liquidityUSDChange1d = oneDayData.get(pair.id)?.liquidityUSD
-          ? currentLiquidityUSD / oneDayData.get(pair.id)?.liquidityUSD - 1
+          ? currentLiquidityUSD / oneDayData.get(pair.id)!.liquidityUSD - 1
           : 0
 
         const liquidityUSDChange1w = oneWeekData.get(pair.id)?.liquidityUSD
-          ? currentLiquidityUSD / oneWeekData.get(pair.id)?.liquidityUSD - 1
+          ? currentLiquidityUSD / oneWeekData.get(pair.id)!.liquidityUSD - 1
           : 0
 
         const liquidityUSDChange1m = oneMonthData.get(pair.id)?.liquidityUSD
-          ? currentLiquidityUSD / oneMonthData.get(pair.id)?.liquidityUSD - 1
+          ? currentLiquidityUSD / oneMonthData.get(pair.id)!.liquidityUSD - 1
           : 0
 
         return {
@@ -1018,16 +1017,16 @@ function transformV3(queryResult: { chainId: ChainId; data: V3Data }) {
       )
 
       const fees1h = oneHourData.has(pair.id)
-        ? currentFeesUSD - oneHourData.get(pair.id).feesUSD
+        ? currentFeesUSD - oneHourData.get(pair.id)!.feesUSD
         : currentFeesUSD
       const fees1d = oneDayData.has(pair.id)
-        ? currentFeesUSD - oneDayData.get(pair.id).feesUSD
+        ? currentFeesUSD - oneDayData.get(pair.id)!.feesUSD
         : currentFeesUSD
       const fees1w = oneWeekData.has(pair.id)
-        ? currentFeesUSD - oneWeekData.get(pair.id).feesUSD
+        ? currentFeesUSD - oneWeekData.get(pair.id)!.feesUSD
         : currentFeesUSD
       const fees1m = oneMonthData.has(pair.id)
-        ? currentFeesUSD - oneMonthData.get(pair.id).feesUSD
+        ? currentFeesUSD - oneMonthData.get(pair.id)!.feesUSD
         : currentFeesUSD
       const feesChange1h = calculatePercentageChange(
         currentFeesUSD,
@@ -1050,16 +1049,16 @@ function transformV3(queryResult: { chainId: ChainId; data: V3Data }) {
         twoMonthData.get(pair.id)?.feesUSD ?? 0,
       )
       const volume1h = oneHourData.has(pair.id)
-        ? currentVolumeUSD - oneHourData.get(pair.id).volumeUSD
+        ? currentVolumeUSD - oneHourData.get(pair.id)!.volumeUSD
         : currentVolumeUSD
       const volume1d = oneDayData.has(pair.id)
-        ? currentVolumeUSD - oneDayData.get(pair.id).volumeUSD
+        ? currentVolumeUSD - oneDayData.get(pair.id)!.volumeUSD
         : currentVolumeUSD
       const volume1w = oneWeekData.has(pair.id)
-        ? currentVolumeUSD - oneWeekData.get(pair.id).volumeUSD
+        ? currentVolumeUSD - oneWeekData.get(pair.id)!.volumeUSD
         : currentVolumeUSD
       const volume1m = oneMonthData.has(pair.id)
-        ? currentVolumeUSD - oneMonthData.get(pair.id).volumeUSD
+        ? currentVolumeUSD - oneMonthData.get(pair.id)!.volumeUSD
         : currentVolumeUSD
       const volumeChange1h = calculatePercentageChange(
         currentVolumeUSD,
@@ -1082,18 +1081,18 @@ function transformV3(queryResult: { chainId: ChainId; data: V3Data }) {
         twoMonthData.get(pair.id)?.volumeUSD ?? 0,
       )
       const liquidityUSDChange1h = oneHourData.get(pair.id)?.liquidityUSD
-        ? currentLiquidityUSD / oneHourData.get(pair.id)?.liquidityUSD - 1
+        ? currentLiquidityUSD / oneHourData.get(pair.id)!.liquidityUSD - 1
         : 0
       const liquidityUSDChange1d = oneDayData.get(pair.id)?.liquidityUSD
-        ? currentLiquidityUSD / oneDayData.get(pair.id)?.liquidityUSD - 1
+        ? currentLiquidityUSD / oneDayData.get(pair.id)!.liquidityUSD - 1
         : 0
 
       const liquidityUSDChange1w = oneWeekData.get(pair.id)?.liquidityUSD
-        ? currentLiquidityUSD / oneWeekData.get(pair.id)?.liquidityUSD - 1
+        ? currentLiquidityUSD / oneWeekData.get(pair.id)!.liquidityUSD - 1
         : 0
 
       const liquidityUSDChange1m = oneMonthData.get(pair.id)?.liquidityUSD
-        ? currentLiquidityUSD / oneMonthData.get(pair.id)?.liquidityUSD - 1
+        ? currentLiquidityUSD / oneMonthData.get(pair.id)!.liquidityUSD - 1
         : 0
 
       return {
@@ -1197,17 +1196,17 @@ const calculatePercentageChange = (
   return previous !== 0 && previous2 !== 0 ? change1 / change2 - 1 : 0
 }
 
-const calculateHistoricalBlock = (
-  chainId: ChainId,
-  currentBlock: number,
-  seconds: number,
-): number | undefined => {
-  if (currentBlock === 0) return undefined
-  if (seconds <= 0) return undefined
-  const secondsBetweenBlocks = SECONDS_BETWEEN_BLOCKS[chainId]
-  if (!secondsBetweenBlocks) {
-    console.debug(`No secondsBetweenBlocks for chain ${chainId}`)
-    return undefined
-  }
-  return currentBlock - Math.floor(seconds / secondsBetweenBlocks)
-}
+// const calculateHistoricalBlock = (
+//   chainId: ChainId,
+//   currentBlock: number,
+//   seconds: number,
+// ): number | undefined => {
+//   if (currentBlock === 0) return undefined
+//   if (seconds <= 0) return undefined
+//   const secondsBetweenBlocks = SECONDS_BETWEEN_BLOCKS[chainId]
+//   if (!secondsBetweenBlocks) {
+//     console.debug(`No secondsBetweenBlocks for chain ${chainId}`)
+//     return undefined
+//   }
+//   return currentBlock - Math.floor(seconds / secondsBetweenBlocks)
+// }

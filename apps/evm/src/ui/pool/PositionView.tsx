@@ -31,7 +31,6 @@ import {
 } from '@sushiswap/ui'
 import { Button } from '@sushiswap/ui/components/button'
 import { SkeletonText } from '@sushiswap/ui/components/skeleton'
-import { SushiSwapV3ChainId } from '@sushiswap/v3-sdk'
 import { useAccount } from '@sushiswap/wagmi'
 import {
   useConcentratedLiquidityPositionsFromTokenId,
@@ -41,13 +40,12 @@ import {
 } from '@sushiswap/wagmi'
 import { Checker } from '@sushiswap/wagmi/systems'
 import React, { FC, useMemo, useState } from 'react'
-
-import useIsTickAtLimit from 'src/lib/hooks/useIsTickAtLimit'
 import { Chain } from 'sushi/chain'
+import { SushiSwapV3ChainId } from 'sushi/config'
+import { isAngleEnabledChainId } from 'sushi/config'
 import { Amount } from 'sushi/currency'
 import { formatUSD } from 'sushi/format'
-
-import { isAngleEnabledChainId } from '../../config'
+import { getAddress } from 'viem'
 import { Bound } from '../../lib/constants'
 import {
   formatTickPrice,
@@ -55,6 +53,7 @@ import {
   unwrapToken,
 } from '../../lib/functions'
 import { usePriceInverter, useTokenAmountDollarValues } from '../../lib/hooks'
+import { useIsTickAtLimit } from '../../lib/pool/v3'
 import { ConcentratedLiquidityCollectButton } from './ConcentratedLiquidityCollectButton'
 import { ConcentratedLiquidityHarvestButton } from './ConcentratedLiquidityHarvestButton'
 import {
@@ -176,7 +175,7 @@ const Component: FC<{ id: string }> = ({ id }) => {
     chainId,
     amounts: positionAmounts,
   })
-  const currentAngleRewardsPool = rewardsData?.pools[poolId]
+  const currentAngleRewardsPool = rewardsData?.pools[getAddress(poolId)]
 
   return (
     <>

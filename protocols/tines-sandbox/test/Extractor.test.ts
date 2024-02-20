@@ -7,34 +7,32 @@ import {
   TokenManager,
 } from '@sushiswap/extractor'
 import {
+  PANCAKESWAP_V3_DEPLOYER_ADDRESS,
+  PANCAKESWAP_V3_FACTORY_ADDRESS,
+  PANCAKESWAP_V3_FEE_SPACING_MAP,
+  PANCAKESWAP_V3_INIT_CODE_HASH,
+  PancakeSwapV3ChainId,
+  SUSHISWAP_V2_FACTORY_ADDRESS,
+  SUSHISWAP_V2_INIT_CODE_HASH,
+  SUSHISWAP_V3_FACTORY_ADDRESS,
+  SUSHISWAP_V3_INIT_CODE_HASH,
+  SUSHISWAP_V3_TICK_LENS,
+  SushiSwapV3ChainId,
+  UNISWAP_V3_INIT_CODE_HASH,
+} from 'sushi'
+import { routeProcessor2Abi } from 'sushi/abi'
+import { ChainId } from 'sushi/chain'
+import { publicClientConfig } from 'sushi/config'
+import { BASES_TO_CHECK_TRADES_AGAINST } from 'sushi/config'
+import { Native, Token } from 'sushi/currency'
+import {
   ConstantProductPoolCode,
   LiquidityProviders,
   NativeWrapProvider,
   PoolCode,
   Router,
-} from '@sushiswap/router'
-import { BASES_TO_CHECK_TRADES_AGAINST } from '@sushiswap/router-config'
-import { RouteStatus, getBigInt } from '@sushiswap/tines'
-import {
-  SUSHISWAP_V2_FACTORY_ADDRESS,
-  SUSHISWAP_V2_INIT_CODE_HASH,
-} from '@sushiswap/v2-sdk'
-import {
-  PANCAKESWAP_V3_DEPLOYER_ADDRESS,
-  PANCAKESWAP_V3_FACTORY_ADDRESS,
-  PANCAKESWAP_V3_FEE_SPACING_MAP,
-  PANCAKESWAP_V3_INIT_CODE_HASH,
-  POOL_INIT_CODE_HASH,
-  PancakeSwapV3ChainId,
-  SUSHISWAP_V3_FACTORY_ADDRESS,
-  SUSHISWAP_V3_INIT_CODE_HASH,
-  SUSHISWAP_V3_TICK_LENS,
-  SushiSwapV3ChainId,
-} from '@sushiswap/v3-sdk'
-import { config } from '@sushiswap/viem-config'
-import { routeProcessor2Abi } from 'sushi/abi'
-import { ChainId } from 'sushi/chain'
-import { Native, Token } from 'sushi/currency'
+} from 'sushi/router'
+import { RouteStatus, getBigInt } from 'sushi/tines'
 import { http, Address, Transport, createPublicClient } from 'viem'
 import {
   Chain,
@@ -110,7 +108,7 @@ function uniswapV3Factory(chain: ChainId): FactoryV3 {
   return {
     address: UniswapV3FactoryAddress[chain] as Address,
     provider: LiquidityProviders.UniswapV3,
-    initCodeHash: POOL_INIT_CODE_HASH,
+    initCodeHash: UNISWAP_V3_INIT_CODE_HASH[chain],
   }
 }
 
@@ -222,8 +220,7 @@ async function startInfinitTest(args: {
       )
       if (route.status === RouteStatus.NoWay) {
         console.log(
-          `Routing: ${fromToken.symbol} => ${toToken.symbol} ${route.status} ` +
-            timingLine,
+          `Routing: ${fromToken.symbol} => ${toToken.symbol} ${route.status} ${timingLine}`,
         )
         continue
       }
@@ -265,9 +262,7 @@ async function startInfinitTest(args: {
         console.log(
           `Routing: ${fromToken.symbol} => ${toToken.symbol} ${
             route.legs.length - 1
-          } pools ` +
-            timingLine +
-            ` diff = ${diff > 0 ? '+' : ''}${diff} `,
+          } pools ${timingLine} diff = ${diff > 0 ? '+' : ''}${diff} `,
         )
         if (Math.abs(Number(diff)) > 0.001)
           console.log('Routing: TOO BIG DIFFERENCE !!!!!!!!!!!!!!!!!!!!!')
@@ -318,15 +313,15 @@ it.skip('Extractor Polygon infinite work test', async () => {
 const drpcId = process.env['DRPC_ID'] || process.env['NEXT_PUBLIC_DRPC_ID']
 it.skip('Extractor Arbitrum infinite work test', async () => {
   await startInfinitTest({
-    providerURL: `https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_ID}`,
-    //providerURL: `https://lb.drpc.org/ogrpc?network=arbitrum&dkey=${drpcId}`,
+    //providerURL: `https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_ID}`,
+    providerURL: `https://lb.drpc.org/ogrpc?network=arbitrum&dkey=${drpcId}`,
     chain: arbitrum,
-    factoriesV2: [],
+    factoriesV2: [sushiswapV2Factory(ChainId.ARBITRUM)],
     factoriesV3: [uniswapV3Factory(ChainId.ARBITRUM)],
     tickHelperContract: TickLensContract[ChainId.ARBITRUM],
     cacheDir: './cache',
     logDepth: 300,
-    logType: LogFilterType.MultiCall,
+    logType: LogFilterType.Native,
     logging: true,
     RP3Address: RP3Address[ChainId.ARBITRUM],
   })
@@ -403,8 +398,8 @@ it.skip('Extractor Polygon zkevm infinite work test', async () => {
 
 it.skip('Extractor AVALANCH infinite work test', async () => {
   await startInfinitTest({
-    transport: config[ChainId.AVALANCHE].transport,
-    chain: config[ChainId.AVALANCHE].chain as Chain,
+    transport: publicClientConfig[ChainId.AVALANCHE].transport,
+    chain: publicClientConfig[ChainId.AVALANCHE].chain as Chain,
     factoriesV2: [
       sushiswapV2Factory(ChainId.AVALANCHE),
       {
@@ -426,8 +421,8 @@ it.skip('Extractor AVALANCH infinite work test', async () => {
 
 it.skip('Extractor Base infinite work test', async () => {
   await startInfinitTest({
-    ...config[ChainId.BASE],
-    chain: config[ChainId.BASE].chain as Chain,
+    ...publicClientConfig[ChainId.BASE],
+    chain: publicClientConfig[ChainId.BASE].chain as Chain,
     factoriesV2: [
       sushiswapV2Factory(ChainId.BASE),
       {
@@ -476,8 +471,8 @@ it.skip('Extractor Base infinite work test', async () => {
 
 it.skip('Extractor BSC infinite work test', async () => {
   await startInfinitTest({
-    transport: config[ChainId.BSC].transport,
-    chain: config[ChainId.BSC].chain as Chain,
+    transport: publicClientConfig[ChainId.BSC].transport,
+    chain: publicClientConfig[ChainId.BSC].chain as Chain,
     factoriesV2: [],
     factoriesV3: [pancakeswapV3Factory(ChainId.BSC)],
     tickHelperContract: TickLensContract[ChainId.BSC],

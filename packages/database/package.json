@@ -42,7 +42,7 @@
     "check": "tsc --pretty --noEmit",
     "clean": "rm -rf .turbo node_modules dist",
     "dev": "tsc -w",
-    "generate": "prisma generate",
+    "generate": "prisma generate --data-proxy",
     "prepublishOnly": "pnpm build",
     "pull": "prisma db pull",
     "push": "prisma db push --skip-generate",
@@ -53,17 +53,18 @@
     "preset": "@sushiswap/jest-config"
   },
   "dependencies": {
-    "@prisma/client": "5.7.0"
+    "@prisma/client": "5.6.0",
+    "@prisma/extension-accelerate": "^0.6.2"
   },
   "devDependencies": {
     "@sushiswap/jest-config": "workspace:*",
     "@tsconfig/esm": "1.0.4",
     "@tsconfig/strictest": "2.0.2",
     "@types/jest": "29.5.5",
-    "@types/node": "18",
+    "@types/node": "20",
     "dotenv": "16.3.1",
     "jest": "29.7.0",
-    "prisma": "5.7.0",
+    "prisma": "5.6.0",
     "typescript": "5.2.2"
   }
 }

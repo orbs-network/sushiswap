@@ -1,7 +1,6 @@
 'use client'
 
 import { GiftIcon } from '@heroicons/react-v1/outline'
-import { TridentChainId, isTridentChainId } from '@sushiswap/trident-sdk'
 import { LinkExternal, LinkInternal, typographyVariants } from '@sushiswap/ui'
 import { Button } from '@sushiswap/ui/components/button'
 import { Chip } from '@sushiswap/ui/components/chip'
@@ -14,11 +13,16 @@ import {
 } from '@sushiswap/ui/components/dropdown-menu'
 import { DiscordIcon } from '@sushiswap/ui/components/icons'
 import { SelectIcon } from '@sushiswap/ui/components/select'
-import { isSushiSwapV2ChainId } from '@sushiswap/v2-sdk'
-import { SushiSwapV3ChainId, isSushiSwapV3ChainId } from '@sushiswap/v3-sdk'
 import { useNetwork } from '@sushiswap/wagmi'
 import { FC } from 'react'
 import { ChainId } from 'sushi/chain'
+import {
+  SushiSwapV3ChainId,
+  TridentChainId,
+  isSushiSwapV2ChainId,
+  isSushiSwapV3ChainId,
+  isTridentChainId,
+} from 'sushi/config'
 
 export const Hero: FC = () => {
   const { chain } = useNetwork()
@@ -54,10 +58,10 @@ export const Hero: FC = () => {
                   isSushiSwapV3ChainId(chainId as SushiSwapV3ChainId)
                     ? `/pool/add?chainId=${chainId}`
                     : isSushiSwapV2ChainId(chainId as SushiSwapV3ChainId)
-                    ? `/pool/add/v2/${chainId}`
-                    : isTridentChainId(chainId as TridentChainId)
-                    ? `/pool/add/trident/${chainId}`
-                    : ''
+                      ? `/pool/add/v2/${chainId}`
+                      : isTridentChainId(chainId as TridentChainId)
+                        ? `/pool/add/trident/${chainId}`
+                        : ''
                 }
               >
                 I want to create a position
@@ -159,7 +163,7 @@ export const Hero: FC = () => {
         <div className="flex flex-col items-center gap-1 lg:items-end">
           <span className="font-semibold lg:text-sm">Need Help?</span>
           <Button icon={DiscordIcon} variant="link" size="sm" asChild>
-            <LinkExternal href="https://discord.gg/NVPXN4e">
+            <LinkExternal href="https://sushi.com/discord">
               Join our discord
             </LinkExternal>
           </Button>

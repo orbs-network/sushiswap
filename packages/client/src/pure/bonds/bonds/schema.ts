@@ -1,5 +1,5 @@
 import {
-  type AuctionType,
+  AuctionType,
   AuctionTypes,
   BONDS_ENABLED_CHAIN_IDS,
   getChainIdAuctioneerMarketFromMarketId,
@@ -24,53 +24,49 @@ export const BondsApiSchema = z.object({
     .default(BONDS_ENABLED_CHAIN_IDS.join(','))
     .transform((val) => val.split(',').map((v) => parseInt(v) as ChainId))
     .transform((chainIds) => chainIds.filter(isBondChainId)),
-  issuerIds: z
+  issuerNames: z
     .string()
-    .transform((ids) => ids?.split(',').map((id) => id.toLowerCase()))
+    .transform((names) => names?.split(','))
     .optional(),
+  anyIssuer: z.coerce
+    .string()
+    .optional()
+    .default('false')
+    .refine((val) => ['true', 'false'].includes(val), {
+      message: 'anyIssuer must true or false',
+    })
+    .transform((val) => val === 'true'),
   onlyOpen: z.coerce
     .string()
     .optional()
     .default('true')
-    .transform((val) => {
-      if (val === 'true') {
-        return true
-      } else if (val === 'false') {
-        return false
-      } else {
-        throw new Error('onlyOpen must true or false')
-      }
-    }),
+    .refine((val) => ['true', 'false'].includes(val), {
+      message: 'onlyOpen must true or false',
+    })
+    .transform((val) => val === 'true'),
   onlyDiscounted: z.coerce
     .string()
     .optional()
     .default('false')
-    .transform((val) => {
-      if (val === 'true') {
-        return true
-      } else if (val === 'false') {
-        return false
-      } else {
-        throw new Error('onlyDiscounted must true or false')
-      }
-    }),
+    .refine((val) => ['true', 'false'].includes(val), {
+      message: 'onlyDiscounted must true or false',
+    })
+    .transform((val) => val === 'true'),
   auctionTypes: z
     .string()
     .optional()
     .default(AuctionTypes.join(','))
-    .transform((types) =>
-      types?.split(',').map((type) => {
-        if (!AuctionTypes.includes(type as AuctionType)) {
-          throw new Error(
-            `Invalid auction type ${type}, valid options are ${AuctionTypes.join(
-              ', ',
-            )}`,
-          )
-        }
-
-        return type as AuctionType
-      }),
-    ),
+    .transform((types) => types?.split(','))
+    .refine(
+      (types) =>
+        types.every((type) => AuctionTypes.includes(type as AuctionType)),
+      {
+        message: `Invalid auction types, valid options are: ${AuctionTypes.join(
+          ', ',
+        )}`,
+      },
+    )
+    .transform((types) => types as AuctionType[]),
   orderBy: z.string().default('discount'),
   orderDir: z.enum(['asc', 'desc']).default('desc'),
 })

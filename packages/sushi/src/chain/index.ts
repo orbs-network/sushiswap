@@ -9,9 +9,10 @@ const EIP3091_OVERRIDE = [
   ChainId.OPTIMISM,
   ChainId.BOBA,
   ChainId.BASE,
+  ChainId.FILECOIN,
 ] as number[]
 
-type Data = typeof RAW[number]
+type Data = (typeof RAW)[number]
 
 export interface Chain {
   name: string
@@ -22,41 +23,41 @@ export interface Chain {
   parent?: Parent
 }
 
-export interface Explorer {
+interface Explorer {
   name: string
   url: string
   standard: Standard
   icon?: string
 }
 
-export const Standard = {
+const Standard = {
   Eip3091: 'EIP3091',
   None: 'none',
 } as const
 
-export type Standard = typeof Standard[keyof typeof Standard]
+type Standard = (typeof Standard)[keyof typeof Standard]
 
-export interface NativeCurrency {
+interface NativeCurrency {
   name: string
   symbol: string
   decimals: number
 }
 
-export interface Parent {
+interface Parent {
   type: Type
   chain: string
   bridges?: Bridge[]
 }
 
-export interface Bridge {
+interface Bridge {
   url: string
 }
 
-export const Type = {
+const Type = {
   L2: 'L2',
   Shard: 'shard',
 } as const
-export type Type = typeof Type[keyof typeof Type]
+type Type = (typeof Type)[keyof typeof Type]
 
 // biome-ignore lint/suspicious/noUnsafeDeclarationMerging: explaination
 export class Chain implements Chain {
@@ -102,11 +103,11 @@ export class Chain implements Chain {
     }
 
     // process explorer overrides etc...
-    if (data.name === 'Scroll') {
+    if (data.chainId === ChainId.SCROLL) {
       this.explorers?.sort((explorer) =>
         explorer.name === 'Scrollscan' ? -1 : 1,
       )
-    } else if (data.name === 'Arbitrum Nova') {
+    } else if (data.chainId === ChainId.ARBITRUM_NOVA) {
       this.explorers = [
         {
           name: 'Arbitrum Nova Explorer',
@@ -114,6 +115,17 @@ export class Chain implements Chain {
           standard: 'EIP3091',
         },
         ...(this.explorers ?? []),
+      ]
+    } else if (data.chainId === ChainId.FILECOIN) {
+      this.explorers?.sort((explorer) => (explorer.name === 'Filfox' ? -1 : 1))
+    } else if (data.chainId === ChainId.ZETACHAIN) {
+      this.name = 'ZetaChain'
+      this.explorers = [
+        {
+          name: 'ZetaChain Mainnet Explorer',
+          url: 'https://explorer.zetachain.com',
+          standard: 'EIP3091',
+        },
       ]
     }
   }

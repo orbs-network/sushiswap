@@ -1,16 +1,19 @@
 'use client'
 
-import { Bond } from '@sushiswap/client'
+import { Bond, getBonds, getBondsUrl } from '@sushiswap/client'
+import { BondsApiSchema } from '@sushiswap/client/api'
 import { Card, CardHeader, CardTitle, DataTable } from '@sushiswap/ui'
-import { ColumnDef, PaginationState } from '@tanstack/react-table'
-import React, { FC, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { ColumnDef, PaginationState, SortingState } from '@tanstack/react-table'
+import { useSearchParams } from 'next/navigation'
+import React, { FC, useMemo, useState } from 'react'
 import {
   BOND_ASSET_COLUMN,
-  CLIFF_COLUMN,
   DISCOUNT_COLUMN,
-  ISSUER_COLUMN,
+  // ISSUER_COLUMN,
   PAYOUT_ASSET_COLUMN,
   PRICE_COLUMN,
+  VESTING_COLUMN,
 } from './bonds-table-columns'
 
 const COLUMNS = [
@@ -18,18 +21,29 @@ const COLUMNS = [
   PRICE_COLUMN,
   DISCOUNT_COLUMN,
   BOND_ASSET_COLUMN,
-  CLIFF_COLUMN,
-  ISSUER_COLUMN,
+  VESTING_COLUMN,
+  // ISSUER_COLUMN,
 ] satisfies ColumnDef<Bond, unknown>[]
 
-interface PositionsTableProps {
-  initialData?: Bond[]
-  onRowClick?(row: Bond): void
-}
+const emptyArray: any[] = []
 
-const tableState = { sorting: [{ id: 'discount', desc: true }] }
+export const BondsTable: FC = () => {
+  const searchParams = useSearchParams()
 
-export const BondsTable: FC<PositionsTableProps> = ({ initialData = [] }) => {
+  const args = useMemo(() => {
+    return BondsApiSchema.parse(Object.fromEntries(searchParams))
+  }, [searchParams])
+
+  const { data, isLoading } = useQuery({
+    queryKey: [getBondsUrl(args)],
+    queryFn: () => getBonds(args),
+    cacheTime: 0,
+  })
+
+  const [sortingState, setSortingState] = useState<SortingState>([
+    { id: 'discount', desc: true },
+  ])
+
   const [paginationState, setPaginationState] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -40,19 +54,23 @@ export const BondsTable: FC<PositionsTableProps> = ({ initialData = [] }) => {
       <CardHeader>
         <CardTitle>
           Bonds{' '}
-          <span className="text-gray-400 dark:text-slate-500">
-            ({initialData?.length})
-          </span>
+          {data && (
+            <span className="text-gray-400 dark:text-slate-500">
+              ({data.length})
+            </span>
+          )}
         </CardTitle>
       </CardHeader>
       <DataTable
-        loading={false}
+        loading={isLoading}
         columns={COLUMNS}
-        data={initialData}
+        data={data || emptyArray}
+        linkFormatter={(row) => `/bonds/${row.id}`}
         pagination={true}
         onPaginationChange={setPaginationState}
+        onSortingChange={setSortingState}
         state={{
-          ...tableState,
+          sorting: sortingState,
           pagination: paginationState,
         }}
       />

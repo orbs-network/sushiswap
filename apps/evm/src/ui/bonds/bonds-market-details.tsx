@@ -1,81 +1,147 @@
 'use client'
 
+import { Bond } from '@sushiswap/client'
+import { useIsMounted } from '@sushiswap/hooks'
 import {
   Card,
   CardContent,
   CardDescription,
+  CardGroup,
   CardHeader,
   CardItem,
+  CardLabel,
   CardTitle,
   Currency,
   Explainer,
+  SkeletonText,
+  Toggle,
 } from '@sushiswap/ui'
-import { CardGroup, CardLabel } from '@sushiswap/ui'
-import { Toggle } from '@sushiswap/ui'
-import { useMemo, useState } from 'react'
-import { formatNumber, formatUSD } from 'sushi'
-import { tryParseAmount } from 'sushi/currency'
-import { useTokenAmountDollarValues } from '../../lib/hooks'
-import { MOCK_DATA } from './bonds-market-page-header'
+import { useBondMarketDetails } from '@sushiswap/wagmi'
+import { FC, useMemo, useState } from 'react'
+import { Token } from 'sushi/currency'
+import { formatNumber, formatPercent, formatUSD } from 'sushi/format'
 
-export const BondsMarketDetails = () => {
+interface BondsMarketDetails {
+  bond: Bond
+}
+
+export const BondsMarketDetails: FC<BondsMarketDetails> = ({
+  bond: staleBond,
+}) => {
+  const isMounted = useIsMounted()
+
+  const [quoteToken, payoutToken] = useMemo(() => {
+    return [new Token(staleBond.quoteToken), new Token(staleBond.payoutToken)]
+  }, [staleBond.quoteToken, staleBond.payoutToken])
+
   const [invert, setInvert] = useState(false)
-  const assetAmounts = useMemo(() => {
-    return [
-      tryParseAmount('1', MOCK_DATA.bondAsset),
-      tryParseAmount('1', MOCK_DATA.payoutAsset),
-    ]
-  }, [])
 
-  const [bondAssetPrice, payoutAssetPrice] = useTokenAmountDollarValues({
-    chainId: MOCK_DATA.chainId,
-    amounts: assetAmounts,
+  const {
+    discount,
+    discountedPrice,
+    payoutTokenPriceUSD,
+    quoteTokenPriceUSD,
+    availableCapacity,
+    availableCapacityUSD,
+    remainingCapacity,
+    remainingCapacityUSD,
+  } = useBondMarketDetails({
+    bond: staleBond,
   })
 
-  const price = invert
-    ? payoutAssetPrice / bondAssetPrice
-    : bondAssetPrice / payoutAssetPrice
+  const price =
+    payoutTokenPriceUSD && quoteTokenPriceUSD
+      ? invert
+        ? payoutTokenPriceUSD / quoteTokenPriceUSD
+        : quoteTokenPriceUSD / payoutTokenPriceUSD
+      : undefined
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Market Details</CardTitle>
         <CardDescription>
-          Total Bonded Value: {formatUSD(MOCK_DATA.totalBondedValue)}
+          {quoteTokenPriceUSD ? (
+            <>
+              Total Bonded Value:{' '}
+              {formatUSD(staleBond.totalBondedAmount * quoteTokenPriceUSD)}
+            </>
+          ) : (
+            <SkeletonText />
+          )}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <CardGroup>
           <CardLabel>Tokens</CardLabel>
-          <CardItem title="Bond Price">
-            {formatUSD(MOCK_DATA.bondPrice)}
+          <CardItem
+            title={
+              <div className="flex flex-row space-x-1 items-center">
+                <span>Market Price</span>
+                <Explainer>Token price at current market spot price</Explainer>
+              </div>
+            }
+          >
+            {typeof payoutTokenPriceUSD === 'number' ? (
+              formatUSD(payoutTokenPriceUSD)
+            ) : (
+              <SkeletonText fontSize="sm" />
+            )}
           </CardItem>
-          <CardItem title="Market Price">
-            {formatUSD(MOCK_DATA.marketPrice)}
+          <CardItem
+            title={
+              <div className="flex flex-row space-x-1 items-center">
+                <span>Bond Price</span>
+                <Explainer>Token price after bond discount</Explainer>
+              </div>
+            }
+          >
+            {typeof discountedPrice === 'number' ? (
+              formatUSD(discountedPrice)
+            ) : (
+              <SkeletonText fontSize="sm" />
+            )}
           </CardItem>
-          <CardItem title="Discount">
-            <span
-              className={
-                MOCK_DATA.bondPrice > 0
-                  ? 'text-green'
-                  : MOCK_DATA.bondPrice < 0
-                  ? 'text-red'
-                  : ''
-              }
-            >
-              {formatUSD(MOCK_DATA.bondPrice)}
-            </span>
+          <CardItem
+            title={
+              <div className="flex flex-row space-x-1 items-center">
+                <span>Discount</span>
+                <Explainer>
+                  Percentage of the current spot price and bond market price
+                  difference
+                </Explainer>
+              </div>
+            }
+          >
+            {discount && payoutTokenPriceUSD && discountedPrice ? (
+              <span
+                className={
+                  discount > 0 ? 'text-green' : discount < 0 ? 'text-red' : ''
+                }
+              >
+                {formatUSD(payoutTokenPriceUSD - discountedPrice)} (
+                {formatPercent(discount)})
+              </span>
+            ) : (
+              <SkeletonText fontSize="sm" />
+            )}
           </CardItem>
         </CardGroup>
         <CardGroup>
           <CardLabel>Market Payout</CardLabel>
           <CardItem
             onClick={() => setInvert(!invert)}
-            title={`1 ${
-              invert ? MOCK_DATA.payoutAsset.symbol : MOCK_DATA.bondAsset.symbol
-            } = ${formatNumber(price)} ${
-              invert ? MOCK_DATA.bondAsset.symbol : MOCK_DATA.payoutAsset.symbol
-            }`}
+            title={
+              price !== undefined ? (
+                `1 ${
+                  invert ? payoutToken.symbol : quoteToken.symbol
+                } = ${formatNumber(price)} ${
+                  invert ? quoteToken.symbol : payoutToken.symbol
+                }`
+              ) : (
+                <SkeletonText fontSize="sm" />
+              )
+            }
           >
             <div className="flex items-center gap-1">
               <Toggle
@@ -84,7 +150,7 @@ export const BondsMarketDetails = () => {
                 size="xs"
                 variant="outline"
               >
-                {MOCK_DATA.bondAsset.symbol}
+                {quoteToken.symbol}
               </Toggle>
               <Toggle
                 pressed={invert}
@@ -92,7 +158,7 @@ export const BondsMarketDetails = () => {
                 size="xs"
                 variant="outline"
               >
-                {MOCK_DATA.payoutAsset.symbol}
+                {payoutToken.symbol}
               </Toggle>
             </div>
           </CardItem>
@@ -101,44 +167,68 @@ export const BondsMarketDetails = () => {
           <div className="border border-accent p-4 flex flex-col gap-3 rounded-xl">
             <div className="flex">
               <div className="flex gap-1 px-2 py-1 text-xs font-medium rounded-full bg-pink/10 text-pink">
-                Max Payout{' '}
+                Available Capacity{' '}
                 <Explainer>
-                  The maximum amount of tokens that can be purchased from the
-                  bond.
+                  The maximum amount of tokens that is currently available.
                 </Explainer>
               </div>
             </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1 text-sm font-semibold">
-                <Currency.Icon
-                  currency={MOCK_DATA.payoutAsset}
-                  width={16}
-                  height={16}
-                />
-                {MOCK_DATA.maxPayout?.toSignificant(4)}{' '}
-                {MOCK_DATA.maxPayout?.currency.symbol}
-              </div>
+            <div>
+              {availableCapacity && availableCapacityUSD && isMounted ? (
+                <div className="flex flex-row">
+                  <div className="px-1 pt-0.5">
+                    <Currency.Icon
+                      currency={payoutToken}
+                      width={16}
+                      height={16}
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1 text-sm font-semibold">
+                      {availableCapacity?.toSignificant(6)} {payoutToken.symbol}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {formatUSD(availableCapacityUSD)}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <SkeletonText fontSize="sm" />
+              )}
             </div>
           </div>
-          <div className="border border-accent p-4 flex flex-col gap-3 rounded-xl">
+          <div className="border border-accent p-4 flex flex-col gap-4 rounded-xl">
             <div className="flex">
               <div className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-blue/10 text-blue">
                 Remaining Capacity
                 <Explainer>
-                  The remaining capacity of the bond, in tokens.
+                  The total remaining capacity of the bond, in tokens.
                 </Explainer>
               </div>
             </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1 text-sm font-semibold">
-                <Currency.Icon
-                  currency={MOCK_DATA.bondAsset}
-                  width={16}
-                  height={16}
-                />
-                {MOCK_DATA.remainingCapacity?.toSignificant(4)}{' '}
-                {MOCK_DATA.remainingCapacity?.currency.symbol}
-              </div>
+            <div>
+              {remainingCapacity && remainingCapacityUSD && isMounted ? (
+                <div className="flex flex-row">
+                  <div className="px-1 pt-0.5">
+                    <Currency.Icon
+                      currency={remainingCapacity?.currency}
+                      width={16}
+                      height={16}
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1 text-sm font-semibold">
+                      {remainingCapacity?.toSignificant(6)}{' '}
+                      {remainingCapacity?.currency.symbol}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {formatUSD(remainingCapacityUSD)}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <SkeletonText fontSize="sm" />
+              )}
             </div>
           </div>
         </div>

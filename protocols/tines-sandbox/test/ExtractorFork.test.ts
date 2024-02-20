@@ -7,27 +7,24 @@ import {
   TokenManager,
 } from '@sushiswap/extractor'
 import {
+  SUSHISWAP_V2_FACTORY_ADDRESS,
+  SUSHISWAP_V2_INIT_CODE_HASH,
+  SUSHISWAP_V3_FACTORY_ADDRESS,
+  SUSHISWAP_V3_INIT_CODE_HASH,
+  SushiSwapV3ChainId,
+} from 'sushi'
+import { ChainId } from 'sushi/chain'
+import { publicClientConfig } from 'sushi/config'
+import { BASES_TO_CHECK_TRADES_AGAINST } from 'sushi/config'
+import { Native, Token } from 'sushi/currency'
+import {
   ConstantProductPoolCode,
   LiquidityProviders,
   NativeWrapProvider,
   PoolCode,
   Router,
-} from '@sushiswap/router'
-import { BASES_TO_CHECK_TRADES_AGAINST } from '@sushiswap/router-config'
-import { RouteStatus, getBigInt } from '@sushiswap/tines'
-import {
-  SUSHISWAP_V2_FACTORY_ADDRESS,
-  SUSHISWAP_V2_INIT_CODE_HASH,
-} from '@sushiswap/v2-sdk'
-import {
-  POOL_INIT_CODE_HASH,
-  SUSHISWAP_V3_FACTORY_ADDRESS,
-  SUSHISWAP_V3_INIT_CODE_HASH,
-  SushiSwapV3ChainId,
-} from '@sushiswap/v3-sdk'
-import { config } from '@sushiswap/viem-config'
-import { ChainId } from 'sushi/chain'
-import { Native, Token } from 'sushi/currency'
+} from 'sushi/router'
+import { RouteStatus, getBigInt } from 'sushi/tines'
 import {
   http,
   Address,
@@ -92,7 +89,7 @@ export function uniswapV3Factory(chain: ChainId): FactoryV3 {
   return {
     address: UniswapV3FactoryAddress[chain] as Address,
     provider: LiquidityProviders.UniswapV3,
-    initCodeHash: POOL_INIT_CODE_HASH,
+    initCodeHash: SUSHISWAP_V3_INIT_CODE_HASH[chain],
   }
 }
 
@@ -225,13 +222,11 @@ async function startInfinitTest(args: {
         (p) => p instanceof ConstantProductPoolCode,
       ).length
       const pools1_3 = pools1.length - pools1_2
-      const timingLine =
-        `sync: (${pools0_2}, ${pools0_3}) pools ${Math.round(
-          time1 - time0,
-        )}ms` +
-        `, async: (${pools1_2}, ${pools1_3}) pools ${Math.round(
-          time2 - time1,
-        )}ms`
+      const timingLine = `sync: (${pools0_2}, ${pools0_3}) pools ${Math.round(
+        time1 - time0,
+      )}ms, async: (${pools1_2}, ${pools1_3}) pools ${Math.round(
+        time2 - time1,
+      )}ms`
 
       const pools = pools1
       const poolMap = new Map<string, PoolCode>()
@@ -251,8 +246,7 @@ async function startInfinitTest(args: {
       )
       if (route.status === RouteStatus.NoWay) {
         console.log(
-          `Routing: ${fromToken.symbol} => ${toToken.symbol} ${route.status} ` +
-            timingLine,
+          `Routing: ${fromToken.symbol} => ${toToken.symbol} ${route.status} ${timingLine}`,
         )
         continue
       }
@@ -303,9 +297,7 @@ async function startInfinitTest(args: {
         console.log(
           `Routing: ${fromToken.symbol} => ${toToken.symbol} ${
             route.legs.length - 1
-          } pools ` +
-            timingLine +
-            ` diff = ${diff > 0 ? '+' : ''}${diff} `,
+          } pools ${timingLine} diff = ${diff > 0 ? '+' : ''}${diff} `,
         )
         if (Math.abs(Number(diff)) > 0.001)
           console.log('Routing: TOO BIG DIFFERENCE !!!!!!!!!!!!!!!!!!!!!')
@@ -320,8 +312,8 @@ const drpcId = process.env['DRPC_ID'] || process.env['NEXT_PUBLIC_DRPC_ID']
 
 it.skip('Extractor BSC infinite work test', async () => {
   await startInfinitTest({
-    transport: config[ChainId.BSC].transport,
-    chain: config[ChainId.BSC].chain as Chain,
+    transport: publicClientConfig[ChainId.BSC].transport,
+    chain: publicClientConfig[ChainId.BSC].chain as Chain,
     factoriesV2: [],
     factoriesV3: [pancakeswapV3Factory(ChainId.BSC)],
     tickHelperContract: TickLensContract[ChainId.BSC],

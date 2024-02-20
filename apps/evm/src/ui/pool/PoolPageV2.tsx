@@ -23,7 +23,7 @@ interface PoolPageV2 {
 
 export const PoolPageV2: FC<PoolPageV2> = ({ pool, tab }) => {
   return (
-    <Container maxWidth="5xl" className="px-2 sm:px-4">
+    <Container maxWidth="5xl" className="px-2 sm:px-4 space-y-4">
       <UnknownTokenAlert pool={pool} />
       <div className="flex flex-col gap-6">
         <div className="grid grid-cols-1 md:grid-cols-[auto_400px] gap-6">
@@ -54,7 +54,7 @@ export const PoolPageV2: FC<PoolPageV2> = ({ pool, tab }) => {
           <div className="flex flex-col gap-6">
             <PoolComposition pool={pool} />
             <PoolStats pool={pool} />
-            <PoolRewards pool={pool} />
+            {pool.isIncentivized ? <PoolRewards pool={pool} /> : null}
           </div>
         </div>
         <div className="py-4">

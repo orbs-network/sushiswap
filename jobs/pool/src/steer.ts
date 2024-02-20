@@ -6,16 +6,16 @@ import {
 } from '@sushiswap/graph-config'
 import {
   getSteerStrategiesPayloads,
-  getSteerStrategyPayload,
   getSteerVaultAprs,
 } from '@sushiswap/steer-sdk'
-import { TickMath } from '@sushiswap/v3-sdk'
 import { isPromiseFulfilled } from 'sushi'
 import { getIdFromChainIdAddress } from 'sushi/format'
+import { TickMath } from 'sushi/pool'
 
 import { getBuiltGraphSDK } from '../.graphclient/index.js'
 import { updatePoolsWithSteerVaults } from './etl/pool/load.js'
 import { deprecateVaults, upsertVaults } from './etl/steer/load.js'
+import { getTokenPrices } from './lib/price.js'
 
 export async function steer() {
   console.log('Starting steer')
@@ -67,10 +67,9 @@ async function extractChain(chainId: SteerChainId) {
     url: STEER_SUBGRAPH_URL[chainId],
   })
 
-  const { getTokenPricesChain, getPools } = await import('@sushiswap/client')
+  const { getPools } = await import('@sushiswap/client')
 
-  const prices = await getTokenPricesChain({ chainId })
-
+  const prices = await getTokenPrices({ chainId })
   const { vaults } = await sdk.SteerVaults()
 
   const poolIds = vaults

@@ -8,6 +8,12 @@ import {
 } from '@sushiswap/bentobox-sdk'
 import { Prisma, PrismaClient, Protocol, Token } from '@sushiswap/database'
 import { SWAP_ENABLED_NETWORKS } from '@sushiswap/graph-config'
+import { Address, fetchBlockNumber, readContracts } from '@wagmi/core'
+import { isAddress } from 'ethers/lib/utils.js'
+import { performance } from 'perf_hooks'
+import { totalsAbi } from 'sushi/abi'
+import { ChainId } from 'sushi/chain'
+import { USDC_ADDRESS } from 'sushi/currency'
 import {
   CLRPool,
   ConstantProductRPool,
@@ -17,15 +23,9 @@ import {
   StableSwapRPool,
   calcTokenPrices,
   toShareBI,
-} from '@sushiswap/tines'
-import { TICK_SPACINGS } from '@sushiswap/v3-sdk'
-import { Address, fetchBlockNumber, readContracts } from '@wagmi/core'
-import { isAddress } from 'ethers/lib/utils.js'
-import { performance } from 'perf_hooks'
-import { totalsAbi } from 'sushi/abi'
-import { ChainId } from 'sushi/chain'
-import { USDC_ADDRESS } from 'sushi/currency'
+} from 'sushi/tines'
 
+import { TICK_SPACINGS } from 'sushi/config'
 import {
   getConcentratedLiquidityPoolReserves,
   getConstantProductPoolReserves,
@@ -47,8 +47,8 @@ export async function prices() {
         chainId === ChainId.OPTIMISM
           ? '0x7f5c764cbc14f9669b88837ca1490cca17c31607'
           : chainId === ChainId.ZETACHAIN
-          ? '0x7c8dDa80bbBE1254a7aACf3219EBe1481c6E01d7' // USDT.ETH
-          : USDC_ADDRESS[chainId as keyof typeof USDC_ADDRESS]
+            ? '0x7c8dDa80bbBE1254a7aACf3219EBe1481c6E01d7' // USDT.ETH
+            : USDC_ADDRESS[chainId as keyof typeof USDC_ADDRESS]
       if (!isAddress(base) || !base) {
         console.log(
           `Base token (${base}) is not a valid address, given the chainId: ${chainId}. SKIPPING`,
@@ -156,7 +156,7 @@ async function getPoolsByPagination(
   chainId: ChainId,
   take: number,
   skip?: number,
-  cursor?: Prisma.PoolWhereUniqueInput,
+  cursor?: Prisma.SushiPoolWhereUniqueInput,
 ): Promise<Pool[]> {
   return client.sushiPool.findMany({
     take,
