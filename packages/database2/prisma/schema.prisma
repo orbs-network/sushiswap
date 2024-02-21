@@ -10,432 +10,437 @@ datasource db {
 }
 
 model Token {
-  entityId                 String    @id @db.VarChar(255)
-  entityType               String?   @db.VarChar(255)
-  entityUpdatedAt          BigInt?
-  chainId                  Int?
-  address                  String?   @db.VarChar(255)
-  decimals                 Int?
-  isWhitelisted            Boolean?
-  liquidityTimestamp       BigInt?
-  name                     String?   @db.VarChar(255)
-  symbol                   String?   @db.VarChar(255)
-  v2FeeUSD                 Float?
-  v2Pools                  Int?
-  v2PrevTxCount1d          Int?
-  v2PrevTxCount1h          Int?
-  v2PrevTxCount1m          Int?
-  v2PrevTxCount1w          Int?
-  v2PrevTxCountTimestamp1d BigInt?
-  v2PrevTxCountTimestamp1h BigInt?
-  v2PrevTxCountTimestamp1m BigInt?
-  v2PrevTxCountTimestamp1w BigInt?
-  v2StatsTimestamp         BigInt?
-  v2TrackedLiquidity       String?   @db.VarChar(255)
-  v2TrackedLiquidityUSD    Float?
-  v2TrackedVolume          String?   @db.VarChar(255)
-  v2TrackedVolumeUSD       Float?
-  v2TxCount                Int?
-  v2TxCount1d              Int?
-  v2TxCount1h              Int?
-  v2TxCount1m              Int?
-  v2TxCount1w              Int?
-  v2TxCountChange1d        Int?
-  v2TxCountChange1h        Int?
-  v2TxCountChange1m        Int?
-  v2TxCountChange1w        Int?
-  v2TxCountChangePercent1d Float?
-  v2TxCountChangePercent1h Float?
-  v2TxCountChangePercent1m Float?
-  v2TxCountChangePercent1w Float?
-  v2UntrackedLiquidity     String?   @db.VarChar(255)
-  v2UntrackedLiquidityUSD  Float?
-  v2UntrackedVolume        String?   @db.VarChar(255)
-  v2UntrackedVolumeUSD     Float?
-  v3FeeUSD                 Float?
-  v3Pools                  Int?
-  v3StatsTimestamp         BigInt?
-  v3TrackedLiquidity       String?   @db.VarChar(255)
-  v3TrackedLiquidityUSD    Float?
-  v3TrackedVolume          String?   @db.VarChar(255)
-  v3TrackedVolumeUSD       Float?
-  v3TxCount                Int?
-  v3UntrackedLiquidity     String?   @db.VarChar(255)
-  v3UntrackedLiquidityUSD  Float?
-  v3UntrackedVolume        String?   @db.VarChar(255)
-  v3UntrackedVolumeUSD     Float?
-  whitelistedAt            BigInt?
-  lastModifiedAt           DateTime? @default(now()) @db.Timestamp(0)
-  pools0                   Pool[]    @relation("token0")
-  pools1                   Pool[]    @relation("token1")
+  id                      String   @id @db.VarChar(255)
+  entityUpdatedAt         BigInt
+  chainId                 BigInt
+  address                 String   @db.VarChar(255)
+  name                    String   @db.VarChar(255)
+  symbol                  String   @db.VarChar(255)
+  decimals                Int
+  isWhitelisted           Boolean  @default(false)
+  liquidityTimestamp      BigInt   @default(0)
+  v2FeeUSD                Float    @default(0)
+  v2Pools                 Int      @default(0)
+  v2StatsTimestamp        BigInt   @default(0)
+  v2TrackedLiquidity      String   @default("0") @db.VarChar(255)
+  v2TrackedLiquidityUSD   Float    @default(0)
+  v2TrackedVolume         String   @default("0") @db.VarChar(255)
+  v2TrackedVolumeUSD      Float    @default(0)
+  v2TxCount               Int      @default(0)
+  v2UntrackedLiquidity    String   @default("0") @db.VarChar(255)
+  v2UntrackedLiquidityUSD Float    @default(0)
+  v2UntrackedVolume       String   @default("0") @db.VarChar(255)
+  v2UntrackedVolumeUSD    Float    @default(0)
+  v3FeeUSD                Float    @default(0)
+  v3Pools                 Int      @default(0)
+  v3StatsTimestamp        BigInt   @default(0)
+  v3TrackedLiquidity      String   @default("0") @db.VarChar(255)
+  v3TrackedLiquidityUSD   Float    @default(0)
+  v3TrackedVolume         String   @default("0") @db.VarChar(255)
+  v3TrackedVolumeUSD      Float    @default(0)
+  v3TxCount               Int      @default(0)
+  v3UntrackedLiquidity    String   @default("0") @db.VarChar(255)
+  v3UntrackedLiquidityUSD Float    @default(0)
+  v3UntrackedVolume       String   @default("0") @db.VarChar(255)
+  v3UntrackedVolumeUSD    Float    @default(0)
+  whitelistedAt           BigInt   @default(0)
+  lastModifiedAt          DateTime @default(now()) @db.Timestamp(0)
+  pools0                  Pool[]   @relation("token0")
+  pools1                  Pool[]   @relation("token1")
 
-  @@index([address], map: "idx_address")
-  @@index([chainId], map: "idx_chainId")
-  @@index([chainId, liquidityTimestamp], map: "idx_chainId_liquidityTimestamp")
-  @@index([liquidityTimestamp], map: "idx_liquidityTimestamp")
+  @@unique([chainId, address])
+  @@index([address, chainId])
+  @@index([address])
+  @@index([chainId])
+  @@index([chainId, isWhitelisted])
+  @@index([chainId, isWhitelisted, symbol])
+  @@index([chainId, liquidityTimestamp])
+  @@index([id])
+  @@index([liquidityTimestamp])
+  @@index([symbol])
 }
 
 model Pool {
-  entityId                    String    @id @db.VarChar(255)
-  chainId                     Int?
-  horizon                     String?   @db.VarChar(255)
-  blockNumber                 BigInt?
-  blockTimestamp              BigInt?
-  txHash                      String?   @db.VarChar(255)
-  entityType                  String?   @db.VarChar(255)
-  entityUpdatedAt             BigInt?
-  forkIndex                   BigInt?
-  transactionIndex            BigInt?
-  logIndex                    BigInt?
-  localIndex                  BigInt?
-  name                        String?   @map("_name") @db.VarChar(255)
-  address                     String?   @db.VarChar(255)
-  feeApr1d                    Float?
-  feeApr1h                    Float?
-  feeApr1m                    Float?
-  feeApr1w                    Float?
-  feeAprChange1d              Float?
-  feeAprChange1h              Float?
-  feeAprChange1m              Float?
-  feeAprChange1w              Float?
-  feeAprChangePercent1d       Float?
-  feeAprChangePercent1h       Float?
-  feeAprChangePercent1m       Float?
-  feeAprChangePercent1w       Float?
-  feeGrowthGlobal0X128        String?   @db.VarChar(255)
-  feeGrowthGlobal1X128        String?   @db.VarChar(255)
-  feeUSD1d                    Float?
-  feeUSD1h                    Float?
-  feeUSD1m                    Float?
-  feeUSD1w                    Float?
-  feeUSDChange1d              Float?
-  feeUSDChange1h              Float?
-  feeUSDChange1m              Float?
-  feeUSDChange1w              Float?
-  feeUSDChangePercent1d       Float?
-  feeUSDChangePercent1h       Float?
-  feeUSDChangePercent1m       Float?
-  feeUSDChangePercent1w       Float?
-  isWhitelisted               Boolean?
-  liquidity                   String?   @db.VarChar(255)
-  liquidityUSD                Float?
-  liquidityUSDChange1d        Float?
-  liquidityUSDChange1h        Float?
-  liquidityUSDChange1m        Float?
-  liquidityUSDChange1w        Float?
-  liquidityUSDChangePercent1d Float?
-  liquidityUSDChangePercent1h Float?
-  liquidityUSDChangePercent1m Float?
-  liquidityUSDChangePercent1w Float?
-  liquidityUSDTimestamp       BigInt?
-  prevFeeApr1d                Float?
-  prevFeeApr1h                Float?
-  prevFeeApr1m                Float?
-  prevFeeApr1w                Float?
-  prevLiquidityUSD1d          Float?
-  prevLiquidityUSD1h          Float?
-  prevLiquidityUSD1m          Float?
-  prevLiquidityUSD1w          Float?
-  prevLiquidityUSDTimestamp1d BigInt?
-  prevLiquidityUSDTimestamp1h BigInt?
-  prevLiquidityUSDTimestamp1m BigInt?
-  prevLiquidityUSDTimestamp1w BigInt?
-  prevVolumeMaxBlock1d        BigInt?
-  prevVolumeMaxBlock1h        BigInt?
-  prevVolumeMaxBlock1m        BigInt?
-  prevVolumeMaxBlock1w        BigInt?
-  prevVolumeMinBlock1d        BigInt?
-  prevVolumeMinBlock1h        BigInt?
-  prevVolumeMinBlock1m        BigInt?
-  prevVolumeMinBlock1w        BigInt?
-  prevVolumeSwaps1d           BigInt?
-  prevVolumeSwaps1h           BigInt?
-  prevVolumeSwaps1m           BigInt?
-  prevVolumeSwaps1w           BigInt?
-  prevVolumeUSD1d             Float?
-  prevVolumeUSD1h             Float?
-  prevVolumeUSD1m             Float?
-  prevVolumeUSD1w             Float?
-  prevVolumeUSDTimestamp1d    BigInt?
-  prevVolumeUSDTimestamp1h    BigInt?
-  prevVolumeUSDTimestamp1m    BigInt?
-  prevVolumeUSDTimestamp1w    BigInt?
-  protocol                    String?   @db.VarChar(255)
-  reserve0                    Float?
-  reserve0USD                 Float?
-  reserve0BI                  String?   @db.VarChar(255)
-  reserve1                    Float?
-  reserve1BI                  String?   @db.VarChar(255)
-  reserve1USD                 Float?
-  sqrtPriceX96                String?   @db.VarChar(255)
-  swapFee                     Float?
-  tick                        BigInt?
-  token0Address               String?   @db.VarChar(255)
-  token0Id                    String?   @db.VarChar(255)
-  token0Price                 Float?
-  token1Address               String?   @db.VarChar(255)
-  token1Id                    String?   @db.VarChar(255)
-  token1Price                 Float?
-  volumeMaxBlock1d            BigInt?
-  volumeMaxBlock1h            BigInt?
-  volumeMaxBlock1m            BigInt?
-  volumeMaxBlock1w            BigInt?
-  volumeMinBlock1d            BigInt?
-  volumeMinBlock1h            BigInt?
-  volumeMinBlock1m            BigInt?
-  volumeMinBlock1w            BigInt?
-  volumeSwaps1d               BigInt?
-  volumeSwaps1h               BigInt?
-  volumeSwaps1m               BigInt?
-  volumeSwaps1w               BigInt?
-  volumeUSD1d                 Float?
-  volumeUSD1h                 Float?
-  volumeUSD1m                 Float?
-  volumeUSD1w                 Float?
-  volumeUSDChange1d           Float?
-  volumeUSDChange1h           Float?
-  volumeUSDChange1m           Float?
-  volumeUSDChange1w           Float?
-  volumeUSDChangePercent1d    Float?
-  volumeUSDChangePercent1h    Float?
-  volumeUSDChangePercent1m    Float?
-  volumeUSDChangePercent1w    Float?
-  volumeUSDTimestamp1d        BigInt?
-  volumeUSDTimestamp1h        BigInt?
-  volumeUSDTimestamp1m        BigInt?
-  volumeUSDTimestamp1w        BigInt?
-  lastModifiedAt              DateTime? @default(now()) @db.Timestamp(0)
-  token0                      Token?     @relation("token0", fields: [token0Id], references: [entityId])
-  token1                      Token?     @relation("token1", fields: [token1Id], references: [entityId])
+  id                          String   @id @db.VarChar(255)
+  chainId                     BigInt
+  entityUpdatedAt             BigInt   @default(0)
+  horizon                     String?  @db.VarChar(255)
+  blockTimestamp              BigInt   @default(0)
+  txHash                      String?  @db.VarChar(255)
+  feeGrowthGlobal0X128        String   @default("0") @db.VarChar(255)
+  feeGrowthGlobal1X128        String   @default("0") @db.VarChar(255)
+  sqrtPriceX96                String   @default("0") @db.VarChar(255)
+  tick                        BigInt   @default(0)
+  name                        String   @map("_name") @db.VarChar(255)
+  address                     String   @db.VarChar(255)
+  feeApr1d                    Float    @default(0)
+  feeApr1h                    Float    @default(0)
+  feeApr1m                    Float    @default(0)
+  feeApr1w                    Float    @default(0)
+  feeAprChange1d              Float    @default(0)
+  feeAprChange1h              Float    @default(0)
+  feeAprChange1m              Float    @default(0)
+  feeAprChange1w              Float    @default(0)
+  feeAprChangePercent1d       Float    @default(0)
+  feeAprChangePercent1h       Float    @default(0)
+  feeAprChangePercent1m       Float    @default(0)
+  feeAprChangePercent1w       Float    @default(0)
+  totalApr1h                  Float    @default(0)
+  totalApr1d                  Float    @default(0)
+  totalApr1w                  Float    @default(0)
+  totalApr1m                  Float    @default(0)
+  feeUSD1d                    Float    @default(0)
+  feeUSD1h                    Float    @default(0)
+  feeUSD1m                    Float    @default(0)
+  feeUSD1w                    Float    @default(0)
+  feeUSDChange1d              Float    @default(0)
+  feeUSDChange1h              Float    @default(0)
+  feeUSDChange1m              Float    @default(0)
+  feeUSDChange1w              Float    @default(0)
+  feeUSDChangePercent1d       Float    @default(0)
+  feeUSDChangePercent1h       Float    @default(0)
+  feeUSDChangePercent1m       Float    @default(0)
+  feeUSDChangePercent1w       Float    @default(0)
+  isWhitelisted               Boolean  @default(false)
+  liquidity                   String   @db.VarChar(255)
+  liquidityUSD                Float    @default(0)
+  liquidityUSDChange1d        Float    @default(0)
+  liquidityUSDChange1h        Float    @default(0)
+  liquidityUSDChange1m        Float    @default(0)
+  liquidityUSDChange1w        Float    @default(0)
+  liquidityUSDChangePercent1d Float    @default(0)
+  liquidityUSDChangePercent1h Float    @default(0)
+  liquidityUSDChangePercent1m Float    @default(0)
+  liquidityUSDChangePercent1w Float    @default(0)
+  liquidityUSDTimestamp       BigInt   @default(0)
+  prevFeeApr1d                Float    @default(0)
+  prevFeeApr1h                Float    @default(0)
+  prevFeeApr1m                Float    @default(0)
+  prevFeeApr1w                Float    @default(0)
+  prevLiquidityUSD1d          Float    @default(0)
+  prevLiquidityUSD1h          Float    @default(0)
+  prevLiquidityUSD1m          Float    @default(0)
+  prevLiquidityUSD1w          Float    @default(0)
+  prevLiquidityUSDTimestamp1d BigInt   @default(0)
+  prevLiquidityUSDTimestamp1h BigInt   @default(0)
+  prevLiquidityUSDTimestamp1m BigInt   @default(0)
+  prevLiquidityUSDTimestamp1w BigInt   @default(0)
+  prevVolumeMaxBlock1d        BigInt   @default(0)
+  prevVolumeMaxBlock1h        BigInt   @default(0)
+  prevVolumeMaxBlock1m        BigInt   @default(0)
+  prevVolumeMaxBlock1w        BigInt   @default(0)
+  prevVolumeMinBlock1d        BigInt   @default(0)
+  prevVolumeMinBlock1h        BigInt   @default(0)
+  prevVolumeMinBlock1m        BigInt   @default(0)
+  prevVolumeMinBlock1w        BigInt   @default(0)
+  prevVolumeSwaps1d           BigInt   @default(0)
+  prevVolumeSwaps1h           BigInt   @default(0)
+  prevVolumeSwaps1m           BigInt   @default(0)
+  prevVolumeSwaps1w           BigInt   @default(0)
+  prevVolumeUSD1d             Float    @default(0)
+  prevVolumeUSD1h             Float    @default(0)
+  prevVolumeUSD1m             Float    @default(0)
+  prevVolumeUSD1w             Float    @default(0)
+  prevVolumeUSDTimestamp1d    BigInt   @default(0)
+  prevVolumeUSDTimestamp1h    BigInt   @default(0)
+  prevVolumeUSDTimestamp1m    BigInt   @default(0)
+  prevVolumeUSDTimestamp1w    BigInt   @default(0)
+  protocol                    String   @db.VarChar(255)
+  reserve0                    Float    @default(0)
+  reserve0USD                 Float    @default(0)
+  reserve0BI                  String   @default("0") @db.VarChar(255)
+  reserve1                    Float    @default(0)
+  reserve1USD                 Float    @default(0)
+  reserve1BI                  String   @default("0") @db.VarChar(255)
+  swapFee                     Float
+  token0Address               String   @db.VarChar(255)
+  token0Id                    String   @db.VarChar(255)
+  token0Price                 Float    @default(0)
+  token1Address               String   @db.VarChar(255)
+  token1Id                    String   @db.VarChar(255)
+  token1Price                 Float    @default(0)
+  volumeMaxBlock1d            BigInt   @default(0)
+  volumeMaxBlock1h            BigInt   @default(0)
+  volumeMaxBlock1m            BigInt   @default(0)
+  volumeMaxBlock1w            BigInt   @default(0)
+  volumeMinBlock1d            BigInt   @default(0)
+  volumeMinBlock1h            BigInt   @default(0)
+  volumeMinBlock1m            BigInt   @default(0)
+  volumeMinBlock1w            BigInt   @default(0)
+  volumeSwaps1d               BigInt   @default(0)
+  volumeSwaps1h               BigInt   @default(0)
+  volumeSwaps1m               BigInt   @default(0)
+  volumeSwaps1w               BigInt   @default(0)
+  volumeUSD                   Float    @default(0)
+  volumeUSD1d                 Float    @default(0)
+  volumeUSD1h                 Float    @default(0)
+  volumeUSD1m                 Float    @default(0)
+  volumeUSD1w                 Float    @default(0)
+  volumeUSDChange1d           Float    @default(0)
+  volumeUSDChange1h           Float    @default(0)
+  volumeUSDChange1m           Float    @default(0)
+  volumeUSDChange1w           Float    @default(0)
+  volumeUSDChangePercent1d    Float    @default(0)
+  volumeUSDChangePercent1h    Float    @default(0)
+  volumeUSDChangePercent1m    Float    @default(0)
+  volumeUSDChangePercent1w    Float    @default(0)
+  volumeUSDTimestamp1d        BigInt   @default(0)
+  volumeUSDTimestamp1h        BigInt   @default(0)
+  volumeUSDTimestamp1m        BigInt   @default(0)
+  volumeUSDTimestamp1w        BigInt   @default(0)
+  lastModifiedAt              DateTime @default(now()) @db.Timestamp(0)
+  createdAtTimestamp          BigInt
+  createdAtBlockNumber        BigInt
+  token0                      Token?   @relation("token0", fields: [token0Id], references: [id])
+  token1                      Token?   @relation("token1", fields: [token1Id], references: [id])
 
-  @@index([address], map: "idx_address")
-  @@index([blockNumber], map: "idx_blockNumber")
-  @@index([blockTimestamp], map: "idx_blockTimestamp")
-  @@index([token0Id], map: "idx_token0Id")
-  @@index([token1Id], map: "idx_token1Id")
+  @@index([address])
+  @@index([chainId])
+  @@index([chainId, protocol])
+  @@index([feeApr1d, chainId])
+  @@index([id])
+  @@index([liquidityUSD, chainId])
+  @@index([token0Id])
+  @@index([token1Id])
+  @@index([totalApr1d, chainId])
+  @@index([totalApr1m, chainId])
+  @@index([totalApr1w, chainId])
 }
 
 model LiquidityPosition {
-  entityId              String    @id @db.VarChar(255)
-  entityUpdatedAt       BigInt?
-  chainId               Int?
-  amountDepositedUSD    Float?
-  amountWithdrawnUSD    Float?
-  balance               String?   @db.VarChar(255)
-  balanceTimestamp      BigInt?
-  depositsTimestamp     BigInt?
-  poolId                String?   @db.VarChar(255)
-  protocol              String?   @db.VarChar(255)
-  token0AmountDeposited String?   @db.VarChar(255)
-  token0AmountWithdrawn String?   @db.VarChar(255)
-  token1AmountDeposited String?   @db.VarChar(255)
-  token1AmountWithdrawn String?   @db.VarChar(255)
-  user                  String?   @db.VarChar(255)
-  withdrawalsTimestamp  BigInt?
-  lastModifiedAt        DateTime? @default(now()) @db.Timestamp(0)
+  entityUpdatedAt       BigInt
+  chainId               BigInt
+  amountDepositedUSD    Float
+  amountWithdrawnUSD    Float
+  balance               String   @db.VarChar(255)
+  balanceTimestamp      BigInt
+  depositsTimestamp     BigInt
+  poolId                String   @db.VarChar(255)
+  protocol              String   @db.VarChar(255)
+  token0AmountDeposited String   @db.VarChar(255)
+  token0AmountWithdrawn String   @db.VarChar(255)
+  token1AmountDeposited String   @db.VarChar(255)
+  token1AmountWithdrawn String   @db.VarChar(255)
+  user                  String   @db.VarChar(255)
+  withdrawalsTimestamp  BigInt
+  lastModifiedAt        DateTime @default(now()) @db.Timestamp(0)
+  id                    String   @id @db.VarChar(255)
 
-  @@index([balanceTimestamp], map: "idx_balanceTimestamp")
-  @@index([chainId], map: "idx_chainId")
-  @@index([chainId, balanceTimestamp], map: "idx_chainId_balanceTimestamp")
-  @@index([chainId, depositsTimestamp], map: "idx_chainId_depositsTimestamp")
-  @@index([depositsTimestamp], map: "idx_depositsTimestamp")
-  @@index([poolId], map: "idx_poolId")
-  @@index([poolId, balanceTimestamp], map: "idx_poolId_balanceTimestamp")
-  @@index([poolId, depositsTimestamp], map: "idx_poolId_depositsTimestamp")
+  @@index([balanceTimestamp])
+  @@index([chainId, balanceTimestamp])
+  @@index([chainId, depositsTimestamp])
+  @@index([chainId])
+  @@index([depositsTimestamp])
+  @@index([poolId, balanceTimestamp])
+  @@index([poolId, depositsTimestamp])
+  @@index([poolId])
 }
 
 model PoolStat {
-  entityId            String  @id @db.VarChar(255)
-  entityUpdatedAt     BigInt?
-  chainId             Int?
-  bucketTimestamp     BigInt?
-  granularity         String? @db.VarChar(255)
-  liquidityUSD        Float?
-  liquidityUSDChange  Float?
-  poolId              String? @db.VarChar(255)
-  prevBucketTimestamp BigInt?
+  id                  String  @id @db.VarChar(255)
+  entityUpdatedAt     BigInt
+  chainId             BigInt
+  bucketTimestamp     BigInt  @default(0)
+  granularity         String  @db.VarChar(255)
+  liquidityUSD        Float   @default(0)
+  liquidityUSDChange  Float   @default(0)
+  poolId              String  @db.VarChar(255)
+  prevBucketTimestamp BigInt  @default(0)
   prevLiquidityUSD    Float?
   prevTimeBucket      String? @db.VarChar(255)
-  protocol            String? @db.VarChar(255)
-  reserve0            Float?
-  reserve0BI          String? @db.VarChar(255)
-  reserve1            Float?
-  reserve1BI          String? @db.VarChar(255)
-  timeBucket          String? @db.VarChar(255)
-  txCount             BigInt?
-  volumeToken0        String? @db.VarChar(255)
-  volumeToken0USD     Float?
-  volumeToken1        String? @db.VarChar(255)
-  volumeToken1USD     Float?
-  volumeUSD           Float?
+  protocol            String  @db.VarChar(255)
+  reserve0            Float   @default(0)
+  reserve0BI          String  @default("0") @db.VarChar(255)
+  reserve1            Float   @default(0)
+  reserve1BI          String  @default("0") @db.VarChar(255)
+  timeBucket          String  @db.VarChar(255)
+  txCount             BigInt  @default(0)
+  volumeToken0        String  @default("0") @db.VarChar(255)
+  volumeToken0USD     Float   @default(0)
+  volumeToken1        String  @default("0") @db.VarChar(255)
+  volumeToken1USD     Float   @default(0)
+  volumeUSD           Float   @default(0)
 
-  @@index([bucketTimestamp], map: "idx_blockNumber")
-  @@index([bucketTimestamp], map: "idx_bucketTimestamp")
-  @@index([chainId], map: "idx_chainId")
-  @@index([chainId, bucketTimestamp], map: "idx_chainId_blockNumber")
-  @@index([chainId, bucketTimestamp], map: "idx_chainId_bucketTimestamp")
-  @@index([chainId, granularity], map: "idx_chainId_granularity")
-  @@index([granularity], map: "idx_granularity")
-  @@index([poolId], map: "idx_poolId")
-  @@index([poolId, bucketTimestamp], map: "idx_poolId_blockNumber")
-  @@index([poolId, bucketTimestamp], map: "idx_poolId_bucketTimestamp")
-  @@index([poolId, granularity], map: "idx_poolId_granularity")
-  @@index([timeBucket], map: "idx_timeBucket")
+  @@index([bucketTimestamp])
+  @@index([chainId, bucketTimestamp])
+  @@index([chainId, granularity])
+  @@index([chainId])
+  @@index([granularity])
+  @@index([poolId, bucketTimestamp])
+  @@index([poolId, granularity, bucketTimestamp])
+  @@index([poolId, granularity])
+  @@index([poolId])
+  @@index([timeBucket])
 }
 
 model Swap {
-  entityId         String  @id @db.VarChar(255)
-  entityUpdatedAt  BigInt?
-  chainId          Int?
-  horizon          String? @db.VarChar(255)
-  blockNumber      BigInt?
-  blockTimestamp   BigInt?
-  forkIndex        BigInt?
-  transactionIndex BigInt?
-  logIndex         BigInt?
-  localIndex       BigInt?
-  txHash           String? @db.VarChar(255)
-  address          String? @db.VarChar(255)
-  amount0          String? @db.VarChar(255)
+  id               String  @id @db.VarChar(255)
+  chainId          BigInt
+  entityUpdatedAt  BigInt
+  horizon          String  @db.VarChar(255)
+  blockNumber      BigInt
+  blockTimestamp   BigInt
+  forkIndex        BigInt
+  transactionIndex BigInt
+  logIndex         BigInt
+  localIndex       BigInt
+  txHash           String  @db.VarChar(255)
+  address          String  @db.VarChar(255)
+  amount0          String  @db.VarChar(255)
   amount0In        String? @db.VarChar(255)
   amount0Out       String? @db.VarChar(255)
-  amount0USD       Float?
-  amount1          String? @db.VarChar(255)
+  amount0USD       Float
+  amount1          String  @db.VarChar(255)
   amount1In        String? @db.VarChar(255)
   amount1Out       String? @db.VarChar(255)
-  amount1USD       Float?
-  amountUSD        Float?
-  dayBucket        String? @db.VarChar(255)
-  hourBucket       String? @db.VarChar(255)
-  monthBucket      String? @db.VarChar(255)
-  poolId           String? @db.VarChar(255)
-  protocol         String? @db.VarChar(255)
-  sender           String? @db.VarChar(255)
-  token0Id         String? @db.VarChar(255)
-  token1Id         String? @db.VarChar(255)
-  weekBucket       String? @db.VarChar(255)
-  reserve0         Float?
-  reserve0BI       String? @db.VarChar(255)
-  reserve0USD      Float?
-  reserve1         Float?
-  reserve1BI       String? @db.VarChar(255)
-  reserve1USD      Float?
+  amount1USD       Float
+  amountUSD        Float
+  poolId           String  @db.VarChar(255)
+  protocol         String  @db.VarChar(255)
+  sender           String  @db.VarChar(255)
+  token0Id         String  @db.VarChar(255)
+  token1Id         String  @db.VarChar(255)
+  hourBucket       String  @db.VarChar(255)
+  dayBucket        String  @db.VarChar(255)
+  weekBucket       String  @db.VarChar(255)
+  monthBucket      String  @db.VarChar(255)
+  reserve0         Float
+  reserve0BI       String  @db.VarChar(255)
+  reserve0USD      Float
+  reserve1         Float
+  reserve1BI       String  @db.VarChar(255)
+  reserve1USD      Float
+  txTo             String? @db.VarChar(255)
+  txFrom           String? @db.VarChar(255)
   tick             String? @db.VarChar(255)
   liquidity        String? @db.VarChar(255)
   liquidityUSD     Float?
   sqrtPriceX96     String? @db.VarChar(255)
-  txTo             String? @db.VarChar(255)
-  txFrom           String? @db.VarChar(255)
+  recipient        String  @db.VarChar(255)
+  to               String  @db.VarChar(255)
 
-  @@index([address], map: "idx_address")
-  @@index([token0Id], map: "idx_token0Id")
-  @@index([token1Id], map: "idx_token1Id")
+  @@index([address])
+  @@index([token0Id])
+  @@index([token1Id])
 }
 
 model Sync {
-  entityId         String  @id @db.VarChar(255)
-  entityUpdatedAt  BigInt?
-  chainId          Int?
-  horizon          String? @db.VarChar(255)
-  blockNumber      BigInt?
-  blockTimestamp   BigInt?
-  forkIndex        Int?
-  transactionIndex Int?
-  logIndex         Int?
-  localIndex       Int?
-  txHash           String? @db.VarChar(255)
-  txTo             String? @db.VarChar(255)
-  txFrom           String? @db.VarChar(255)
-  address          String? @db.VarChar(255)
-  dayBucket        String? @db.VarChar(255)
-  hourBucket       String? @db.VarChar(255)
-  liquidityUSD     Float?
-  monthBucket      String? @db.VarChar(255)
-  poolId           String? @db.VarChar(255)
-  protocol         String? @db.VarChar(255)
-  reserve0         Float?
-  reserve0BI       String? @db.VarChar(255)
-  reserve0USD      Float?
-  reserve1         Float?
-  reserve1BI       String? @db.VarChar(255)
-  reserve1USD      Float?
-  token0Id         String? @db.VarChar(255)
-  token0Price      Float?
-  token1Id         String? @db.VarChar(255)
-  token1Price      Float?
-  weekBucket       String? @db.VarChar(255)
+  id               String @id @db.VarChar(255)
+  entityUpdatedAt  BigInt
+  chainId          BigInt
+  horizon          String @db.VarChar(255)
+  blockNumber      BigInt
+  blockTimestamp   BigInt
+  forkIndex        BigInt
+  transactionIndex BigInt
+  logIndex         BigInt
+  localIndex       BigInt
+  txHash           String @db.VarChar(255)
+  address          String @db.VarChar(255)
+  txTo             String @db.VarChar(255)
+  txFrom           String @db.VarChar(255)
+  dayBucket        String @db.VarChar(255)
+  hourBucket       String @db.VarChar(255)
+  liquidityUSD     Float
+  monthBucket      String @db.VarChar(255)
+  poolId           String @db.VarChar(255)
+  protocol         String @db.VarChar(255)
+  reserve0         Float
+  reserve0BI       String @db.VarChar(255)
+  reserve0USD      Float
+  reserve1         Float
+  reserve1BI       String @db.VarChar(255)
+  reserve1USD      Float
+  token0Id         String @db.VarChar(255)
+  token0Price      Float
+  token1Id         String @db.VarChar(255)
+  token1Price      Float
+  weekBucket       String @db.VarChar(255)
 
-  @@index([address], map: "idx_address")
-  @@index([blockNumber], map: "idx_blockNumber")
-  @@index([blockTimestamp], map: "idx_blockTimestamp")
-  @@index([chainId], map: "idx_chainId")
-  @@index([chainId, blockNumber], map: "idx_chainId_blockNumber")
-  @@index([chainId, blockTimestamp], map: "idx_chainId_blockTimestamp")
-  @@index([poolId], map: "idx_poolId")
-  @@index([poolId, blockNumber], map: "idx_poolId_blockNumber")
-  @@index([poolId, blockTimestamp], map: "idx_poolId_blockTimestamp")
-  @@index([token0Id], map: "idx_token0Id")
-  @@index([token1Id], map: "idx_token1Id")
+  @@index([address])
+  @@index([blockNumber])
+  @@index([blockTimestamp])
+  @@index([chainId, blockNumber])
+  @@index([chainId, blockTimestamp])
+  @@index([chainId])
+  @@index([poolId, blockNumber])
+  @@index([poolId, blockTimestamp])
+  @@index([poolId])
+  @@index([token0Id])
+  @@index([token1Id])
 }
 
 model TokenStat {
-  entityId                String    @id @db.VarChar(255)
-  entityUpdatedAt         BigInt?
-  granularity             String?   @db.VarChar(255)
-  timeBucket              String?   @db.VarChar(255)
-  timestamp               BigInt?
-  tokenId                 String?   @db.VarChar(255)
-  v2FeeUSD                Float?
-  v2LiquidityTimestamp    BigInt?
-  v2TrackedLiquidity      String?   @db.VarChar(255)
-  v2TrackedLiquidityUSD   Float?
-  v2TrackedVolume         String?   @db.VarChar(255)
-  v2TrackedVolumeUSD      Float?
-  v2TxCount               Int?
-  v2UntrackedLiquidity    String?   @db.VarChar(255)
-  v2UntrackedLiquidityUSD Float?
-  v2UntrackedVolume       String?   @db.VarChar(255)
-  v2UntrackedVolumeUSD    Float?
-  v2VolumeTimestamp       BigInt?
-  lastModifiedAt          DateTime? @default(now()) @db.Timestamp(0)
+  id                      String   @id @db.VarChar(255)
+  entityUpdatedAt         BigInt
+  granularity             String   @db.VarChar(255)
+  timeBucket              String   @db.VarChar(255)
+  timestamp               BigInt
+  tokenId                 String   @db.VarChar(255)
+  v2FeeUSD                Float    @default(0)
+  v2LiquidityTimestamp    BigInt   @default(0)
+  v2TrackedLiquidity      String   @default("0") @db.VarChar(255)
+  v2TrackedLiquidityUSD   Float    @default(0)
+  v2TrackedVolume         String   @default("0") @db.VarChar(255)
+  v2TrackedVolumeUSD      Float    @default(0)
+  v2TxCount               Int      @default(0)
+  v2UntrackedLiquidity    String   @default("0") @db.VarChar(255)
+  v2UntrackedLiquidityUSD Float    @default(0)
+  v2UntrackedVolume       String   @default("0") @db.VarChar(255)
+  v2UntrackedVolumeUSD    Float    @default(0)
+  v2VolumeTimestamp       BigInt   @default(0)
+  v3FeeUSD                Float    @default(0)
+  v3LiquidityTimestamp    BigInt   @default(0)
+  v3TrackedLiquidity      String   @default("0") @db.VarChar(255)
+  v3TrackedLiquidityUSD   Float    @default(0)
+  v3TrackedVolume         String   @default("0") @db.VarChar(255)
+  v3TrackedVolumeUSD      Float    @default(0)
+  v3TxCount               Int      @default(0)
+  v3UntrackedLiquidity    String   @default("0") @db.VarChar(255)
+  v3UntrackedLiquidityUSD Float    @default(0)
+  v3UntrackedVolume       String   @default("0") @db.VarChar(255)
+  v3UntrackedVolumeUSD    Float    @default(0)
+  v3VolumeTimestamp       BigInt   @default(0)
+  lastModifiedAt          DateTime @default(now()) @db.Timestamp(0)
 
-  @@index([timestamp], map: "idx_timestamp")
-  @@index([tokenId], map: "idx_tokenId")
-  @@index([tokenId, timestamp], map: "idx_tokenId_timestamp")
+  @@index([timestamp])
+  @@index([tokenId, granularity, timestamp])
+  @@index([tokenId])
+  @@index([tokenId, timestamp])
 }
 
 model Transfer {
-  entityId         String  @id @db.VarChar(255)
-  entityUpdatedAt  BigInt?
-  chainId          Int?
-  horizon          String? @db.VarChar(255)
-  blockNumber      BigInt?
-  blockTimestamp   BigInt?
-  forkIndex        BigInt?
-  transactionIndex BigInt?
-  logIndex         BigInt?
-  localIndex       BigInt?
-  txHash           String? @db.VarChar(255)
-  address          String? @db.VarChar(255)
-  amountIn         String? @db.VarChar(255)
-  amountOut        String? @db.VarChar(255)
-  dayBucket        String? @db.VarChar(255)
-  hourBucket       String? @db.VarChar(255)
-  monthBucket      String? @db.VarChar(255)
-  poolId           String? @db.VarChar(255)
-  protocol         String? @db.VarChar(255)
-  to               String? @db.VarChar(255)
-  user             String? @db.VarChar(255)
-  value            String? @db.VarChar(255)
-  weekBucket       String? @db.VarChar(255)
+  id               String @id @db.VarChar(255)
+  entityUpdatedAt  BigInt
+  chainId          BigInt
+  horizon          String @db.VarChar(255)
+  blockNumber      BigInt
+  blockTimestamp   BigInt
+  forkIndex        BigInt
+  transactionIndex BigInt
+  logIndex         BigInt
+  localIndex       BigInt
+  txHash           String @db.VarChar(255)
+  address          String @db.VarChar(255)
+  amountIn         String @db.VarChar(255)
+  amountOut        String @db.VarChar(255)
+  dayBucket        String @db.VarChar(255)
+  hourBucket       String @db.VarChar(255)
+  monthBucket      String @db.VarChar(255)
+  poolId           String @db.VarChar(255)
+  protocol         String @db.VarChar(255)
+  to               String @db.VarChar(255)
+  user             String @db.VarChar(255)
+  value            String @db.VarChar(255)
+  weekBucket       String @db.VarChar(255)
 
-  @@index([address], map: "idx_address")
-  @@index([blockNumber], map: "idx_blockNumber")
-  @@index([blockTimestamp], map: "idx_blockTimestamp")
-  @@index([chainId], map: "idx_chainId")
-  @@index([chainId, blockNumber], map: "idx_chainId_blockNumber")
-  @@index([chainId, blockTimestamp], map: "idx_chainId_blockTimestamp")
-  @@index([poolId], map: "idx_poolId")
-  @@index([poolId, blockNumber], map: "idx_poolId_blockNumber")
-  @@index([poolId, blockTimestamp], map: "idx_poolId_blockTimestamp")
+  @@index([address])
+  @@index([blockNumber])
+  @@index([blockTimestamp])
+  @@index([chainId, blockNumber])
+  @@index([chainId, blockTimestamp])
+  @@index([chainId])
+  @@index([poolId, blockNumber])
+  @@index([poolId, blockTimestamp])
+  @@index([poolId])
 }
