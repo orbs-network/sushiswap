@@ -11,3 +11,10 @@ export async function createClient(options = defaultPrismaClientOptions) {
 
   return new PrismaClient(options).$extends(withAccelerate())
 }
+
+export async function createDirectClient(options = defaultPrismaClientOptions) {
+  await import('dotenv/config')
+  if (!process.env['DATABASE_URL']) throw new Error('DATABASE_URL is required')
+
+  return new PrismaClient(options)
+}

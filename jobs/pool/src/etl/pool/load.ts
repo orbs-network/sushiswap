@@ -1,4 +1,4 @@
-import { Prisma, createClient } from '@sushiswap/database'
+import { Prisma, createDirectClient } from '@sushiswap/database'
 import { performance } from 'perf_hooks'
 
 function clipDecimal(value: any) {
@@ -10,7 +10,7 @@ function clipDecimal(value: any) {
 
 export async function upsertPools(pools: Prisma.SushiPoolCreateManyInput[]) {
   if (pools.length === 0) return
-  const client = await createClient()
+  const client = await createDirectClient()
   const poolsWithIncentives = await client.sushiPool.findMany({
     where: {
       id: {
@@ -539,7 +539,7 @@ export async function upsertPools(pools: Prisma.SushiPoolCreateManyInput[]) {
 }
 
 export async function updatePoolsWithIncentivesTotalApr() {
-  const client = await createClient()
+  const client = await createDirectClient()
   const startTime = performance.now()
 
   const updatedPoolsCount = await client.$executeRaw`
@@ -570,7 +570,7 @@ export async function updatePoolsWithIncentivesTotalApr() {
 }
 
 export async function updatePoolsWithSteerVaults() {
-  const client = await createClient()
+  const client = await createDirectClient()
   const startTime = performance.now()
 
   const poolsUpdatedCount = await client.$executeRaw`

@@ -5,7 +5,7 @@ import {
   ChefType,
   Prisma,
   RewarderType,
-  createClient,
+  createDirectClient,
 } from '@sushiswap/database'
 import { Address, fetchToken } from '@wagmi/core'
 import { fetch } from '@whatwg-node/fetch'
@@ -95,7 +95,6 @@ type PriceResponse = {
   [token: string]: number
 }
 
-
 type PriceMap = {
   [chainId: number]: PriceResponse
 }
@@ -143,13 +142,13 @@ export async function execute() {
         ),
       )
     ).reduce((acc: PriceMap, prices: PriceResponse, index: number) => {
-      const chainId = MERKL_SUPPORTED_NETWORKS[index];
+      const chainId = MERKL_SUPPORTED_NETWORKS[index]
       acc[chainId] = Object.keys(prices).reduce((result, key) => {
-        result[key.toLowerCase()] = prices[key];
-        return result;
-      }, {} as PriceResponse);
-      return acc;
-    }, {});
+        result[key.toLowerCase()] = prices[key]
+        return result
+      }, {} as PriceResponse)
+      return acc
+    }, {})
 
     // TRANSFORM
     const { incentivesToCreate, incentivesToUpdate, tokens } = await transform(
@@ -174,9 +173,9 @@ export async function execute() {
     )
   } catch (e) {
     console.error(e)
-    await (await createClient()).$disconnect()
+    await (await createDirectClient()).$disconnect()
   } finally {
-    await (await createClient()).$disconnect()
+    await (await createDirectClient()).$disconnect()
   }
 }
 

@@ -1,7 +1,7 @@
-import { Prisma, createClient } from '@sushiswap/database'
+import { Prisma, createDirectClient } from '@sushiswap/database'
 
 export async function upsertVaults(vaults: Prisma.SteerVaultCreateManyInput[]) {
-  const client = await createClient()
+  const client = await createDirectClient()
 
   const vaultTokens = vaults.flatMap((vault) => [
     vault.token0Id,
@@ -386,7 +386,7 @@ export async function upsertVaults(vaults: Prisma.SteerVaultCreateManyInput[]) {
 }
 
 export async function deprecateVaults(vaultIds: string[]) {
-  const client = await createClient()
+  const client = await createDirectClient()
 
   const deprecated = await client.steerVault.updateMany({
     data: {

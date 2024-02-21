@@ -1,7 +1,7 @@
 import '../lib/wagmi.js'
 
 import { isAddress } from '@ethersproject/address'
-import { createClient } from '@sushiswap/database'
+import { createDirectClient } from '@sushiswap/database'
 import { Address, fetchToken } from '@wagmi/core'
 import { chainIds, chains } from 'sushi/chain'
 
@@ -37,7 +37,7 @@ class Token {
 }
 
 export async function main() {
-  const client = await createClient()
+  const client = await createDirectClient()
   // const token = new Token(56288, '0x4a2c2838c3907D024916c3f4Fe07832745Ae4bec', 'APPROVED')
   const token = new Token(1234, '0x', 'DISAPPROVED')
   try {

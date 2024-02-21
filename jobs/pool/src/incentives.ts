@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import './lib/wagmi.js'
 
-import { Prisma, createClient } from '@sushiswap/database'
+import { Prisma, createDirectClient } from '@sushiswap/database'
 import { MINICHEF_SUBGRAPH_NAME } from '@sushiswap/graph-config'
 import { performance } from 'perf_hooks'
 import { ChainId } from 'sushi/chain'
@@ -39,9 +39,9 @@ export async function execute() {
     )
   } catch (e) {
     console.error(e)
-    await (await createClient()).$disconnect()
+    await (await createDirectClient()).$disconnect()
   } finally {
-    await (await createClient()).$disconnect()
+    await (await createDirectClient()).$disconnect()
   }
 }
 

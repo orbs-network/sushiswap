@@ -1,5 +1,5 @@
 // import { ChainId, chainShortName } from '@sushiswap/chain'
-// import { createClient, PoolVersion } from '@sushiswap/database'
+// import { createDirectClient, PoolVersion } from '@sushiswap/database'
 // import {
 //   SUBGRAPH_HOST,
 //   SUSHISWAP_ENABLED_NETWORKS,
@@ -59,9 +59,9 @@
 //     console.log(`COMPLETE - Script ran for ${((endTime - startTime) / 1000).toFixed(1)} seconds. `)
 //   } catch (e) {
 //     console.error(e)
-//     await (await createClient()).$disconnect()
+//     await (await createDirectClient()).$disconnect()
 //   } finally {
-//     await (await createClient()).$disconnect()
+//     await (await createDirectClient()).$disconnect()
 //   }
 // }
 
