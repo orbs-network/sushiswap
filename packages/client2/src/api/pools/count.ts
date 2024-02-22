@@ -1,4 +1,4 @@
-import { type Prisma, createClient } from '@sushiswap/database'
+import { type Prisma, createClient } from '@sushiswap/database2'
 import { type PoolCountApiSchema } from '../../pure/pools/count/schema'
 import { parsePoolArgs } from './parse'
 

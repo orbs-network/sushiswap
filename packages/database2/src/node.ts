@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '../generated'
 import { withAccelerate } from '@prisma/extension-accelerate'
 import { defaultPrismaClientOptions } from './common.js'
 
 export { type DecimalToString } from './common.js'
-export * from '@prisma/client'
+export * from '../generated'
 
 export async function createClient(options = defaultPrismaClientOptions) {
   await import('dotenv/config')

@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client/edge'
 import { withAccelerate } from '@prisma/extension-accelerate'
+import { PrismaClient } from '../generated/edge'
 import { defaultPrismaClientOptions } from './common'
 
 export { type DecimalToString } from './common'
