@@ -31,6 +31,7 @@ import {
   TX_ORIGIN_V3_COLUMN,
   TX_TIME_V3_COLUMN,
 } from './columns'
+import { ID } from 'sushi'
 
 interface UseTransactionsV3Opts {
   type: TransactionType
@@ -43,14 +44,14 @@ interface UseTransactionsV3Opts {
 // The fact that there are different subtransactions aggregated under one transaction makes paging a bit difficult
 function useTransactionsV3(pool: ExtendedPool, opts: UseTransactionsV3Opts) {
   return useQuery({
-    queryKey: [getTransactionsUrl({ id: pool.id, type: opts.type })],
+    queryKey: [getTransactionsUrl({ id: pool.id as ID, type: opts.type })],
     queryFn: async () => {
-      const chainId = pool?.chainId as ChainId
+      const chainId = Number(pool?.chainId) as ChainId
 
       if (!pool || !isSushiSwapV3ChainId(chainId)) return []
 
       const txs = await getTransactions({
-        id: pool.id,
+        id: pool.id as ID,
         type: opts.type,
       })
 
@@ -66,7 +67,7 @@ function useTransactionsV3(pool: ExtendedPool, opts: UseTransactionsV3Opts) {
 
       return transformed
     },
-    enabled: !!pool && isSushiSwapV3ChainId(pool?.chainId as ChainId),
+    enabled: !!pool && isSushiSwapV3ChainId(Number(pool?.chainId) as ChainId),
     refetchInterval: opts?.refetchInterval,
   })
 }

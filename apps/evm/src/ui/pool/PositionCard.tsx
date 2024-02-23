@@ -11,12 +11,12 @@ import {
 } from '@sushiswap/ui/components/tooltip'
 import React, { FC } from 'react'
 import { useTokensFromPool } from 'src/lib/hooks'
-import { PositionWithPool } from 'src/types'
+import { PositionWithPool2 } from 'src/types'
 import { Chain } from 'sushi/chain'
 import { formatNumber, formatUSD } from 'sushi/format'
 
 interface PositionCard {
-  position: V2Position
+  position: PositionWithPool2
 }
 
 export const PositionCardSkeleton = () => {
@@ -50,7 +50,7 @@ export const PositionCard: FC<PositionCard> = ({ position }) => {
   return (
     <div className="relative bg-white dark:bg-slate-800 shadow-md hover:shadow-lg transition-all rounded-2xl p-7 overflow-hidden w-[320px]">
       <span className="text-xs font-semibold text-gray-600 uppercase dark:text-slate-400">
-        {Chain.from(position.pool.chainId)?.name}
+        {Chain.from(Number(position.pool.chainId))?.name}
       </span>
       <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
         {token0.symbol}/{token1.symbol}{' '}
@@ -70,7 +70,7 @@ export const PositionCard: FC<PositionCard> = ({ position }) => {
         Est. position value <br />
         {formatUSD(valueUSD)}
       </span>
-      <div className="absolute flex gap-1 top-7 right-7">
+      {/* <div className="absolute flex gap-1 top-7 right-7">
         {position.pool.isIncentivized && (
           <TooltipProvider>
             <Tooltip>
@@ -88,7 +88,7 @@ export const PositionCard: FC<PositionCard> = ({ position }) => {
             </Tooltip>
           </TooltipProvider>
         )}
-      </div>
+      </div> */}
       <div className="absolute bottom-7 right-7">
         <Button size="sm" asChild>
           <LinkInternal href={`/pools/${position.pool.id}/migrate`}>

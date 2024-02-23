@@ -1,6 +1,7 @@
 'use client'
 
-import { IncentiveType, Pool } from '@sushiswap/rockset-client'
+import { Pool } from '@sushiswap/client2'
+import { IncentiveType } from '@sushiswap/rockset-client'
 import { useMasterChef } from '@sushiswap/wagmi'
 import { FC, ReactNode, createContext, useContext, useMemo } from 'react'
 import {
@@ -32,7 +33,7 @@ interface PoolPositionStakedProviderProps {
 
 export const PoolPositionStakedProvider: FC<PoolPositionStakedProviderProps> =
   ({ pool, children, watch = true }) => {
-    if (!pool?.incentives || pool.incentives.length === 0)
+    // if (!pool?.incentives || pool.incentives.length === 0)
       return (
         <Context.Provider
           value={{
@@ -51,16 +52,16 @@ export const PoolPositionStakedProvider: FC<PoolPositionStakedProviderProps> =
         </Context.Provider>
       )
 
-    return (
-      <_PoolPositionStakedProvider
-        watch={watch}
-        pool={pool}
-        farmId={Number(pool.incentives[0].poolId)}
-        incentiveType={pool.incentives[0].type}
-      >
-        {children}
-      </_PoolPositionStakedProvider>
-    )
+    // return (
+    //   <_PoolPositionStakedProvider
+    //     watch={watch}
+    //     pool={pool}
+    //     farmId={Number(pool.incentives[0].poolId)}
+    //     incentiveType={pool.incentives[0].type}
+    //   >
+    //     {children}
+    //   </_PoolPositionStakedProvider>
+    // )
   }
 
 interface _PoolPositionStakedProviderProps {
@@ -83,7 +84,7 @@ const _PoolPositionStakedProvider: FC<_PoolPositionStakedProviderProps> = ({
   })
   const { balance, isLoading, isError, isWritePending, isWriteError } =
     useMasterChef({
-      chainId: pool.chainId,
+      chainId: Number(pool.chainId),
       chef: incentiveType,
       pid: farmId,
       token: liquidityToken,
@@ -99,7 +100,7 @@ const _PoolPositionStakedProvider: FC<_PoolPositionStakedProviderProps> = ({
 
   const [underlying0, underlying1] = stakedUnderlying
   const [value0, value1] = useTokenAmountDollarValues({
-    chainId: pool.chainId,
+    chainId: Number(pool.chainId),
     amounts: stakedUnderlying,
   })
 

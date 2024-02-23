@@ -8,7 +8,6 @@ import { SUPPORTED_CHAIN_IDS } from 'src/config'
 // import { useUserPositions } from 'src/lib/hooks'
 // import { PositionWithPool } from 'src/types'
 
-import { V2Position } from '@sushiswap/rockset-client'
 import { useV2Positions } from 'src/lib/flair/hooks/positions/v2/v2'
 import { usePoolFilters } from './PoolsFiltersProvider'
 import {
@@ -16,17 +15,18 @@ import {
   NAME_COLUMN_POSITION_WITH_POOL,
   VALUE_COLUMN,
 } from './columns'
+import { PositionWithPool2 } from 'src/types'
 
 const COLUMNS = [
   NAME_COLUMN_POSITION_WITH_POOL,
   VALUE_COLUMN,
   APR_COLUMN,
-] satisfies ColumnDef<V2Position, unknown>[]
+] satisfies ColumnDef<PositionWithPool2, unknown>[]
 
 interface PositionsTableProps {
   protocol: Protocol
-  onRowClick?(row: V2Position): void
-  rowLink?(row: V2Position): string
+  onRowClick?(row: PositionWithPool2): void
+  rowLink?(row: PositionWithPool2): string
 }
 
 const tableState = { sorting: [{ id: 'value', desc: true }] }
@@ -43,35 +43,37 @@ export const PositionsTable: FC<PositionsTableProps> = ({
     pageSize: 10,
   })
 
-  const { data: positions, isLoading } = useV2Positions(
-    {
-      user: address!,
-      chainIds: SUPPORTED_CHAIN_IDS,
-    },
-    { enabled: !!address },
-  )
+  // const { data: positions, isLoading } = useV2Positions(
+  //   {
+  //     user: address!,
+  //     chainIds: SUPPORTED_CHAIN_IDS,
+  //   },
+  //   { enabled: !!address },
+  // )
 
-  const _positions = useMemo<V2Position[]>(() => {
+  const [positions, isLoading] = [[] as PositionWithPool2[], false]
+
+  const _positions = useMemo<PositionWithPool2[]>(() => {
     if (!positions) return []
 
     const _tokenSymbols = tokenSymbols?.filter((el) => el !== '') || []
     const searchFiltered = positions.filter((el) =>
       _tokenSymbols.length > 0
         ? _tokenSymbols.some((symbol) => {
-            return [el.pool?.token0.symbol, el.pool?.token1.symbol].includes(
+            return [el.pool?.token0!.symbol, el.pool?.token1!.symbol].includes(
               symbol.toUpperCase(),
             )
           })
         : true,
     )
     const chainFiltered = searchFiltered.filter((el) =>
-      chainIds.includes(el.pool.chainId),
+      chainIds.includes(Number(el.pool.chainId)),
     )
     return chainFiltered.filter((el) => el.pool?.protocol === protocol)
   }, [positions, tokenSymbols, chainIds, protocol])
 
   const rowRenderer = useCallback(
-    (row: Row<V2Position>, rowNode: ReactNode) => {
+    (row: Row<PositionWithPool2>, rowNode: ReactNode) => {
       if (onRowClick)
         return (
           <Slot

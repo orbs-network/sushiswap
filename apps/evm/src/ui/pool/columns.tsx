@@ -1,9 +1,6 @@
+import { Pool } from '@sushiswap/client2'
 import { AngleRewardsPool } from '@sushiswap/react-query'
-import {
-  SimplePool,
-  TransactionType,
-  V2Position,
-} from '@sushiswap/rockset-client'
+import { TransactionType } from '@sushiswap/rockset-client'
 import {
   NetworkIcon,
   Tooltip,
@@ -19,7 +16,7 @@ import { formatDistance } from 'date-fns'
 import React from 'react'
 import { formatNumber, formatPercent, formatUSD, shortenAddress } from 'sushi'
 
-import { PositionWithPool } from '../../types'
+import { PositionWithPool, PositionWithPool2 } from '../../types'
 import { APRHoverCard } from './APRHoverCard'
 import { ConcentratedLiquidityPositionAPRCell } from './ConcentratedLiquidityPositionAPRCell'
 import { PoolNameCell, PoolNameCellPool } from './PoolNameCell'
@@ -104,7 +101,7 @@ export const REWARDS_V3_CLAIMABLE_COLUMN: ColumnDef<AngleRewardsPool, unknown> =
     },
   }
 
-export const NETWORK_COLUMN_POOL: ColumnDef<SimplePool, unknown> = {
+export const NETWORK_COLUMN_POOL: ColumnDef<Pool, unknown> = {
   id: 'network',
   header: 'Network',
   cell: (props) => (
@@ -120,7 +117,7 @@ export const NETWORK_COLUMN_POOL: ColumnDef<SimplePool, unknown> = {
   },
 }
 
-export const NAME_COLUMN_POOL: ColumnDef<SimplePool, unknown> = {
+export const NAME_COLUMN_POOL: ColumnDef<Pool, unknown> = {
   id: 'name',
   header: 'Name',
   cell: (props) => <PoolNameCellPool pool={props.row.original} />,
@@ -140,7 +137,7 @@ export const NAME_COLUMN_POOL: ColumnDef<SimplePool, unknown> = {
   size: 300,
 }
 
-export const TVL_COLUMN: ColumnDef<SimplePool, unknown> = {
+export const TVL_COLUMN: ColumnDef<Pool, unknown> = {
   id: 'liquidityUSD',
   header: 'TVL',
   accessorFn: (row) => row.liquidityUSD,
@@ -155,23 +152,23 @@ export const TVL_COLUMN: ColumnDef<SimplePool, unknown> = {
   },
 }
 
-export const APR_COLUMN_POOL: ColumnDef<SimplePool, unknown> = {
+export const APR_COLUMN_POOL: ColumnDef<Pool, unknown> = {
   id: 'feeApr1d',
   header: 'APR',
   accessorFn: (row) => row.feeApr1d,
   cell: (props) => (
-    <APRHoverCard pool={props.row.original}>
+    // <APRHoverCard pool={props.row.original}>
       <span className="underline decoration-dotted">
         {formatPercent(props.row.original.feeApr1d)}
       </span>
-    </APRHoverCard>
+    // </APRHoverCard>
   ),
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
   },
 }
 
-export const VOLUME_1D_COLUMN: ColumnDef<SimplePool, unknown> = {
+export const VOLUME_1D_COLUMN: ColumnDef<Pool, unknown> = {
   id: 'volumeUSD1d',
   header: 'Volume (24h)',
   accessorFn: (row) => row.volumeUSD1d,
@@ -184,7 +181,7 @@ export const VOLUME_1D_COLUMN: ColumnDef<SimplePool, unknown> = {
   },
 }
 
-export const VOLUME_7D_COLUMN: ColumnDef<SimplePool, unknown> = {
+export const VOLUME_7D_COLUMN: ColumnDef<Pool, unknown> = {
   id: 'volumeUSD1w',
   header: 'Volume (7d)',
   accessorFn: (row) => row.volumeUSD1w,
@@ -197,7 +194,7 @@ export const VOLUME_7D_COLUMN: ColumnDef<SimplePool, unknown> = {
   },
 }
 
-export const VOLUME_1M_COLUMN: ColumnDef<SimplePool, unknown> = {
+export const VOLUME_1M_COLUMN: ColumnDef<Pool, unknown> = {
   id: 'volumeUSD1m',
   header: 'Volume (30d)',
   accessorFn: (row) => row.volumeUSD1m,
@@ -210,7 +207,7 @@ export const VOLUME_1M_COLUMN: ColumnDef<SimplePool, unknown> = {
   },
 }
 
-export const FEES_COLUMN: ColumnDef<SimplePool, unknown> = {
+export const FEES_COLUMN: ColumnDef<Pool, unknown> = {
   id: 'feeUSD1d',
   header: 'Fees (24h)',
   accessorFn: (row) => row.feeUSD1d,
@@ -223,13 +220,13 @@ export const FEES_COLUMN: ColumnDef<SimplePool, unknown> = {
   },
 }
 
-export const NETWORK_COLUMN: ColumnDef<SimplePool, unknown> = {
+export const NETWORK_COLUMN: ColumnDef<Pool, unknown> = {
   id: 'network',
   header: 'Network',
   cell: (props) => (
     <NetworkIcon
       type="naked"
-      chainId={props.row.original.chainId}
+      chainId={Number(props.row.original.chainId)}
       width={26}
       height={26}
     />
@@ -239,7 +236,10 @@ export const NETWORK_COLUMN: ColumnDef<SimplePool, unknown> = {
   },
 }
 
-export const NAME_COLUMN_POSITION_WITH_POOL: ColumnDef<V2Position, unknown> = {
+export const NAME_COLUMN_POSITION_WITH_POOL: ColumnDef<
+  PositionWithPool2,
+  unknown
+> = {
   id: 'name',
   header: 'Name',
   cell: (props) => <PoolNameCell pool={props.row.original.pool} />,
@@ -258,23 +258,23 @@ export const NAME_COLUMN_POSITION_WITH_POOL: ColumnDef<V2Position, unknown> = {
   },
 }
 
-export const APR_COLUMN: ColumnDef<V2Position, unknown> = {
+export const APR_COLUMN: ColumnDef<PositionWithPool2, unknown> = {
   id: 'feeApr1d',
   header: 'APR',
   accessorFn: (row) => row.pool.feeApr1d,
   cell: (props) => (
-    <APRHoverCard pool={props.row.original.pool}>
-      <span className="underline decoration-dotted">
-        {formatPercent(props.row.original.pool.feeApr1d)}
-      </span>
-    </APRHoverCard>
+    // <APRHoverCard pool={props.row.original.pool}>
+    <span className="underline decoration-dotted">
+      {formatPercent(props.row.original.pool.feeApr1d)}
+    </span>
+    // </APRHoverCard>
   ),
   meta: {
     skeleton: <SkeletonText fontSize="lg" />,
   },
 }
 
-export const VALUE_COLUMN: ColumnDef<V2Position, unknown> = {
+export const VALUE_COLUMN: ColumnDef<PositionWithPool2, unknown> = {
   id: 'value',
   header: 'Value',
   accessorFn: (row) =>

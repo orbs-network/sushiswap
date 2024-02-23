@@ -1,6 +1,6 @@
 'use client'
 
-import { Pool } from '@sushiswap/rockset-client'
+import { Pool } from '@sushiswap/client2'
 import { Button } from '@sushiswap/ui/components/button'
 import {
   Card,
@@ -27,50 +27,51 @@ export const PoolMyRewards: FC<PoolMyRewardsProps> = ({ pool }) => {
   const { pendingRewards, harvest, values, isLoading } =
     usePoolPositionRewards()
 
-  if (!pool?.incentives?.length && !pendingRewards?.length) return <span />
+  // if (!pool?.incentives?.length && !pendingRewards?.length) 
+  return <span />
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Unclaimed rewards</CardTitle>
-        <CardDescription>
-          Total: {formatUSD(values.reduce((a, b) => a + b, 0))}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <CardGroup>
-          <CardLabel>Tokens</CardLabel>
-          {pendingRewards.map((reward, index) => {
-            return (
-              <CardCurrencyAmountItem
-                key={index}
-                isLoading={isLoading}
-                amount={reward}
-                fiatValue={formatUSD(values[index])}
-              />
-            )
-          })}
-        </CardGroup>
-      </CardContent>
-      <CardFooter>
-        <Checker.Connect variant="outline" size="default" fullWidth>
-          <Checker.Network
-            variant="outline"
-            size="default"
-            fullWidth
-            chainId={pool.chainId}
-          >
-            <Button
-              disabled={!harvest}
-              fullWidth
-              onClick={() => harvest?.()}
-              size="default"
-            >
-              Claim
-            </Button>
-          </Checker.Network>
-        </Checker.Connect>
-      </CardFooter>
-    </Card>
-  )
+  // return (
+  //   <Card>
+  //     <CardHeader>
+  //       <CardTitle>Unclaimed rewards</CardTitle>
+  //       <CardDescription>
+  //         Total: {formatUSD(values.reduce((a, b) => a + b, 0))}
+  //       </CardDescription>
+  //     </CardHeader>
+  //     <CardContent>
+  //       <CardGroup>
+  //         <CardLabel>Tokens</CardLabel>
+  //         {pendingRewards.map((reward, index) => {
+  //           return (
+  //             <CardCurrencyAmountItem
+  //               key={index}
+  //               isLoading={isLoading}
+  //               amount={reward}
+  //               fiatValue={formatUSD(values[index])}
+  //             />
+  //           )
+  //         })}
+  //       </CardGroup>
+  //     </CardContent>
+  //     <CardFooter>
+  //       <Checker.Connect variant="outline" size="default" fullWidth>
+  //         <Checker.Network
+  //           variant="outline"
+  //           size="default"
+  //           fullWidth
+  //           chainId={pool.chainId}
+  //         >
+  //           <Button
+  //             disabled={!harvest}
+  //             fullWidth
+  //             onClick={() => harvest?.()}
+  //             size="default"
+  //           >
+  //             Claim
+  //           </Button>
+  //         </Checker.Network>
+  //       </Checker.Connect>
+  //     </CardFooter>
+  //   </Card>
+  // )
 }

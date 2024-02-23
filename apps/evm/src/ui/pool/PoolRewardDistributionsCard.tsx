@@ -31,11 +31,11 @@ export const PoolRewardDistributionsCard: FC<
   PoolRewardDistributionsCardParams
 > = ({ pool }) => {
   const { data: rewardsData, isLoading: rewardsLoading } = useAngleRewards({
-    chainId: pool.chainId as ChainId,
+    chainId: Number(pool.chainId) as ChainId,
   })
 
   if (!pool) return null
-  if (!isAngleEnabledChainId(pool.chainId)) return null
+  if (!isAngleEnabledChainId(Number(pool.chainId))) return null
 
   const currentAngleRewardsPool = rewardsData?.pools[getAddress(pool.address)]
 
@@ -49,12 +49,12 @@ export const PoolRewardDistributionsCard: FC<
             <LinkInternal
               href={`/pool/incentivize?chainId=${pool.chainId}&fromCurrency=${
                 pool.token0.wrapped.address ===
-                Native.onChain(pool.chainId).wrapped.address
+                Native.onChain(Number(pool.chainId)).wrapped.address
                   ? 'NATIVE'
                   : pool.token0.wrapped.address
               }&toCurrency=${
                 pool.token1.wrapped.address ===
-                Native.onChain(pool.chainId).wrapped.address
+                Native.onChain(Number(pool.chainId)).wrapped.address
                   ? 'NATIVE'
                   : pool.token1.wrapped.address
               }&feeAmount=${pool.swapFee * 10_000 * 100}`}

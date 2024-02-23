@@ -10,7 +10,7 @@ import {
 import { FC } from 'react'
 import { formatUSD } from 'sushi'
 
-import { Pool } from '@sushiswap/rockset-client'
+import { Pool } from '@sushiswap/client2'
 import { PoolPositionDesktop } from './PoolPositionDesktop'
 import { usePoolPosition } from './PoolPositionProvider'
 import { PoolPositionStakedDesktop } from './PoolPositionStakedDesktop'

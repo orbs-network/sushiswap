@@ -1,7 +1,7 @@
 'use client'
 
-import { Protocol } from '@sushiswap/client'
-import { PoolProtocol, SimplePool } from '@sushiswap/rockset-client'
+import { Pool } from '@sushiswap/client2'
+import { Protocol } from '@sushiswap/database2'
 import { classNames } from '@sushiswap/ui'
 import { Badge } from '@sushiswap/ui/components/badge'
 import { Currency } from '@sushiswap/ui/components/currency'
@@ -12,12 +12,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@sushiswap/ui/components/tooltip'
-import { useTokensFromPool } from 'src/lib/hooks'
 import { FC } from 'react'
+import { useTokensFromPool } from 'src/lib/hooks'
 import { formatNumber } from 'sushi'
 import { ChainId } from 'sushi/chain'
 
-export const ProtocolBadge: Record<PoolProtocol, JSX.Element> = {
+export const ProtocolBadge: Record<Protocol, JSX.Element> = {
   [Protocol.SUSHISWAP_V2]: (
     <div className="whitespace-nowrap bg-pink/20 text-pink text-[10px] px-2 rounded-full">
       V2
@@ -30,10 +30,10 @@ export const ProtocolBadge: Record<PoolProtocol, JSX.Element> = {
   ),
 }
 
-export const PoolNameCell: FC<{ pool: SimplePool }> = ({ pool }) => {
+export const PoolNameCell: FC<{ pool: Pool }> = ({ pool }) => {
   const { token0, token1 } = useTokensFromPool(pool)
 
-  const incentives = pool.incentives.filter((i) => i.rewardPerDay > 0)
+  // const incentives = pool.incentives.filter((i) => i.rewardPerDay > 0)
 
   return (
     <div className="flex items-center gap-5">
@@ -44,7 +44,7 @@ export const PoolNameCell: FC<{ pool: SimplePool }> = ({ pool }) => {
             position="bottom-right"
             badgeContent={
               <NetworkIcon
-                chainId={pool.chainId as ChainId}
+                chainId={Number(pool.chainId) as ChainId}
                 width={14}
                 height={14}
               />
@@ -75,7 +75,7 @@ export const PoolNameCell: FC<{ pool: SimplePool }> = ({ pool }) => {
           <div className="bg-gray-200 text-gray-700 dark:bg-slate-800 dark:text-slate-300 text-[10px] px-2 rounded-full">
             {formatNumber(pool.swapFee * 100)}%
           </div>
-          {pool.isIncentivized && (
+          {/* {pool.isIncentivized && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -104,17 +104,17 @@ export const PoolNameCell: FC<{ pool: SimplePool }> = ({ pool }) => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          )}
+          )} */}
         </div>
       </div>
     </div>
   )
 }
 
-export const PoolNameCellPool: FC<{ pool: SimplePool }> = ({ pool }) => {
+export const PoolNameCellPool: FC<{ pool: Pool }> = ({ pool }) => {
   const { token0, token1 } = useTokensFromPool(pool)
 
-  const incentives = pool.incentives.filter((i) => i.rewardPerDay > 0)
+  // const incentives = pool.incentives.filter((i) => i.rewardPerDay > 0)
 
   return (
     <div className="flex items-center gap-5">
@@ -125,7 +125,7 @@ export const PoolNameCellPool: FC<{ pool: SimplePool }> = ({ pool }) => {
             position="bottom-right"
             badgeContent={
               <NetworkIcon
-                chainId={pool.chainId as ChainId}
+                chainId={Number(pool.chainId) as ChainId}
                 width={14}
                 height={14}
               />
@@ -174,7 +174,7 @@ export const PoolNameCellPool: FC<{ pool: SimplePool }> = ({ pool }) => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          {pool.isIncentivized && (
+          {/* {pool.isIncentivized && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -203,7 +203,7 @@ export const PoolNameCellPool: FC<{ pool: SimplePool }> = ({ pool }) => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          )}
+          )} */}
         </div>
       </div>
     </div>

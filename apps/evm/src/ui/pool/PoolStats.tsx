@@ -1,6 +1,6 @@
 'use client'
 
-import { Pool } from '@sushiswap/rockset-client'
+import { Pool } from '@sushiswap/client2'
 import {
   Card,
   CardContent,
@@ -35,13 +35,13 @@ export const PoolStats: FC<PoolStats> = ({ pool }) => {
                 <span
                   className={classNames(
                     'text-xs',
-                    pool.liquidityUSDChangePercent1d > 0
+                    pool.liquidityUSDChange1d > 0
                       ? 'text-green'
                       : 'text-red',
                   )}
                 >
-                  {pool.liquidityUSDChangePercent1d > 0 ? '+' : '-'}
-                  {formatPercent(Math.abs(pool.liquidityUSDChangePercent1d))}
+                  {pool.liquidityUSDChange1d > 0 ? '+' : '-'}
+                  {formatPercent(Math.abs(pool.liquidityUSDChange1d))}
                 </span>
               </div>
             ) : null}
@@ -54,13 +54,13 @@ export const PoolStats: FC<PoolStats> = ({ pool }) => {
                 <span
                   className={classNames(
                     'text-xs',
-                    pool.volumeUSDChangePercent1d > 0
+                    pool.volumeUSDChange1d > 0
                       ? 'text-green'
                       : 'text-red',
                   )}
                 >
-                  {pool.volumeUSDChangePercent1d > 0 ? '+' : '-'}
-                  {formatPercent(Math.abs(pool.volumeUSDChangePercent1d))}
+                  {pool.volumeUSDChange1d > 0 ? '+' : '-'}
+                  {formatPercent(Math.abs(pool.volumeUSDChange1d))}
                 </span>
               </div>
             ) : null}
@@ -76,13 +76,13 @@ export const PoolStats: FC<PoolStats> = ({ pool }) => {
                     pool.feeUSDChange1d > 0 ? 'text-green' : 'text-red',
                   )}
                 >
-                  {pool.feeUSDChangePercent1d > 0 ? '+' : '-'}
-                  {formatPercent(Math.abs(pool.feeUSDChangePercent1d))}
+                  {pool.feeUSDChange1d > 0 ? '+' : '-'}
+                  {formatPercent(Math.abs(pool.feeUSDChange1d))}
                 </span>
               </div>
             ) : null}
           </div>
-          <div>
+          {/* <div>
             <CardLabel>Transactions (24h)</CardLabel>
             {pool ? (
               <div className="text-xl font-semibold">
@@ -98,7 +98,7 @@ export const PoolStats: FC<PoolStats> = ({ pool }) => {
                 </span>
               </div>
             ) : null}
-          </div>
+          </div> */}
         </div>
       </CardContent>
     </Card>

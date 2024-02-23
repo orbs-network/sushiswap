@@ -1,7 +1,9 @@
 'use client'
 
+import { 
+  Pool
+} from '@sushiswap/client2'
 import {
-  Pool,
   Transaction as _Transaction,
   TransactionType,
 } from '@sushiswap/rockset-client'
@@ -16,11 +18,11 @@ import { Toggle } from '@sushiswap/ui/components/toggle'
 import { isSushiSwapV2ChainId } from '@sushiswap/v2-sdk'
 import { useQuery } from '@tanstack/react-query'
 import { PaginationState } from '@tanstack/react-table'
+import { FC, useMemo, useState } from 'react'
 import {
   ExtendedPool,
   useExtendedPool,
 } from 'src/lib/hooks/api/useFlairPoolGraphData'
-import { FC, useMemo, useState } from 'react'
 import { Chain, ChainId } from 'sushi/chain'
 import { Amount } from 'sushi/currency'
 
@@ -49,7 +51,7 @@ function useTransactionsV2(
   return useQuery({
     queryKey: ['poolTransactionsV2', poolId, pool?.chainId, opts],
     queryFn: async () => {
-      const chainId = pool?.chainId as ChainId
+      const chainId = Number(pool?.chainId) as ChainId
 
       if (!pool || !isSushiSwapV2ChainId(chainId)) return []
 
@@ -65,7 +67,7 @@ function useTransactionsV2(
       }))
       return transformed
     },
-    enabled: !!pool && isSushiSwapV2ChainId(pool?.chainId as ChainId),
+    enabled: !!pool && isSushiSwapV2ChainId(Number(pool?.chainId) as ChainId),
     refetchInterval: opts?.refetchInterval,
   })
 }
@@ -108,7 +110,7 @@ const PoolTransactionsV2: FC<PoolTransactionsV2Props> = ({ pool }) => {
     [paginationState.pageIndex, paginationState.pageSize, type],
   )
   const extendedPool = useExtendedPool({ pool })
-  const { data, isLoading } = useTransactionsV2(extendedPool, pool.id, opts)
+  const { data, isLoading } = useTransactionsV2(extendedPool, pool.id as ID, opts)
 
   const _data = useMemo(() => {
     return data ?? []

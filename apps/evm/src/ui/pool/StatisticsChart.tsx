@@ -7,6 +7,7 @@ import { LiquidityDepthWidget } from './LiquidityDepthWidget'
 import { PoolChartGraph } from './PoolChartGraph'
 import { PoolChartPeriod, PoolChartPeriods } from './PoolChartPeriods'
 import { PoolChartType, PoolChartTypes } from './PoolChartTypes'
+import { ID } from 'sushi'
 
 const statisticsChart = [
   PoolChartType.Volume,
@@ -54,7 +55,7 @@ export const StatisticsCharts: FC<Charts> = ({ pool, address, chainId }) => {
       {chart === PoolChartType.Depth ? (
         <LiquidityDepthWidget pool={pool} chainId={chainId} address={address} />
       ) : (
-        <PoolChartGraph chart={chart} period={period} id={pool.id} />
+        <PoolChartGraph chart={chart} period={period} id={pool.id as ID} />
       )}
     </Card>
   )

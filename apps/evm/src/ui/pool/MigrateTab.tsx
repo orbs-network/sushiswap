@@ -1,6 +1,7 @@
 'use client'
 
 import { SwitchHorizontalIcon } from '@heroicons/react-v1/solid'
+import { Pool } from '@sushiswap/client2'
 import {
   Card,
   CardContent,
@@ -69,7 +70,6 @@ import { useConcentratedDerivedMintInfo } from './ConcentratedLiquidityProvider'
 import { usePoolPosition } from './PoolPositionProvider'
 import { SelectFeeConcentratedWidget } from './SelectFeeConcentratedWidget'
 import { SelectPricesWidget } from './SelectPricesWidget'
-import { Pool } from '@sushiswap/rockset-client'
 
 export const MODAL_MIGRATE_ID = 'migrate-modal'
 
@@ -110,7 +110,7 @@ export const MigrateTab: FC<{ pool: Pool }> = withCheckerRoot(({ pool }) => {
   )
 
   const { data: pair } = useSushiSwapV2Pool(
-    pool.chainId as SushiSwapV2ChainId,
+    Number(pool.chainId) as SushiSwapV2ChainId,
     token0,
     token1,
   )
@@ -158,7 +158,7 @@ export const MigrateTab: FC<{ pool: Pool }> = withCheckerRoot(({ pool }) => {
     noLiquidity,
     outOfRange,
   } = useConcentratedDerivedMintInfo({
-    chainId: pool.chainId as SushiSwapV3ChainId,
+    chainId: Number(pool.chainId) as SushiSwapV3ChainId,
     account: address,
     token0,
     token1,
@@ -301,7 +301,7 @@ export const MigrateTab: FC<{ pool: Pool }> = withCheckerRoot(({ pool }) => {
 
   const [v3FiatValue0, v3FiatValue1, refund0FiatValue, refund1FiatValue] =
     useTokenAmountDollarValues({
-      chainId: pool.chainId as SushiSwapV3ChainId,
+      chainId: Number(pool.chainId) as SushiSwapV3ChainId,
       amounts: [positionAmount0, positionAmount1, refund0, refund1],
     })
 
@@ -332,13 +332,13 @@ export const MigrateTab: FC<{ pool: Pool }> = withCheckerRoot(({ pool }) => {
     [token0, token1],
   )
   const fiatAmountsAsNumber = useTokenAmountDollarValues({
-    chainId: pool.chainId,
+    chainId: Number(pool.chainId),
     amounts: fiatAmounts,
   })
 
   const { approved: approvedMigrate } = useApproved(APPROVE_TAG_MIGRATE)
   const { data: deadline } = useTransactionDeadline({
-    chainId: pool.chainId as ChainId,
+    chainId: Number(pool.chainId) as ChainId,
   })
 
   const {
@@ -363,12 +363,12 @@ export const MigrateTab: FC<{ pool: Pool }> = withCheckerRoot(({ pool }) => {
       sqrtPrice,
       noLiquidity,
     },
-    chainId: pool.chainId as V3MigrateChainId,
+    chainId: Number(pool.chainId) as V3MigrateChainId,
     enabled: approvedMigrate,
   })
 
   const { status } = useWaitForTransaction({
-    chainId: pool.chainId as SushiSwapV3ChainId,
+    chainId: Number(pool.chainId) as SushiSwapV3ChainId,
     hash: data?.hash,
   })
 
@@ -458,7 +458,7 @@ export const MigrateTab: FC<{ pool: Pool }> = withCheckerRoot(({ pool }) => {
           <Separator />
           <div className="flex flex-col gap-6">
             <SelectPricesWidget
-              chainId={pool.chainId as SushiSwapV3ChainId}
+              chainId={Number(pool.chainId) as SushiSwapV3ChainId}
               token0={token0}
               token1={token1}
               poolAddress={v3Address}
@@ -544,7 +544,7 @@ export const MigrateTab: FC<{ pool: Pool }> = withCheckerRoot(({ pool }) => {
                   <Checker.Network
                     fullWidth
                     size="default"
-                    chainId={pool.chainId}
+                    chainId={Number(pool.chainId)}
                   >
                     <Checker.Guard
                       size="default"
@@ -567,12 +567,12 @@ export const MigrateTab: FC<{ pool: Pool }> = withCheckerRoot(({ pool }) => {
                           amount={balance ?? undefined}
                           contract={
                             V3MigrateContractConfig(
-                              pool.chainId as V3MigrateChainId,
+                              Number(pool.chainId) as V3MigrateChainId,
                             ).address
                           }
                           enabled={Boolean(
                             V3MigrateContractConfig(
-                              pool.chainId as V3MigrateChainId,
+                              Number(pool.chainId) as V3MigrateChainId,
                             ).address,
                           )}
                         >
@@ -603,7 +603,7 @@ export const MigrateTab: FC<{ pool: Pool }> = withCheckerRoot(({ pool }) => {
                                       <List className="!pt-0">
                                         <List.Control>
                                           <List.KeyValue flex title="Network">
-                                            {Chain.from(pool.chainId)?.name}
+                                            {Chain.from(Number(pool.chainId))?.name}
                                           </List.KeyValue>
                                           {feeAmount && (
                                             <List.KeyValue title="Fee Tier">{`${
@@ -834,7 +834,7 @@ export const MigrateTab: FC<{ pool: Pool }> = withCheckerRoot(({ pool }) => {
       </Card>
       {pool && token0 && token1 ? (
         <DialogConfirm
-          chainId={pool.chainId as SushiSwapV3ChainId}
+          chainId={Number(pool.chainId) as SushiSwapV3ChainId}
           status={status}
           testId="migrate-confirmation-modal"
           successMessage={`Successfully migrated your ${token0.symbol}/${token1.symbol} position`}

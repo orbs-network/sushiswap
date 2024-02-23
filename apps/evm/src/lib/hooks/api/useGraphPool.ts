@@ -6,8 +6,8 @@ import { useMemo } from 'react'
 import { Amount } from 'sushi/currency'
 import useSWR from 'swr'
 
+import { Pool } from '@sushiswap/client2'
 import { useTokensFromPool } from '../useTokensFromPool'
-import { Pool } from '@sushiswap/rockset-client'
 
 export function getGraphPoolUrl(poolId: string) {
   return `/pools/api/graphPool/${poolId}`

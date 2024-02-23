@@ -1,4 +1,4 @@
-import { Pool } from '@sushiswap/rockset-client'
+import { Pool } from '@sushiswap/client2'
 import {
   CardCurrencyAmountItem,
   CardGroup,
@@ -19,21 +19,22 @@ export const PoolPositionStakedDesktop: FC<PoolPositionStakedDesktopProps> = ({
   const { value1, value0, underlying1, underlying0, isLoading } =
     usePoolPositionStaked()
 
-  if (!pool.incentives.length) return <></>
+  // if (!pool.incentives.length) 
+  return <></>
 
-  return (
-    <CardGroup>
-      <CardLabel>Staked</CardLabel>
-      <CardCurrencyAmountItem
-        isLoading={isLoading}
-        amount={underlying0}
-        fiatValue={formatUSD(value0)}
-      />
-      <CardCurrencyAmountItem
-        isLoading={isLoading}
-        amount={underlying1}
-        fiatValue={formatUSD(value1)}
-      />
-    </CardGroup>
-  )
+  // return (
+  //   <CardGroup>
+  //     <CardLabel>Staked</CardLabel>
+  //     <CardCurrencyAmountItem
+  //       isLoading={isLoading}
+  //       amount={underlying0}
+  //       fiatValue={formatUSD(value0)}
+  //     />
+  //     <CardCurrencyAmountItem
+  //       isLoading={isLoading}
+  //       amount={underlying1}
+  //       fiatValue={formatUSD(value1)}
+  //     />
+  //   </CardGroup>
+  // )
 }

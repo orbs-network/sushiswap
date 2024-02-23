@@ -28,7 +28,7 @@ import React, { FC, useMemo, useState } from 'react'
 import { useTokenAmountDollarValues } from 'src/lib/hooks'
 import { formatPercent, formatUSD } from 'sushi/format'
 
-import { Pool } from '@sushiswap/rockset-client'
+import { Pool } from '@sushiswap/client2'
 import { useExtendedPool } from 'src/lib/hooks/api/useFlairPoolGraphData'
 import { ConcentratedLiquidityProvider } from './ConcentratedLiquidityProvider'
 import { ConcentratedPositionsTable } from './ConcentratedPositionsTable'
@@ -38,7 +38,7 @@ import { PoolTransactionsV3 } from './PoolTransactionsV3'
 import { PoolsFiltersProvider } from './PoolsFiltersProvider'
 import { StatisticsCharts } from './StatisticsChart'
 
-enum Granularity {
+export enum Granularity {
   Day = 0,
   Week = 1,
 }
@@ -88,14 +88,14 @@ const _Pool: FC<{ pool: Pool }> = ({ pool }) => {
             : pool.volumeUSD1d ?? 0,
         volumeUSDChangePercent:
           granularity === Granularity.Week
-            ? pool.volumeUSDChangePercent1w
-            : pool.volumeUSDChangePercent1d,
+            ? pool.volumeUSDChange1w
+            : pool.volumeUSDChange1d,
         feeUSD:
           granularity === Granularity.Week ? pool.feeUSD1w : pool.feeUSD1d ?? 0,
         feeUSDChangePercent:
           granularity === Granularity.Week
-            ? pool.feeUSDChangePercent1w
-            : pool.feeUSDChangePercent1d,
+            ? pool.feeUSDChange1w
+            : pool.feeUSDChange1d,
       }),
       [pool, granularity],
     )
@@ -103,7 +103,7 @@ const _Pool: FC<{ pool: Pool }> = ({ pool }) => {
   return (
     <Container maxWidth="5xl" className="px-2 sm:px-4">
       <div className="flex flex-col gap-6">
-        {pool.hasEnabledSteerVault && (
+        {/* {pool.hasEnabledSteerVault && (
           <Message variant="info" size="sm">
             {`This pool has been activated to leverage our smart pool feature. Smart pools are designed to optimize the
       allocation of liquidity within customized price ranges, thereby improving trading efficiency. They achieve
@@ -119,10 +119,10 @@ const _Pool: FC<{ pool: Pool }> = ({ pool }) => {
               here
             </LinkInternal>
           </Message>
-        )}
+        )} */}
         <PoolsFiltersProvider>
           <ConcentratedPositionsTable
-            chainId={pool.chainId as SushiSwapV3ChainId}
+            chainId={Number(pool.chainId) as SushiSwapV3ChainId}
             poolId={pool.address}
           />
         </PoolsFiltersProvider>

@@ -1,6 +1,7 @@
 'use client'
 
-import { Pool, PoolBucket, PoolProtocol } from '@sushiswap/rockset-client'
+import { Pool } from '@sushiswap/client2'
+import { PoolBucket, PoolProtocol } from '@sushiswap/rockset-client'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Amount, Native, Token } from 'sushi/currency'
@@ -14,8 +15,14 @@ interface UsePoolGraphDataParams {
 
 export const useExtendedPool = ({ pool }: { pool: Pool }) => {
   return useMemo(() => {
-    const _token0 = new Token(pool.token0)
-    const _token1 = new Token(pool.token1)
+    const _token0 = new Token({
+      ...pool.token0!,
+      chainId: Number(pool.chainId),
+    })
+    const _token1 = new Token({
+      ...pool.token1!,
+      chainId: Number(pool.chainId),
+    })
 
     const [token0, token1, liquidityToken] = [
       _token0.wrapped.address ===
@@ -31,7 +38,7 @@ export const useExtendedPool = ({ pool }: { pool: Pool }) => {
         name: 'SLP Token',
         decimals: 18,
         symbol: 'SLP',
-        chainId: pool.chainId,
+        chainId: Number(pool.chainId),
       }),
     ]
 
@@ -39,11 +46,19 @@ export const useExtendedPool = ({ pool }: { pool: Pool }) => {
       ...pool,
       reserve0:
         token0 && pool
-          ? Amount.fromRawAmount(token0, Math.ceil(Number(pool.reserve0BI)))
+          ? Amount.fromRawAmount(
+              token0,
+              // Math.ceil(Number(pool.reserve0BI))
+              0,
+            )
           : null,
       reserve1:
         token1 && pool
-          ? Amount.fromRawAmount(token1, Math.ceil(Number(pool.reserve1BI)))
+          ? Amount.fromRawAmount(
+              token1,
+              // Math.ceil(Number(pool.reserve1BI))
+              0,
+            )
           : null,
       totalSupply:
         liquidityToken && pool

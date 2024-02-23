@@ -1,10 +1,10 @@
 import { PoolProtocol } from '@sushiswap/rockset-client'
 import { unstable_cache } from 'next/cache'
-import { getPool } from 'src/lib/flair/fetchers/pool/id/pool'
 import { PoolPageV2 } from 'src/ui/pool/PoolPageV2'
 import { ID, unsanitize } from 'sushi'
 import { PoolPageV3 } from '../../../../ui/pool/PoolPageV3'
 import notFound from '../../not-found'
+import { getPool } from '@sushiswap/client2'
 
 export default async function PoolPage({
   params,
@@ -14,8 +14,8 @@ export default async function PoolPage({
   tab: 'add' | 'remove' | 'unstake' | 'stake'
 }) {
   const poolId = unsanitize(params.id)
-  const { success, data: pool } = await unstable_cache(
-    async () => getPool({ id: poolId as ID }),
+  const pool = await unstable_cache(
+    async () => getPool(poolId),
     ['pool', poolId],
     {
       revalidate: 60 * 15,

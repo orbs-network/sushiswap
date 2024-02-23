@@ -12,11 +12,6 @@ import {
 } from '@heroicons/react/24/outline'
 import { Slot } from '@radix-ui/react-slot'
 import {
-  PoolsOrderBy,
-  SimplePool,
-  SimplePoolsArgs,
-} from '@sushiswap/rockset-client'
-import {
   Button,
   Card,
   CardHeader,
@@ -48,9 +43,11 @@ import Link from 'next/link'
 import { FC, ReactNode, useCallback, useMemo, useState } from 'react'
 import { Native } from 'sushi/currency'
 
+import { GetPoolsArgs, Pool } from '@sushiswap/client2'
+import { usePoolsInfinite } from '@sushiswap/client2/hooks'
 import { usePoolsCount } from 'src/lib/flair/hooks/simplePools/count/count'
-import { useSimplePools } from 'src/lib/flair/hooks/simplePools/simplePools'
 import { isAngleEnabledChainId } from 'sushi/config'
+import { useSWRConfig } from 'swr'
 import { usePoolFilters } from './PoolsFiltersProvider'
 import {
   APR_COLUMN_POOL,
@@ -82,7 +79,7 @@ const COLUMNS = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-fit">
             <DropdownMenuLabel>
-              {row.original.token0.symbol} / {row.original.token1.symbol}
+              {row.original.token0!.symbol} / {row.original.token1!.symbol}
               <Chip variant="blue" className="ml-2">
                 SushiSwap V3
               </Chip>
@@ -111,7 +108,7 @@ const COLUMNS = [
                   Create position
                 </Link>
               </DropdownMenuItem>
-              <TooltipProvider>
+              {/* <TooltipProvider>
                 <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild={row.original.hasEnabledSteerVault}>
                     <DropdownMenuItem
@@ -147,18 +144,18 @@ const COLUMNS = [
                     </p>
                   </TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
+              </TooltipProvider> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <TooltipProvider>
                 <Tooltip delayDuration={0}>
                   <TooltipTrigger
-                    asChild={isAngleEnabledChainId(row.original.chainId)}
+                    asChild={isAngleEnabledChainId(Number(row.original.chainId))}
                   >
                     <DropdownMenuItem
                       asChild
-                      disabled={!isAngleEnabledChainId(row.original.chainId)}
+                      disabled={!isAngleEnabledChainId(Number(row.original.chainId))}
                     >
                       <Link
                         onClick={(e) => e.stopPropagation()}
@@ -167,15 +164,15 @@ const COLUMNS = [
                         href={`/pool/incentivize?chainId=${
                           row.original.chainId
                         }&fromCurrency=${
-                          row.original.token0.address ===
-                          Native.onChain(row.original.chainId).wrapped.address
+                          row.original.token0!.address ===
+                          Native.onChain(Number(row.original.chainId)).wrapped.address
                             ? 'NATIVE'
-                            : row.original.token0.address
+                            : row.original.token0!.address
                         }&toCurrency=${
-                          row.original.token1.address ===
-                          Native.onChain(row.original.chainId).wrapped.address
+                          row.original.token1!.address ===
+                          Native.onChain(Number(row.original.chainId)).wrapped.address
                             ? 'NATIVE'
-                            : row.original.token1.address
+                            : row.original.token1!.address
                         }&feeAmount=${row.original.swapFee * 10_000 * 100}`}
                       >
                         <GiftIcon width={16} height={16} className="mr-2" />
@@ -185,7 +182,7 @@ const COLUMNS = [
                   </TooltipTrigger>
                   <TooltipContent side="left" className="max-w-[240px]">
                     <p>
-                      {!isAngleEnabledChainId(row.original.chainId)
+                      {!isAngleEnabledChainId(Number(row.original.chainId))
                         ? 'Not available on this network'
                         : 'Add rewards to a pool to incentivize liquidity providers joining in.'}
                     </p>
@@ -204,7 +201,7 @@ const COLUMNS = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-fit">
             <DropdownMenuLabel>
-              {row.original.token0.symbol} / {row.original.token1.symbol}
+              {row.original.token0!.symbol} / {row.original.token1!.symbol}
               {row.original.protocol === 'SUSHISWAP_V2' && (
                 <Chip variant="pink" className="ml-2">
                   SushiSwap V2
@@ -237,7 +234,7 @@ const COLUMNS = [
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
+            {/* <DropdownMenuGroup>
               <DropdownMenuGroupLabel>Farm rewards</DropdownMenuGroupLabel>
               <TooltipProvider>
                 <Tooltip delayDuration={0}>
@@ -277,7 +274,7 @@ const COLUMNS = [
                   Unstake
                 </Link>
               </DropdownMenuItem>
-            </DropdownMenuGroup>
+            </DropdownMenuGroup> */}
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -286,10 +283,10 @@ const COLUMNS = [
       skeleton: <SkeletonText fontSize="lg" />,
     },
   },
-] satisfies ColumnDef<SimplePool, unknown>[]
+] satisfies ColumnDef<Pool, unknown>[]
 
 interface PositionsTableProps {
-  onRowClick?(row: SimplePool): void
+  onRowClick?(row: Pool): void
 }
 
 export const PoolsTable: FC<PositionsTableProps> = ({ onRowClick }) => {
@@ -311,7 +308,7 @@ export const PoolsTable: FC<PositionsTableProps> = ({ onRowClick }) => {
     }
   }, [pagination, sorting])
 
-  const args = useMemo<SimplePoolsArgs>(() => {
+  const args = useMemo<GetPoolsArgs>(() => {
     return {
       pageIndex: pagination.pageIndex,
       chainIds: chainIds,
@@ -319,8 +316,8 @@ export const PoolsTable: FC<PositionsTableProps> = ({ onRowClick }) => {
       isIncentivized: farmsOnly || undefined, // will filter farms out if set to false, undefined will be filtered out by the parser
       hasEnabledSteerVault: smartPoolsOnly || undefined, // will filter smart pools out if set to false, undefined will be filtered out by the parser
       isWhitelisted: true, // can be added to filters later, need to put it here so fallback works
-      orderBy: sorting[0]?.id as PoolsOrderBy,
-      orderDir: sorting[0] ? (sorting[0].desc ? 'DESC' : 'ASC') : 'DESC',
+      orderBy: sorting[0]?.id,
+      orderDir: sorting[0] ? (sorting[0].desc ? 'desc' : 'asc') : 'desc',
       protocols,
     }
     // }, [chainIds, tokenSymbols, protocols, farmsOnly, sorting])
@@ -334,14 +331,18 @@ export const PoolsTable: FC<PositionsTableProps> = ({ onRowClick }) => {
     sorting,
   ])
 
-  const { data: pools, isLoading: isValidatingPools } = useSimplePools(args)
-  const { data: poolCount /*, isLoading: isValidatingCount*/ } =
-    usePoolsCount(args)
+  const { data: pools, isLoading: isValidatingPools } = usePoolsInfinite({
+    args,
+    shouldFetch: true,
+    swrConfig: useSWRConfig(),
+  })
+  // const { data: poolCount /*, isLoading: isValidatingCount*/ } =
+  //   usePoolsCount(args)
 
-  const data = useMemo(() => pools ?? [], [pools])
+  const data = useMemo(() => pools?.flat() ?? [], [pools])
 
   const rowRenderer = useCallback(
-    (row: Row<SimplePool>, rowNode: ReactNode) => {
+    (row: Row<Pool>, rowNode: ReactNode) => {
       if (onRowClick)
         return (
           <Slot
@@ -362,19 +363,19 @@ export const PoolsTable: FC<PositionsTableProps> = ({ onRowClick }) => {
         <CardHeader>
           <CardTitle>
             Pools{' '}
-            {poolCount?.count ? (
+            {/* {poolCount?.count ? (
               <span className="text-gray-400 dark:text-slate-500">
                 ({poolCount.count})
               </span>
-            ) : null}
+            ) : null} */}
           </CardTitle>
         </CardHeader>
         <DataTable
           state={state}
           pagination={true}
-          pageCount={
-            poolCount ? Math.ceil(poolCount?.count / pagination.pageSize) : 0
-          }
+          // pageCount={
+          //   poolCount ? Math.ceil(poolCount?.count / pagination.pageSize) : 0
+          // }
           onSortingChange={setSorting}
           onPaginationChange={setPagination}
           loading={!pools && isValidatingPools}

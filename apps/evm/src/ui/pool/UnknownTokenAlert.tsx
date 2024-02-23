@@ -1,6 +1,6 @@
 'use client'
 
-import { Pool } from '@sushiswap/rockset-client'
+import { Pool } from '@sushiswap/client2'
 import { useCustomTokens } from '@sushiswap/hooks'
 import { Message } from '@sushiswap/ui'
 import { useTokenWithCache } from '@sushiswap/wagmi'
@@ -13,7 +13,7 @@ interface UnknownTokenAlert {
 }
 
 const tokenName = (token: Pool['token0']) =>
-  token.name ? `${token.name} (${token.symbol})` : shortenAddress(token.address)
+  token!.name ? `${token!.name} (${token!.symbol})` : shortenAddress(token!.address)
 
 export const UnknownTokenAlert: FC<UnknownTokenAlert> = ({ pool }) => {
   const { token0, token1 } = pool
@@ -21,14 +21,14 @@ export const UnknownTokenAlert: FC<UnknownTokenAlert> = ({ pool }) => {
   const { hasToken } = useCustomTokens()
 
   const { data: tokenFrom } = useTokenWithCache({
-    chainId: pool.chainId as ChainId,
-    address: token0.address,
+    chainId: Number(pool.chainId) as ChainId,
+    address: token0!.address,
     withStatus: true,
   })
 
   const { data: tokenTo } = useTokenWithCache({
-    chainId: pool.chainId as ChainId,
-    address: token1.address,
+    chainId: Number(pool.chainId) as ChainId,
+    address: token1!.address,
     withStatus: true,
   })
 

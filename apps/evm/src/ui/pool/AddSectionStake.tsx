@@ -18,7 +18,8 @@ import { ChainId } from 'sushi/chain'
 import { tryParseAmount } from 'sushi/currency'
 import { ZERO } from 'sushi/math'
 
-import { IncentiveType, Pool } from '@sushiswap/rockset-client'
+import { Pool } from '@sushiswap/client2'
+import { IncentiveType } from '@sushiswap/rockset-client'
 import { useExtendedPool } from 'src/lib/hooks/api/useFlairPoolGraphData'
 import { AddSectionStakeWidget } from './AddSectionStakeWidget'
 
@@ -37,17 +38,17 @@ export const AddSectionStake: FC<{ pool: Pool; title?: string }> = ({
 
   if (!pool) return <></>
 
-  if (!pool?.incentives || pool.incentives.length === 0 || !isMounted)
-    return <></>
+  // if (!pool?.incentives || pool.incentives.length === 0 || !isMounted)
+  return <></>
 
-  return (
-    <_AddSectionStake
-      pool={pool}
-      incentiveType={pool.incentives[0].type}
-      title={title}
-      farmId={Number(pool.incentives[0].poolId)}
-    />
-  )
+  // return (
+  //   <_AddSectionStake
+  //     pool={pool}
+  //     incentiveType={pool.incentives[0].type}
+  //     title={title}
+  //     farmId={Number(pool.incentives[0].poolId)}
+  //   />
+  // )
 }
 
 const _AddSectionStake: FC<AddSectionStakeProps> = withCheckerRoot(
@@ -64,7 +65,7 @@ const _AddSectionStake: FC<AddSectionStakeProps> = withCheckerRoot(
     const { sendTransaction, isLoading: isWritePending } = useMasterChefDeposit(
       {
         amount: amounts[0],
-        chainId: pool.chainId,
+        chainId: Number(pool.chainId),
         chef: incentiveType,
         pid: farmId,
         enabled: Boolean(approved && amounts[0]?.greaterThan(ZERO) && pool),
@@ -74,27 +75,27 @@ const _AddSectionStake: FC<AddSectionStakeProps> = withCheckerRoot(
     return (
       <AddSectionStakeWidget
         title={title}
-        chainId={pool.chainId}
+        chainId={Number(pool.chainId)}
         value={value}
         setValue={setValue}
         reserve0={reserve0}
         reserve1={reserve1}
         liquidityToken={liquidityToken}
         isFarm={farmId !== undefined}
-        isIncentivized={pool.isIncentivized}
+        // isIncentivized={pool.isIncentivized}
       >
         <Checker.Connect size="default" variant="outline" fullWidth>
           <Checker.Network
             size="default"
             variant="outline"
             fullWidth
-            chainId={pool.chainId}
+            chainId={Number(pool.chainId)}
           >
             <Checker.Amounts
               size="default"
               variant="outline"
               fullWidth
-              chainId={pool.chainId as ChainId}
+              chainId={Number(pool.chainId) as ChainId}
               amounts={amounts}
             >
               <Checker.ApproveERC20
@@ -104,12 +105,16 @@ const _AddSectionStake: FC<AddSectionStakeProps> = withCheckerRoot(
                 id="stake-approve-slp"
                 amount={amounts[0]}
                 contract={
-                  getMasterChefContractConfig(pool.chainId, incentiveType)
-                    ?.address
+                  getMasterChefContractConfig(
+                    Number(pool.chainId),
+                    incentiveType,
+                  )?.address
                 }
                 enabled={Boolean(
-                  getMasterChefContractConfig(pool.chainId, incentiveType)
-                    ?.address,
+                  getMasterChefContractConfig(
+                    Number(pool.chainId),
+                    incentiveType,
+                  )?.address,
                 )}
               >
                 <Checker.Success tag={APPROVE_TAG_STAKE}>

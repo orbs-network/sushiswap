@@ -1,7 +1,8 @@
 'use client'
 
+import { Pool } from '@sushiswap/client2'
 import { useIsMounted } from '@sushiswap/hooks'
-import { IncentiveType, Pool } from '@sushiswap/rockset-client'
+import { IncentiveType } from '@sushiswap/rockset-client'
 import {
   Card,
   CardCurrencyAmountItem,
@@ -36,17 +37,17 @@ export const RemoveSectionUnstake: FC<{ pool: Pool }> = ({ pool }) => {
 
   if (!pool) return <></>
 
-  if (!pool?.incentives || pool.incentives.length === 0 || !isMounted)
-    return <></>
+  // if (!pool?.incentives || pool.incentives.length === 0 || !isMounted)
+  return <></>
 
-  return (
-    <_RemoveSectionUnstake
-      chainId={pool.chainId as ChainId}
-      pool={pool}
-      incentiveType={pool.incentives[0].type}
-      farmId={Number(pool.incentives[0].poolId)}
-    />
-  )
+  // return (
+  //   <_RemoveSectionUnstake
+  //     chainId={pool.chainId as ChainId}
+  //     pool={pool}
+  //     incentiveType={pool.incentives[0].type}
+  //     farmId={Number(pool.incentives[0].poolId)}
+  //   />
+  // )
 }
 
 export const _RemoveSectionUnstake: FC<AddSectionStakeProps> = withCheckerRoot(
@@ -164,7 +165,7 @@ export const _RemoveSectionUnstake: FC<AddSectionStakeProps> = withCheckerRoot(
                 size="default"
                 variant="outline"
                 fullWidth
-                chainId={pool.chainId}
+                chainId={Number(pool.chainId)}
               >
                 <Checker.Guard
                   size="default"

@@ -16,7 +16,7 @@ import {
 import Link from 'next/link'
 import { FC } from 'react'
 
-import { Pool } from '@sushiswap/rockset-client'
+import { Pool } from '@sushiswap/client2'
 import { AddSectionLegacy } from './AddSectionLegacy'
 import { AddSectionStake } from './AddSectionStake'
 import { PoolPositionProvider } from './PoolPositionProvider'
@@ -32,7 +32,8 @@ export const ManageV2LiquidityCard: FC<ManageV2LiquidityCardProps> = ({
   pool,
   tab = 'add',
 }) => {
-  const isFarm = pool.wasIncentivized || pool.isIncentivized
+  // const isFarm = pool.wasIncentivized || pool.isIncentivized
+  const isFarm = false
 
   return (
     <Card>

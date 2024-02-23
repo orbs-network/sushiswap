@@ -17,13 +17,13 @@ import { ChainId } from 'sushi/chain'
 import { tryParseAmount } from 'sushi/currency'
 import { useTokensFromPool } from '../../lib/hooks'
 
+import { Pool } from '@sushiswap/client2'
 import { AddSectionReviewModalLegacy } from './AddSectionReviewModalLegacy'
 import { AddSectionWidget } from './AddSectionWidget'
-import { Pool } from '@sushiswap/rockset-client'
 
 
 export const AddSectionLegacy: FC<{ pool: Pool }> = ({ pool: _pool }) => {
-  const chainId = _pool.chainId as SushiSwapV2ChainId
+  const chainId = Number(_pool.chainId) as SushiSwapV2ChainId
   const isMounted = useIsMounted()
   const { token0, token1 } = useTokensFromPool(_pool)
   const [{ input0, input1 }, setTypedAmounts] = useState<{
@@ -32,7 +32,7 @@ export const AddSectionLegacy: FC<{ pool: Pool }> = ({ pool: _pool }) => {
   }>({ input0: '', input1: '' })
   const {
     data: [poolState, pool],
-  } = useSushiSwapV2Pool(_pool.chainId as SushiSwapV2ChainId, token0, token1)
+  } = useSushiSwapV2Pool(Number(_pool.chainId) as SushiSwapV2ChainId, token0, token1)
 
   const [parsedInput0, parsedInput1] = useMemo(() => {
     return [tryParseAmount(input0, token0), tryParseAmount(input1, token1)]
@@ -86,8 +86,9 @@ export const AddSectionLegacy: FC<{ pool: Pool }> = ({ pool: _pool }) => {
   return (
     <CheckerProvider>
       <AddSectionWidget
-        isFarm={!!_pool.incentives && _pool.incentives.length > 0}
-        chainId={_pool.chainId as ChainId}
+        // isFarm={!!_pool.incentives && _pool.incentives.length > 0}
+        isFarm={false}
+        chainId={Number(_pool.chainId) as ChainId}
         input0={input0}
         input1={input1}
         token0={token0}
@@ -112,13 +113,13 @@ export const AddSectionLegacy: FC<{ pool: Pool }> = ({ pool: _pool }) => {
               size="default"
               variant="outline"
               fullWidth
-              chainId={_pool.chainId}
+              chainId={Number(_pool.chainId)}
             >
               <Checker.Amounts
                 size="default"
                 variant="outline"
                 fullWidth
-                chainId={_pool.chainId as ChainId}
+                chainId={Number(_pool.chainId) as ChainId}
                 amounts={amounts}
               >
                 <Checker.ApproveERC20
@@ -148,7 +149,7 @@ export const AddSectionLegacy: FC<{ pool: Pool }> = ({ pool: _pool }) => {
                       <AddSectionReviewModalLegacy
                         poolAddress={pool?.liquidityToken.address}
                         poolState={poolState}
-                        chainId={_pool.chainId as SushiSwapV2ChainId}
+                        chainId={Number(_pool.chainId) as SushiSwapV2ChainId}
                         token0={token0}
                         token1={token1}
                         input0={parsedInput0}

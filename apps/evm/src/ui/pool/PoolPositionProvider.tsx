@@ -1,6 +1,6 @@
 'use client'
 
-import { Pool } from '@sushiswap/rockset-client'
+import { Pool } from '@sushiswap/client2'
 import { useAccount } from '@sushiswap/wagmi'
 import { useBalanceWeb3 } from '@sushiswap/wagmi'
 import { FC, ReactNode, createContext, useContext, useMemo } from 'react'
@@ -40,7 +40,7 @@ export const PoolPositionProvider: FC<{
     isLoading,
     isError,
   } = useBalanceWeb3({
-    chainId: pool.chainId as ChainId,
+    chainId: Number(pool.chainId) as ChainId,
     currency: liquidityToken,
     account,
   })
@@ -54,7 +54,7 @@ export const PoolPositionProvider: FC<{
 
   const [underlying0, underlying1] = underlying
   const [value0, value1] = useTokenAmountDollarValues({
-    chainId: pool.chainId,
+    chainId: Number(pool.chainId),
     amounts: underlying,
   })
 

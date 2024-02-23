@@ -1,6 +1,6 @@
 'use client'
 
-import { Pool } from '@sushiswap/rockset-client'
+import { Pool } from '@sushiswap/client2'
 import { useDebounce, useIsMounted } from '@sushiswap/hooks'
 import { Dots } from '@sushiswap/ui'
 import { Button } from '@sushiswap/ui/components/button'
@@ -56,9 +56,9 @@ export const RemoveSectionLegacy: FC<RemoveSectionLegacyProps> =
     const { approved } = useApproved(APPROVE_TAG_REMOVE_LEGACY)
     const isMounted = useIsMounted()
     const { address } = useAccount()
-    const deadline = useTransactionDeadline(_pool.chainId)
+    const deadline = useTransactionDeadline(Number(_pool.chainId))
     const contract = useSushiSwapRouterContract(
-      _pool.chainId as SushiSwapV2ChainId,
+      Number(_pool.chainId) as SushiSwapV2ChainId,
     )
     const [slippageTolerance] = useSlippageTolerance('removeLiquidity')
 
@@ -71,7 +71,7 @@ export const RemoveSectionLegacy: FC<RemoveSectionLegacyProps> =
 
     const {
       data: [poolState, pool],
-    } = useSushiSwapV2Pool(_pool.chainId as SushiSwapV2ChainId, token0, token1)
+    } = useSushiSwapV2Pool(Number(_pool.chainId) as SushiSwapV2ChainId, token0, token1)
 
     const { balance } = usePoolPosition()
     const totalSupply = useTotalSupply(liquidityToken)
@@ -187,14 +187,14 @@ export const RemoveSectionLegacy: FC<RemoveSectionLegacyProps> =
         }
 
         const withNative =
-          Native.onChain(_pool.chainId).wrapped.address ===
+          Native.onChain(Number(_pool.chainId)).wrapped.address ===
             pool.token0.address ||
-          Native.onChain(_pool.chainId).wrapped.address === pool.token1.address
+          Native.onChain(Number(_pool.chainId)).wrapped.address === pool.token1.address
 
-        const config = (function () {
+        const config = (() => {
           if (withNative) {
             const token1IsNative =
-              Native.onChain(_pool.chainId).wrapped.address ===
+              Native.onChain(Number(_pool.chainId)).wrapped.address ===
               pool.token1.wrapped.address
 
             return {
@@ -292,7 +292,7 @@ export const RemoveSectionLegacy: FC<RemoveSectionLegacyProps> =
 
     const { config } = usePrepareSendTransaction({
       ...prepare,
-      chainId: _pool.chainId,
+      chainId: Number(_pool.chainId),
       enabled: Boolean(approved && Number(percentage) > 0),
     })
 
@@ -307,8 +307,9 @@ export const RemoveSectionLegacy: FC<RemoveSectionLegacyProps> =
     return (
       <div>
         <RemoveSectionWidget
-          isFarm={!!_pool.incentives && _pool.incentives.length > 0}
-          chainId={_pool.chainId as ChainId}
+          // isFarm={!!_pool.incentives && _pool.incentives.length > 0}
+          isFarm={false}
+          chainId={Number(_pool.chainId) as ChainId}
           percentage={percentage}
           token0={token0}
           token1={token1}
@@ -333,7 +334,7 @@ export const RemoveSectionLegacy: FC<RemoveSectionLegacyProps> =
                 size="default"
                 variant="outline"
                 fullWidth
-                chainId={_pool.chainId}
+                chainId={Number(_pool.chainId)}
               >
                 <Checker.Guard
                   size="default"
@@ -349,7 +350,7 @@ export const RemoveSectionLegacy: FC<RemoveSectionLegacyProps> =
                     amount={amountToRemove}
                     contract={
                       getSushiSwapRouterContractConfig(
-                        _pool.chainId as SushiSwapV2ChainId,
+                        Number(_pool.chainId) as SushiSwapV2ChainId,
                       ).address as Address
                     }
                   >

@@ -2,8 +2,9 @@ import { Container, Separator } from '@sushiswap/ui'
 import { ManageV2LiquidityCard } from 'src/ui/pool/ManageV2LiquidityCard'
 import { PoolTransactionsV2 } from 'src/ui/pool/PoolTransactionsV2'
 
-import { Pool } from '@sushiswap/rockset-client'
+import { Pool } from '@sushiswap/client2'
 import { FC } from 'react'
+import { ID } from 'sushi'
 import { PoolChartV2 } from './PoolChartV2'
 import { PoolComposition } from './PoolComposition'
 import { PoolMyRewards } from './PoolMyRewards'
@@ -45,12 +46,12 @@ export const PoolPageV2: FC<PoolPageV2> = ({ pool, tab }) => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-[auto_400px] gap-6">
           <div>
-            <PoolChartV2 id={pool.id} />
+            <PoolChartV2 id={pool.id as ID} />
           </div>
           <div className="flex flex-col gap-6">
             <PoolComposition pool={pool} />
             <PoolStats pool={pool} />
-            {pool.isIncentivized ? <PoolRewards pool={pool} /> : null}
+            {/* {pool.isIncentivized ? <PoolRewards pool={pool} /> : null} */}
           </div>
         </div>
         <div className="py-4">
