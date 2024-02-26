@@ -14,7 +14,7 @@ export type GetPoolsArgs =
   | undefined
 
 export const getPoolsUrl = (args: GetPoolsArgs) => {
-  return `${EVM_APP_BASE_URL}/pool/api/pools${parseArgs(args)}`
+  return `${EVM_APP_BASE_URL}/pool/api/pools/v1${parseArgs(args)}`
 }
 
 export const getPools = async (args: GetPoolsArgs): Promise<Pools> => {

@@ -14,6 +14,7 @@ export default async function PoolPage({
   tab: 'add' | 'remove' | 'unstake' | 'stake'
 }) {
   const poolId = unsanitize(params.id)
+
   const pool = await unstable_cache(
     async () => getPool(poolId),
     ['pool', poolId],

@@ -14,7 +14,7 @@ export type GetPoolCountArgs =
   | undefined
 
 export const getPoolCountUrl = (args: GetPoolCountArgs) => {
-  return `${EVM_APP_BASE_URL}/pool/api/pools/count${parseArgs(args)}`
+  return `${EVM_APP_BASE_URL}/pool/api/pools/v1/count${parseArgs(args)}`
 }
 
 export const getPoolCount = async (

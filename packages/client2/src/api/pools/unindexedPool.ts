@@ -176,6 +176,7 @@ export async function getUnindexedPool(
     chainId: BigInt(chainId),
     token0: {
       id: `${chainId}:${token0.address.toLowerCase()}`,
+      chainId: BigInt(chainId),
       address: token0.address.toLowerCase(),
       symbol: token0.symbol,
       name: token0.name,
@@ -183,6 +184,7 @@ export async function getUnindexedPool(
     },
     token1: {
       id: `${chainId}:${token1.address.toLowerCase()}`,
+      chainId: BigInt(chainId),
       address: token1.address.toLowerCase(),
       symbol: token1.symbol,
       name: token1.name,

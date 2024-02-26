@@ -45,6 +45,7 @@ export const PoolSelect = {
   // isBlacklisted: true,
   token0: {
     select: {
+      chainId: true,
       id: true,
       address: true,
       name: true,
@@ -54,6 +55,7 @@ export const PoolSelect = {
   },
   token1: {
     select: {
+      chainId: true,
       id: true,
       address: true,
       name: true,

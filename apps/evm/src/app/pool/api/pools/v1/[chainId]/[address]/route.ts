@@ -18,5 +18,10 @@ export async function GET(
   }
 
   const pool = await getPoolFromDB(result.data)
-  return NextResponse.json(pool, { headers: CORS })
+  const p = {
+      ...pool,
+      chainId: Number(pool.chainId), // Temp, replace chainId with number instead of bigint for now. PALMs chain id is > max int?
+  }
+
+  return NextResponse.json(p, { headers: CORS })
 }

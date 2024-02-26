@@ -22,8 +22,7 @@ export const getPoolUrl = (args: GetPoolArgs) => {
   } else {
     ;[chainId, address] = [args.chainId, args.address]
   }
-
-  return `${EVM_APP_BASE_URL}/pool/api/pools/${chainId}/${address}`
+  return `${EVM_APP_BASE_URL}/pool/api/pools/v1/${chainId}/${address}`
 }
 
 export const getPool = async (args: GetPoolArgs): Promise<Pool> => {
