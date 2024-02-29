@@ -9,6 +9,7 @@ import '../interfaces/IBentoBoxMinimal.sol';
 import '../interfaces/IPool.sol';
 import '../interfaces/IWETH.sol';
 import '../interfaces/ICurve.sol';
+import '../interfaces/IBlast.sol';
 import './InputStream.sol';
 import './Approve.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
@@ -48,6 +49,8 @@ contract RouteProcessor4 is Ownable {
 
   error MinimalOutputBalanceViolation(uint256 amountOut);
 
+  IBlast constant blast = IBlast(0x4300000000000000000000000000000000000002);
+
   IBentoBoxMinimal public immutable bentoBox;
   mapping (address => bool) public priviledgedUsers;
   address private lastCalledPool;
@@ -74,6 +77,8 @@ contract RouteProcessor4 is Ownable {
     for (uint256 i = 0; i < priviledgedUserList.length; i++) {
       priviledgedUsers[priviledgedUserList[i]] = true;
     }
+
+    blast.configure(IBlast.YieldMode.VOID, IBlast.GasMode.CLAIMABLE, msg.sender);
   }
 
   function setPriviledge(address user, bool priviledge) external onlyOwner {
