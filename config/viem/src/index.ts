@@ -422,6 +422,46 @@ export const zetachain = {
   },
 } as const
 
+export const blast = {
+  id: ChainId.BLAST,
+  name: 'Blast',
+  network: 'blast',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Ether',
+    symbol: 'ETH',
+  },
+  rpcUrls: {
+    default: {
+      http: [
+        'https://rpc.blast.io',
+        'https://rpc.ankr.com/blast',
+        'https://blast.din.dev/rpc',
+        'https://blastl2-mainnet.public.blastapi.io',
+        'https://blast.blockpi.network/v1/rpc/public',
+      ],
+    },
+    public: {
+      http: [
+        'https://rpc.blast.io',
+        'https://rpc.ankr.com/blast',
+        'https://blast.din.dev/rpc',
+        'https://blastl2-mainnet.public.blastapi.io',
+        'https://blast.blockpi.network/v1/rpc/public',
+      ],
+    },
+  },
+  blockExplorers: {
+    default: { name: 'BlastScan', url: 'https://blastscan.io/' },
+  },
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      blockCreated: 88189,
+    },
+  },
+} as const
+
 // const alchemyId =
 //   process.env['ALCHEMY_ID'] || process.env['NEXT_PUBLIC_ALCHEMY_ID']
 const drpcId = process.env['DRPC_ID'] || process.env['NEXT_PUBLIC_DRPC_ID']
@@ -638,5 +678,9 @@ export const config: Record<
   [ChainId.ZETACHAIN]: {
     chain: zetachain,
     transport: http(zetachain.rpcUrls.default.http[0]),
+  },
+  [ChainId.BLAST]: {
+    chain: blast,
+    transport: http(blast.rpcUrls.default.http[0]),
   },
 } as const

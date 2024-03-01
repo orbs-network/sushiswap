@@ -47,8 +47,10 @@ export async function prices() {
         chainId === ChainId.OPTIMISM
           ? '0x7f5c764cbc14f9669b88837ca1490cca17c31607'
           : chainId === ChainId.ZETACHAIN
-          ? '0x7c8dDa80bbBE1254a7aACf3219EBe1481c6E01d7' // USDT.ETH
-          : USDC_ADDRESS[chainId as keyof typeof USDC_ADDRESS]
+            ? '0x7c8dDa80bbBE1254a7aACf3219EBe1481c6E01d7' // USDT.ETH
+            : chainId === ChainId.BLAST
+              ? '0x4300000000000000000000000000000000000003'
+              : USDC_ADDRESS[chainId as keyof typeof USDC_ADDRESS]
       if (!isAddress(base) || !base) {
         console.log(
           `Base token (${base}) is not a valid address, given the chainId: ${chainId}. SKIPPING`,

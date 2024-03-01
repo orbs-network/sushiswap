@@ -605,6 +605,7 @@ export const WNATIVE = {
     symbol: 'WZETA',
     name: 'Wrapped ZETA',
   }),
+  [ChainId.BLAST]: WETH9[ChainId.BLAST],
 } as const
 
 export const SUSHI = addressMapToTokenMap(
