@@ -3,7 +3,11 @@ import { getCreate2Address } from '@ethersproject/address'
 import { keccak256 } from '@ethersproject/solidity'
 import { Token } from 'sushi/currency'
 
-import { FeeAmount, POOL_INIT_CODE_HASH } from '../constants'
+import {
+  FeeAmount,
+  SUSHISWAP_V3_INIT_CODE_HASH,
+  SushiSwapV3ChainId,
+} from '../constants'
 
 /**
  * Computes a pool address
@@ -42,10 +46,12 @@ export function computePoolAddress({
           ),
         ],
       ),
-      initCodeHashManualOverride ?? POOL_INIT_CODE_HASH,
+      initCodeHashManualOverride ??
+        SUSHISWAP_V3_INIT_CODE_HASH[token0.chainId as SushiSwapV3ChainId],
     )
   }
 
+  // FIXME: We shouldn't even allow sending strings into here, this means we have to assume init code hash is always the same for every chain
   return getCreate2Address(
     factoryAddress,
     keccak256(
@@ -57,6 +63,7 @@ export function computePoolAddress({
         ),
       ],
     ),
-    initCodeHashManualOverride ?? POOL_INIT_CODE_HASH,
+    initCodeHashManualOverride ??
+      '0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54',
   )
 }
