@@ -3,6 +3,7 @@ import {
   arbitrum,
   avalanche,
   bsc,
+  cronos,
   fantom,
   foundry,
   goerli,
@@ -39,6 +40,7 @@ export const defaultChains: Chain[] = [
   // polygonMumbai,
   // sepolia,
   scroll,
+  cronos,
 ]
 
 export const otherChains: Chain[] = [
@@ -808,6 +810,45 @@ export const otherChains: Chain[] = [
       multicall3: {
         address: '0x039e87AB90205F9d87c5b40d4B28e2Be45dA4a20',
         blockCreated: 1565755,
+      },
+    },
+  },
+  {
+    id: ChainId.BLAST,
+    name: 'Blast',
+    network: 'blast',
+    nativeCurrency: {
+      decimals: 18,
+      name: 'Ether',
+      symbol: 'ETH',
+    },
+    rpcUrls: {
+      default: {
+        http: [
+          'https://rpc.blast.io',
+          'https://rpc.ankr.com/blast',
+          'https://blast.din.dev/rpc',
+          'https://blastl2-mainnet.public.blastapi.io',
+          'https://blast.blockpi.network/v1/rpc/public',
+        ],
+      },
+      public: {
+        http: [
+          'https://rpc.blast.io',
+          'https://rpc.ankr.com/blast',
+          'https://blast.din.dev/rpc',
+          'https://blastl2-mainnet.public.blastapi.io',
+          'https://blast.blockpi.network/v1/rpc/public',
+        ],
+      },
+    },
+    blockExplorers: {
+      default: { name: 'BlastScan', url: 'https://blastscan.io/' },
+    },
+    contracts: {
+      multicall3: {
+        address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+        blockCreated: 88189,
       },
     },
   },
