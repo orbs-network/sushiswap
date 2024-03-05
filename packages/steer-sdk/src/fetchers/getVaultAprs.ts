@@ -32,7 +32,7 @@ export async function getVaultAprs({ chainId }: GetVaultAprs) {
 
   const { message, data }: AprData = await result.json()
 
-  if (message !== 'success')
+  if (message !== 'Success')
     throw new Error(`Failed to fetch aprs for chainId: ${chainId}`)
 
   const map = new Map<
@@ -47,17 +47,17 @@ export async function getVaultAprs({ chainId }: GetVaultAprs) {
 
   for (const apr of data.weekly) {
     const vaultId = getIdFromChainIdAddress(chainId, apr.vault)
-    map.set(vaultId, { ...map.get(apr.vault), apr1w: parseFloat(apr.apr) })
+    map.set(vaultId, { ...map.get(vaultId), apr1w: parseFloat(apr.apr) })
   }
 
   for (const apr of data.monthly) {
     const vaultId = getIdFromChainIdAddress(chainId, apr.vault)
-    map.set(vaultId, { ...map.get(apr.vault), apr1m: parseFloat(apr.apr) })
+    map.set(vaultId, { ...map.get(vaultId), apr1m: parseFloat(apr.apr) })
   }
 
   for (const apr of data.default) {
     const vaultId = getIdFromChainIdAddress(chainId, apr.vault)
-    map.set(vaultId, { ...map.get(apr.vault), apr: parseFloat(apr.apr) })
+    map.set(vaultId, { ...map.get(vaultId), apr: parseFloat(apr.apr) })
   }
 
   return Object.fromEntries(map)

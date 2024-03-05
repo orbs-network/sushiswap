@@ -6,15 +6,20 @@ import {
 } from '@sushiswap/graph-config'
 import {
   getSteerStrategiesPayloads,
-  getSteerVaultAprs,
+  getVaultAprs,
+  getVerifiedVaults,
 } from '@sushiswap/steer-sdk'
-import { isPromiseFulfilled } from 'sushi'
-import { getIdFromChainIdAddress } from 'sushi/format'
+import { getIdFromChainIdAddress, isPromiseFulfilled } from 'sushi'
 import { TickMath } from 'sushi/pool'
 
+import { Address } from 'viem'
 import { getBuiltGraphSDK } from '../.graphclient/index.js'
 import { updatePoolsWithSteerVaults } from './etl/pool/load.js'
-import { deprecateVaults, upsertVaults } from './etl/steer/load.js'
+import {
+  deprecateVaults,
+  enableVaults,
+  upsertVaults,
+} from './etl/steer/load.js'
 import { getTokenPrices } from './lib/price.js'
 
 export async function steer() {
@@ -28,6 +33,8 @@ export async function steer() {
 
     await upsertVaults(transformed)
     await updatePoolsWithSteerVaults()
+
+    await enable()
     await deprecate()
 
     const endTime = performance.now()
@@ -39,6 +46,18 @@ export async function steer() {
   } catch (e) {
     console.error(e)
   }
+}
+
+async function enable() {
+  const results = await Promise.allSettled(
+    STEER_ENABLED_NETWORKS.map((chainId) => getVerifiedVaults({ chainId })),
+  )
+
+  const verifiedVaults = results
+    .filter(isPromiseFulfilled)
+    .flatMap((r) => r.value)
+
+  await enableVaults(verifiedVaults)
 }
 
 async function deprecate() {
@@ -59,6 +78,7 @@ async function extract() {
   const result = await Promise.allSettled(
     STEER_ENABLED_NETWORKS.map(extractChain),
   )
+
   return result.filter(isPromiseFulfilled).map((r) => r.value)
 }
 
@@ -98,10 +118,21 @@ async function extractChain(chainId: SteerChainId) {
     payloads.push(...payloadsChunk)
   }
 
+  const aprs = await getVaultAprs({ chainId })
+
   const vaultsWithPayloads = await Promise.allSettled(
     vaults.map(async (vault, i) => {
+      const vaultId = getIdFromChainIdAddress(chainId, vault.id as Address)
+
       const poolId = `${chainId}:${vault.pool.toLowerCase()}`
       const pool = pools.find((pool) => pool.id === poolId)
+
+      const {
+        apr1d = null,
+        apr1w = null,
+        apr1m = null,
+        apr = null,
+      } = aprs[vaultId] || {}
 
       const payload = payloads[i]
 
@@ -125,27 +156,16 @@ async function extractChain(chainId: SteerChainId) {
       const reserveUSD = reserve0USD + reserve1USD
       const feesUSD = Number(fees0USD) + Number(fees1USD)
 
-      const [aprP] = await Promise.allSettled([
-        getSteerVaultAprs({
-          vaultId: getIdFromChainIdAddress(chainId, vault.id as `0x${string}`),
-        }),
-      ])
-
-      const {
-        apr: annualPercentageYield,
-        apr1d: annualPercentageDailyYield,
-        apr1w: annualPercentageWeeklyYield,
-      } = isPromiseFulfilled(aprP) && aprP.value
-        ? aprP.value
-        : { apr: null, apr1d: null, apr1w: null }
-
       return {
         ...vault,
+        id: vaultId,
+        address: vault.id,
         poolId,
         payload,
-        annualPercentageYield,
-        annualPercentageDailyYield,
-        annualPercentageWeeklyYield,
+        apr1d,
+        apr1w,
+        apr1m,
+        apr,
         reserve0USD,
         fees0USD,
         reserve1USD,
@@ -249,11 +269,11 @@ function transform(
         feeTier: Number(vault.feeTier) / 1000000,
 
         // apr1d, apr1m, apr1y are from the subgraph and inaccurate
-        apr: Number(vault.annualPercentageYield),
-        apr1w: Number(vault.annualPercentageWeeklyYield),
-        apr1d: Number(vault.annualPercentageDailyYield),
-        apr1m: Number(vault.annualPercentageMonthlyYield),
-        apr1y: Number(vault.annualPercentageYearlyYield),
+        apr: vault.apr || 0,
+        apr1d: vault.apr1d || 0,
+        apr1w: vault.apr1w || 0,
+        apr1m: vault.apr1m || 0,
+        apr1y: 0,
 
         token0Id: `${chainId}:${vault.token0}`.toLowerCase(),
         reserve0: vault.reserve0 as string,

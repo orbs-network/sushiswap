@@ -610,7 +610,7 @@ serve:
   playground: true
 
 codegen:
-  contextType: 'MeshContext & { chainId: string; subgraphName: string; subgraphHost: string }'
+  contextType: ./context#Context
 
 # cache:
 #   redis:

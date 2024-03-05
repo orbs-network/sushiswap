@@ -297,7 +297,6 @@ export const EXCHANGE_SUBGRAPH_NAME: Record<number, string> = {
   [ChainId.GNOSIS]: 'sushiswap/xdai-exchange',
   [ChainId.MOONBEAM]: 'sushiswap/exchange-moonbeam',
   [ChainId.MOONRIVER]: 'sushiswap/exchange-moonriver',
-  [ChainId.POLYGON]: 'sushiswap/matic-exchange',
   [ChainId.HARMONY]: 'sushiswap/exchange-harmony',
   [ChainId.ARBITRUM_NOVA]: 'sushi-0m/sushiswap-arbitrum-nova',
   [ChainId.POLYGON]: 'sushiswap/exchange-polygon',
@@ -466,9 +465,9 @@ export const STEER_ENABLED_NETWORKS = [
   ChainId.THUNDERCORE,
   ChainId.METIS,
   ChainId.POLYGON_ZKEVM,
-  ChainId.KAVA,
-  ChainId.LINEA,
-  ChainId.SCROLL,
+  // ChainId.KAVA,
+  // ChainId.LINEA,
+  // ChainId.SCROLL,
 ] as const
 
 export type SteerChainId = (typeof STEER_ENABLED_NETWORKS)[number]
@@ -495,12 +494,12 @@ export const STEER_SUBGRAPH_URL: Record<SteerChainId, string> = {
     'http://13.228.90.202:8000/subgraphs/name/steerprotocol/steer-zkevm',
   [ChainId.CELO]:
     'api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-test-celo',
-  [ChainId.KAVA]:
-    'subgraph.steer.finance/kava/subgraphs/name/steerprotocol/steer-kava-evm',
-  [ChainId.LINEA]:
-    'subgraph.steer.finance/linea/subgraphs/name/steerprotocol/steer-linea',
-  [ChainId.SCROLL]:
-    'subgraph.steer.finance/scroll/subgraphs/name/steerprotocol/steer-scroll',
+  // [ChainId.KAVA]:
+  //   'subgraph.steer.finance/kava/subgraphs/name/steerprotocol/steer-kava-evm',
+  // [ChainId.LINEA]:
+  //   'subgraph.steer.finance/linea/subgraphs/name/steerprotocol/steer-linea',
+  // [ChainId.SCROLL]:
+  //   'subgraph.steer.finance/scroll/subgraphs/name/steerprotocol/steer-scroll',
   // [ChainId.MANTA]: 'subgraph.steer.finance/manta/subgraphs/name/steerprotocol/steer-manta'
 }
 
