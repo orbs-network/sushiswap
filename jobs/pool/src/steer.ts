@@ -261,8 +261,8 @@ function transform(
       }
 
       return {
-        id: `${chainId}:${vault.id}`.toLowerCase(),
-        address: vault.id.toLowerCase(),
+        id: vault.id.toLowerCase(),
+        address: vault.address.toLowerCase(),
         chainId: chainId,
 
         poolId: vault.poolId,
