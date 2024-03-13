@@ -1,0 +1,283 @@
+query Pairs($first: Int = 1000, $skip: Int = 0, $where: Pair_filter, $block: Block_height) {
+  pairs(first: $first, skip: $skip, where: $where, block: $block) {
+    id
+    token0 {
+      id
+      name
+      symbol
+      decimals
+    }
+    token1 {
+      id
+      name
+      symbol
+      decimals
+    }
+    name
+    type
+    source
+    swapFee
+    twapEnabled
+    reserve0
+    reserve1
+    liquidity
+    token0Price
+    token1Price
+    liquidityUSD
+    liquidityNative
+    apr
+    aprUpdatedAtTimestamp
+    volumeUSD
+    feesUSD
+    volumeNative
+    createdAtTimestamp
+    createdAtBlock
+  }
+
+  bundle(id: 1, block: $block) {
+    nativePrice
+  }
+}
+
+query PairWithLiquidityPositions($id: ID!, $block: Block_height) {
+  pair(id: $id, block: $block) {
+    reserve0
+    reserve1
+    liquidity
+    token0Price
+    token1Price
+    liquidityPositions {
+      user {
+        id
+      }
+      balance
+    }
+  }
+}
+
+fragment PairWithLiquidityPositionsFragment on Pair {
+  reserve0
+  reserve1
+  liquidity
+  token0 {
+    id
+    decimals
+  }
+  token1 {
+    id
+    decimals
+  }
+  token0Price
+  token1Price
+  liquidityPositions {
+    user {
+      id
+    }
+    balance
+  }
+}
+
+query PairAtBlocks(
+  $id: ID!
+  $blocks: [Block_height!]!
+) {
+  pairAtBlocks(
+    id: $id
+    blocks: $blocks
+  ) {
+    ...PairWithLiquidityPositionsFragment
+  }
+}
+
+query PairHourSnapshots($first: Int = 1000, $skip: Int = 0, $where: PairHourSnapshot_filter, $block: Block_height) {
+  pairHourSnapshots(first: $first, skip: $skip, where: $where, block: $block) {
+    id
+    date
+    pair {
+      createdAtBlock
+      token0 {
+        id
+      }
+      token0Price
+      token1 {
+        id
+      }
+      token1Price
+      reserve0
+      reserve1
+    }
+  }
+}
+
+query LiquidityPositions($first: Int = 1000, $skip: Int = 0, $where: LiquidityPosition_filter, $block: Block_height) {
+  liquidityPositions(first: $first, skip: $skip, where: $where, block: $block) {
+    id
+    balance
+    user {
+      id
+    }
+    pair {
+      id
+      liquidity
+      reserve0
+      reserve1
+      token0 {
+        id
+      }
+      token0Price
+      token1 {
+        id
+      }
+      token1Price
+    }
+  }
+}
+
+query V3Pools($first: Int = 1000, $skip: Int = 0, $where: V3_Pool_filter, $block: V3_Block_height) {
+  pools: V3_pools(first: $first, skip: $skip, where: $where, block: $block) {
+    id
+    token0 {
+      id
+      name
+      symbol
+      decimals
+    }
+    token1 {
+      id
+      name
+      symbol
+      decimals
+    }
+    # volumeToken0
+    # volumeToken1
+    liquidity
+    volumeUSD
+    untrackedVolumeUSD
+    feesUSD
+    feeTier
+    token0Price
+    token1Price
+    # txCount
+    collectedFeesToken0
+    collectedFeesToken1
+    collectedFeesUSD
+    totalValueLockedToken0
+    totalValueLockedToken1
+    totalValueLockedETH
+    totalValueLockedUSD
+    totalValueLockedUSDUntracked
+    liquidityProviderCount
+    createdAtBlockNumber
+  }
+}
+
+fragment V3PoolWithPosition on V3_Pool {
+  id
+  liquidity
+  sqrtPrice
+  tick
+  totalValueLockedToken0
+  totalValueLockedToken1
+  token0 {
+    id
+    decimals
+  }
+  token1 {
+    id
+    decimals
+  }
+  token0Price
+  token1Price
+  positions {
+    id
+    owner
+    liquidity
+    tickLower {
+      tickIdx
+    }
+    tickUpper {
+      tickIdx
+    }
+  }
+}
+
+query V3PoolAtBlocks(
+  $id: ID!
+  $blocks: [Block_height!]!
+) {
+  v3PoolAtBlocks(
+    id: $id
+    blocks: $blocks
+  ) {
+    ...V3PoolWithPosition
+  }
+}
+
+query Block($id: ID!) {
+  block(id: $id) {
+    id
+    number
+    timestamp
+  }
+}
+
+query Blocks(
+  $first: Int = 1
+  $skip: Int = 0
+  $where: Block_filter
+  $orderBy: Block_orderBy = timestamp
+  $orderDirection: OrderDirection = desc
+) {
+  blocks(first: $first, skip: $skip, where: $where, orderBy: $orderBy, orderDirection: $orderDirection) {
+    id
+    number
+    timestamp
+  }
+}
+
+query CurrentBlock($first: Int = 1000, $skip: Int = 0) {
+  _meta {
+    block {
+      number
+    }
+  }
+}
+
+query SteerVaults($first: Int = 1000, $skip: Int = 0, $where: Steer_Vault_filter, $block: Steer_Block_height) {
+  vaults: Steer_vaults(first: $first, skip: $skip, where: $where, block: $block) {
+    id
+    pool
+    totalLPTokensIssued
+    depositors {
+      account
+      shares
+    }
+    positions {
+      lowerTick
+      upperTick
+    }
+  }
+}
+
+query SteerVaultsAtBlocks(
+  $first: Int = 1000
+  $skip: Int = 0
+  $where: Steer_Vault_filter
+  $blocks: [Block_height!]!
+) {
+  steerVaultsAtBlocks(where: $where, blocks: $blocks) {
+    vaults {
+      id
+      pool
+      totalLPTokensIssued
+      depositors {
+        account
+        shares
+      }
+      positions {
+        lowerTick
+        upperTick
+      }
+    }
+  }
+}

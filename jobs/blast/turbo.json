@@ -1,0 +1,25 @@
+{
+  "extends": ["//"],
+  "pipeline": {
+    "start": {
+      "dependsOn": [        
+        "build"
+      ],
+      "env": [
+        "POINTS_OPERATOR_PRIVATE_KEY"
+      ],
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "outputs": [
+        ".graphclient/**"
+      ],
+      "dependsOn": ["^build"]
+    },
+    "check": {
+      "dependsOn": ["build"],
+      "cache": false
+    }
+  }
+}
