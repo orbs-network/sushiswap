@@ -79,6 +79,8 @@ async function distributeV3Pools() {
 
     const transfers = await client.getBatches()
 
+    console.log('transfers', transfers)
+
     const startBlock = transfers.length
       ? +transfers[0].id
       : +pool.createdAtBlockNumber
@@ -144,11 +146,13 @@ async function distributeV3Pools() {
     // const response = await client.sendBatch(
     //   {
     //     pointType: 'LIQUIDITY',
-    //     secondsToFinalize: isTest ? 0 : 60,
+    //     secondsToFinalize: 3600,
     //     transfers: batchTransfers,
     //   },
     //   currentBlock.toString(),
     // )
+
+    // console.log('response', response)
   }
 }
 
@@ -161,7 +165,7 @@ async function distributeV2Pairs() {
       OPERATOR_PRIVATE_KEY as `0x${string}`,
     )
 
-    console.log(pair)
+    console.log(pair.id)
 
     const balances = await client.getBalances()
 
@@ -174,6 +178,8 @@ async function distributeV2Pairs() {
     }
 
     const transfers = await client.getBatches()
+
+    console.log('transfers', transfers)
 
     const startBlock = transfers.length
       ? +transfers[0].id
@@ -216,11 +222,13 @@ async function distributeV2Pairs() {
     // const response = await client.sendBatch(
     //   {
     //     pointType: 'LIQUIDITY',
-    //     secondsToFinalize: isTest ? 0 : 60,
+    //     secondsToFinalize: 3600,
     //     transfers: batchTransfers,
     //   },
     //   currentBlock.toString(),
     // )
+
+    // console.log('response', response)
   }
 }
 
