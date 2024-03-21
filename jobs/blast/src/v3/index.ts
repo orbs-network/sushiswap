@@ -132,12 +132,12 @@ export async function getSteerLiquidityOverBlocks(
     .map(({ vaults }) => vaults)
 
   const usersLiquidity: Record<string, LiquidityInfo> = {}
-  let totalLiquidity: LiquidityInfo = {
+  let totalLiquidity = {
     reserve0: 0,
     reserve1: 0,
   }
 
-  steerVaultsAtBlocks.forEach(async (steerVaultsAtBlock, i) => {
+  for (const [i, steerVaultsAtBlock] of steerVaultsAtBlocks.entries()) {
     const blockIndex = blocks.length - steerVaultsAtBlocks.length + i
     const block = blocks[blockIndex]
 
@@ -210,15 +210,13 @@ export async function getSteerLiquidityOverBlocks(
             (usersLiquidity[depositor.account]?.reserve1 ?? 0) +
             userVaultLiquidity.reserve1,
         }
-
         totalLiquidity = {
           reserve0: totalLiquidity.reserve0 + userVaultLiquidity.reserve0,
           reserve1: totalLiquidity.reserve1 + userVaultLiquidity.reserve1,
         }
       })
     })
-  })
-
+  }
   return { users: usersLiquidity, total: totalLiquidity }
 }
 
