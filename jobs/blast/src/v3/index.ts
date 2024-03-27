@@ -43,7 +43,7 @@ export async function getEligbleV3Pools() {
         { token0: USDB },
         { token0: WETH },
         { token1: USDB },
-        { token0: WETH },
+        { token1: WETH },
       ],
     },
   })

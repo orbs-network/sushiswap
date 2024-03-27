@@ -72,7 +72,7 @@ async function distributeV3Pools() {
     const availablePoints = +balances.balancesByPointType.LIQUIDITY.available
     if (availablePoints < MINIMUM_TRANSFER_SIZE) {
       console.log(
-        `skipping V2Pair ${pool.id} does not meet the minimum points requirement...`,
+        `skipping V3Pool ${pool.id} does not meet the minimum points requirement...`,
       )
       continue
     }
