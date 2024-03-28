@@ -3,18 +3,17 @@
 import { cloudinaryImageLoader } from '@sushiswap/ui/cloudinary'
 import Image from 'next/image'
 
-export const FarmerImage = () => {
+export const FarmerImage = ({ className }: { className: string }) => {
   return (
-    <div className="flex justify-center">
-      <div className="rounded-lg overflow-hidden md:not-prose">
-        <Image
-          loader={cloudinaryImageLoader}
-          alt="farmer"
-          src="/image_142.jpg"
-          width={360}
-          height={293}
-        />
-      </div>
-    </div>
+    <Image
+      loader={cloudinaryImageLoader}
+      alt="farmer"
+      src="/pepefarmercut.jpg"
+      width={0}
+      height={0}
+      sizes="100vw"
+      className={className}
+      quality={75}
+    />
   )
 }

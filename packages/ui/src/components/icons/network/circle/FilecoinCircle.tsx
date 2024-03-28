@@ -9,7 +9,7 @@ export const FilecoinCircle: IconComponent = (props) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <g clip-path="url(#clip0_1169_2)">
+    <g clipPath="url(#clip0_1169_2)">
       <mask
         id="mask0_1169_2"
         type="alpha"

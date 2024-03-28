@@ -3,18 +3,16 @@
 import { cloudinaryImageLoader } from '@sushiswap/ui/cloudinary'
 import Image from 'next/image'
 
-export const CollabHubImage = () => {
+export const CollabHubImage = ({ className }: { className?: string }) => {
   return (
-    <div className="flex justify-center">
-      <div className="rounded-lg overflow-hidden md:not-prose">
-        <Image
-          loader={cloudinaryImageLoader}
-          alt="farmer"
-          src="/image_143.jpg"
-          width={410}
-          height={520}
-        />
-      </div>
-    </div>
+    <Image
+      loader={cloudinaryImageLoader}
+      alt="farmer"
+      src="/sushicolab.png"
+      className={className}
+      quality={75}
+      fill={true}
+      style={{ objectFit: 'cover' }}
+    />
   )
 }
