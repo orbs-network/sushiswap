@@ -1,7 +1,7 @@
 import { ChevronRightIcon } from '@heroicons/react-v1/solid'
-import { Button, typographyVariants } from '@sushiswap/ui'
+import { Button, LinkExternal, typographyVariants } from '@sushiswap/ui'
 import React from 'react'
-import { CollabHubImage } from '../collab-hub-image'
+import { CollabHubImage } from '../images/collab-hub-image'
 
 import { Arbitrum } from './partners/arbitrum'
 import { Bnb } from './partners/bnb'
@@ -42,7 +42,7 @@ export function LetsConnect() {
         <div className="mx-9 my-14 md:m-[120px] flex flex-col">
           <div className="space-y-[88px]">
             <div className="space-y-14">
-              <div className="aspect-1 font-medium text-3xl inline-flex justify-center items-center rounded-lg p-[14px] bg-secondary dark:bg-white dark:bg-opacity-[0.14]">
+              <div className="aspect-1 font-medium text-3xl inline-flex justify-center items-center rounded-lg p-[14px] bg-secondary dark:bg-white dark:bg-opacity-[0.14] select-none">
                 🤝
               </div>
               <div className="space-y-12">
@@ -52,16 +52,30 @@ export function LetsConnect() {
                   >{`Let's connect`}</h1>
                   <span className="text-lg">{`Whether you're about to launch a new product, seeking to enhance your existing project, or looking to forge new partnerships in the DeFi space, Sushi is here to support your journey. Join us today and unleash the full potential of your project with Sushi.`}</span>
                 </div>
-                <Button className="!w-52 !h-12">{`Let's talk!`}</Button>
+                <div>
+                  <LinkExternal
+                    href="https://rbieu62gj0f.typeform.com/to/c4dIghED"
+                    target="_blank"
+                  >
+                    <Button className="!w-64 !h-12">{`Let's Talk!`}</Button>
+                  </LinkExternal>
+                </div>
               </div>
             </div>
             <div className="space-y-10">
               <Partners />
-              <div className="flex flex-row space-x-1 items-center text-blue text-xl md:justify-start justify-center">
-                <span>See our full partner list</span>
-                <span>
-                  <ChevronRightIcon height={24} />
-                </span>
+              <div>
+                <LinkExternal
+                  href="https://docs.sushi.com/docs/Ecosystem/Build%20on%20Sushiswap"
+                  target="_blank"
+                >
+                  <div className="flex flex-row space-x-1 items-center md:justify-start justify-center text-blue text-xl">
+                    <span>See our full partner list</span>
+                    <span>
+                      <ChevronRightIcon height={24} />
+                    </span>
+                  </div>
+                </LinkExternal>
               </div>
             </div>
           </div>
