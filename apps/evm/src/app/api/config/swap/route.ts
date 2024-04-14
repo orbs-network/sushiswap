@@ -12,5 +12,9 @@ export const revalidate = 60
 
 export async function GET() {
   const data = await get('swap')
-  return NextResponse.json(schema.safeParse(data))
+  return NextResponse.json(schema.safeParse(data), {
+    headers: {
+      'Cache-Control': 'maxage=15, stale-while-revalidate=45',
+    },
+  })
 }
