@@ -1,13 +1,12 @@
 import { Interface } from '@ethersproject/abi'
 import INonfungiblePositionManager from '@uniswap/v3-periphery/artifacts/contracts/NonfungiblePositionManager.sol/NonfungiblePositionManager.json'
 import invariant from 'tiny-invariant'
-import { zeroAddress } from 'viem'
 import { toHex } from '../../../convert/index.js'
 import {
   Amount as CurrencyAmount,
   Currency,
   Native,
-  Token,
+  // Token,
 } from '../../../currency/index.js'
 import { BigintIsh, Percent } from '../../../math/index.js'
 import { MethodParameters } from '../utils/calldata.js'
@@ -311,9 +310,9 @@ export abstract class NonfungiblePositionManager {
 
     const tokenId = toHex(options.tokenId)
 
-    const involvesETH =
-      options.expectedCurrencyOwed0.currency.isNative ||
-      options.expectedCurrencyOwed1.currency.isNative
+    // const involvesETH =
+    //   options.expectedCurrencyOwed0.currency.isNative ||
+    //   options.expectedCurrencyOwed1.currency.isNative
 
     const recipient = validateAndParseAddress(options.recipient)
 
@@ -322,27 +321,27 @@ export abstract class NonfungiblePositionManager {
       NonfungiblePositionManager.INTERFACE.encodeFunctionData('collect', [
         {
           tokenId,
-          recipient: involvesETH ? zeroAddress : recipient,
+          recipient: recipient,
           amount0Max: MaxUint128,
           amount1Max: MaxUint128,
         },
       ]),
     )
 
-    if (involvesETH) {
-      const ethAmount = options.expectedCurrencyOwed0.currency.isNative
-        ? options.expectedCurrencyOwed0.quotient
-        : options.expectedCurrencyOwed1.quotient
-      const token = options.expectedCurrencyOwed0.currency.isNative
-        ? (options.expectedCurrencyOwed1.currency as Token)
-        : (options.expectedCurrencyOwed0.currency as Token)
-      const tokenAmount = options.expectedCurrencyOwed0.currency.isNative
-        ? options.expectedCurrencyOwed1.quotient
-        : options.expectedCurrencyOwed0.quotient
+    // if (involvesETH) {
+    //   const ethAmount = options.expectedCurrencyOwed0.currency.isNative
+    //     ? options.expectedCurrencyOwed0.quotient
+    //     : options.expectedCurrencyOwed1.quotient
+    //   const token = options.expectedCurrencyOwed0.currency.isNative
+    //     ? (options.expectedCurrencyOwed1.currency as Token)
+    //     : (options.expectedCurrencyOwed0.currency as Token)
+    //   const tokenAmount = options.expectedCurrencyOwed0.currency.isNative
+    //     ? options.expectedCurrencyOwed1.quotient
+    //     : options.expectedCurrencyOwed0.quotient
 
-      calldatas.push(Payments.encodeUnwrapWETH9(ethAmount, recipient))
-      calldatas.push(Payments.encodeSweepToken(token, tokenAmount, recipient))
-    }
+    //   calldatas.push(Payments.encodeUnwrapWETH9(ethAmount, recipient))
+    //   calldatas.push(Payments.encodeSweepToken(token, tokenAmount, recipient))
+    // }
 
     return calldatas
   }
