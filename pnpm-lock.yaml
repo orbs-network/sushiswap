@@ -1646,12 +1646,6 @@ importers:
 
   packages/react-query:
     dependencies:
-      '@sushiswap/client':
-        specifier: workspace:*
-        version: link:../client
-      '@sushiswap/database':
-        specifier: workspace:*
-        version: link:../database
       '@sushiswap/dexie':
         specifier: workspace:*
         version: link:../dexie
@@ -1680,9 +1674,12 @@ importers:
       '@sentry/nextjs':
         specifier: 7.101.1
         version: 7.101.1(next@14.1.0)(react@18.2.0)
-      '@sushiswap/jest-config':
+      '@sushiswap/client':
         specifier: workspace:*
-        version: link:../../config/jest
+        version: link:../client
+      '@sushiswap/database':
+        specifier: workspace:*
+        version: link:../database
       '@tsconfig/esm':
         specifier: 1.0.4
         version: 1.0.4
@@ -1698,9 +1695,6 @@ importers:
       '@types/react-dom':
         specifier: 18.2.6
         version: 18.2.6
-      jest:
-        specifier: 29.7.0
-        version: 29.7.0(@types/node@20.10.0)
       next:
         specifier: 14.1.0
         version: 14.1.0(@babel/core@7.23.9)(react-dom@18.2.0)(react@18.2.0)
