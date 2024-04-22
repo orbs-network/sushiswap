@@ -1,6 +1,6 @@
 import { Button, Popover, PopoverContent, PopoverTrigger, SelectIcon, JazzIcon, Chip } from "@sushiswap/ui";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
-import { truncateText } from "src/utils/formmaters";
+import { truncateText } from "src/utils/formatters";
 import { WalletListView } from "./WalletListView";
 import { useState } from "react";
 import { DefaultView } from "./DefaultView";

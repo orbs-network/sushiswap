@@ -6,7 +6,7 @@ import { IProfileView } from "./WalletConnector";
 import { SkeletonText } from "@sushiswap/ui/components/skeleton";
 import { formatUSD, formatNumber } from "sushi/format";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
-import { truncateText } from "src/utils/formmaters";
+import { truncateText } from "src/utils/formatters";
 import { useNativeBalance } from "src/hooks/useNativeBalance";
 import { IS_TESTNET } from "src/constants/is-testnet";
 import Link from "next/link";

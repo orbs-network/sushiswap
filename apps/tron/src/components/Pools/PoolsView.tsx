@@ -4,6 +4,7 @@ import { Button } from "@sushiswap/ui/components/button";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import React, { Fragment, useState } from "react";
 import { PoolSearchBar } from "./PoolSearchBar";
+import { PoolsTable } from "./PoolsTable/PoolsTable";
 
 export const PoolsView = () => {
 	const [tab, setTab] = useState<number>(0);
@@ -40,14 +41,12 @@ export const PoolsView = () => {
 						<PoolSearchBar query={query} setQuery={setQuery} />
 					</Container>
 					<Tab.Panel>
-						<Container maxWidth="7xl" className="px-4 mx-auto">
-							<div>pools table</div>
-							{/* <PoolsTable farmsOnly={farmsOnly} query={query} /> */}
-							{/* Pools Table */}
+						<Container maxWidth="7xl" className="px-4 mx-auto mt-4">
+							<PoolsTable query={query} />
 						</Container>
 					</Tab.Panel>
 					<Tab.Panel>
-						<Container maxWidth="7xl" className="px-4 mx-auto">
+						<Container maxWidth="7xl" className="px-4 mx-auto mt-4">
 							<div>positions table</div>
 							{/* <PositionsTable query={query} /> */}
 						</Container>
