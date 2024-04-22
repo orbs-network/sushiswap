@@ -2,7 +2,7 @@ import { SkeletonCircle, SkeletonText } from "@sushiswap/ui";
 import { PoolNameCell } from "./PoolNameCell";
 import { ICON_SIZE } from "src/constants/icon-size";
 import { PoolAprCell } from "./PoolAprCell";
-import { PoolTvlCell } from "../PoolTvlCell";
+import { PoolTvlCell } from "./PoolTvlCell";
 
 export const NAME_COLUMN = {
 	id: "name",
