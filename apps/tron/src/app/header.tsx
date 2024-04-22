@@ -9,7 +9,7 @@ import {
 	navigationMenuTriggerStyle,
 } from "@sushiswap/ui/components/navigation-menu";
 import React, { FC } from "react";
-import { WalletConnector } from "src/components/WalletConector/WalletConnector";
+import { WalletConnector } from "src/components/WalletConnector/WalletConnector";
 
 export const Navigation: FC = () => {
 	return (
