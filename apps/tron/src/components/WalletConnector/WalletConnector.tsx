@@ -17,7 +17,13 @@ export const WalletConnector = () => {
 	return (
 		<Popover>
 			<PopoverTrigger className="relative">
-				<Button loading={connecting} asChild variant="outline" color="default" className="font-bold">
+				<Button
+					loading={connecting}
+					disabled={connecting}
+					asChild
+					variant="outline"
+					color="default"
+					className="font-bold">
 					{isConnected ? (
 						<>
 							<div className="hidden md:flex">
@@ -27,7 +33,7 @@ export const WalletConnector = () => {
 						</>
 					) : (
 						<>
-							Connect <SelectIcon />
+							{connecting ? "Connecting" : "Connect"} <SelectIcon />
 						</>
 					)}
 				</Button>
