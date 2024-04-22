@@ -12,9 +12,9 @@ import { IS_TESTNET } from "src/constants/is-testnet";
 import Link from "next/link";
 import { useClipboard } from "src/hooks/useClipboard";
 
-interface DefaultViewProps {
+type DefaultViewProps = {
 	setView: Dispatch<SetStateAction<IProfileView>>;
-}
+};
 
 export const DefaultView = ({ setView }: DefaultViewProps) => {
 	const { address, disconnect } = useWallet();

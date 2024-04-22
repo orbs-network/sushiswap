@@ -8,9 +8,9 @@ import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "next-themes";
 import { IProfileView } from "./WalletConnector";
 
-interface SettingsViewProps {
+type SettingsViewProps = {
 	setView: React.Dispatch<React.SetStateAction<IProfileView>>;
-}
+};
 
 const options = {
 	system: <span className="text-xs font-semibold">Auto</span>,

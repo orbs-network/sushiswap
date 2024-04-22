@@ -3,10 +3,12 @@ import { Container } from "@sushiswap/ui/components/Container";
 import { Button } from "@sushiswap/ui/components/button";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import React, { Fragment, useState } from "react";
+import { PoolSearchBar } from "./PoolSearchBar";
 
 export const PoolsView = () => {
 	const [tab, setTab] = useState<number>(0);
 	const { address } = useWallet();
+	const [query, setQuery] = useState<string>("");
 
 	return (
 		<div className="flex flex-col h-full">
@@ -35,14 +37,7 @@ export const PoolsView = () => {
 				</Container>
 				<Tab.Panels className="bg-gray-50 dark:bg-white/[0.02] py-4 h-full">
 					<Container maxWidth="7xl" className="px-4 mx-auto">
-						{/* <PoolFilters
-              showCategories={tab === 0}
-              farmHandler={farmHandler}
-              farmsOnly={farmsOnly}
-              query={query}
-              setQuery={setQuery}
-            /> */}
-						<div>pool filters</div>
+						<PoolSearchBar query={query} setQuery={setQuery} />
 					</Container>
 					<Tab.Panel>
 						<Container maxWidth="7xl" className="px-4 mx-auto">
