@@ -5,6 +5,7 @@ import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import React, { Fragment, useState } from "react";
 import { PoolSearchBar } from "./PoolSearchBar";
 import { PoolsTable } from "./PoolsTable/PoolsTable";
+import { PositionsTable } from "./PositionsTable/PositionsTable";
 
 export const PoolsView = () => {
 	const [tab, setTab] = useState<number>(0);
@@ -47,8 +48,7 @@ export const PoolsView = () => {
 					</Tab.Panel>
 					<Tab.Panel>
 						<Container maxWidth="7xl" className="px-4 mx-auto mt-4">
-							<div>positions table</div>
-							{/* <PositionsTable query={query} /> */}
+							<PositionsTable query={query} />
 						</Container>
 					</Tab.Panel>
 					<Tab.Panel />
