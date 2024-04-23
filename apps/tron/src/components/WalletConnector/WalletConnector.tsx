@@ -9,7 +9,19 @@ import { IS_TESTNET } from "src/constants/is-testnet";
 
 export type IProfileView = "default" | "settings";
 
-export const WalletConnector = () => {
+type WalletConnectorProps = {
+	hideChevron?: boolean;
+	fullWidth?: boolean;
+	size?: "default" | "lg";
+	variant?: "secondary" | "default";
+};
+
+export const WalletConnector = ({
+	hideChevron,
+	fullWidth,
+	size = "default",
+	variant = "secondary",
+}: WalletConnectorProps) => {
 	const [view, setView] = useState<IProfileView>("default");
 	const { connected, connecting, address } = useWallet();
 	const isConnected = address && connected;
@@ -18,12 +30,12 @@ export const WalletConnector = () => {
 		<Popover>
 			<PopoverTrigger className="relative">
 				<Button
+					className={`${fullWidth ? "w-full" : ""}`}
 					loading={connecting}
 					disabled={connecting}
 					asChild
-					variant="outline"
-					color="default"
-					className="font-bold">
+					size={size}
+					variant={variant}>
 					{isConnected ? (
 						<>
 							<div className="hidden md:flex">
@@ -33,7 +45,7 @@ export const WalletConnector = () => {
 						</>
 					) : (
 						<>
-							{connecting ? "Connecting" : "Connect"} <SelectIcon />
+							{connecting ? "Connecting" : "Connect"} {hideChevron ? null : <SelectIcon />}
 						</>
 					)}
 				</Button>
