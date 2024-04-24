@@ -5,6 +5,7 @@ import { SwitchSwapDirection } from "src/components/Swap/SwitchSwapDirection";
 import { ReviewSwapDialog } from "src/components/Swap/ReviewSwapDialog";
 import { AmountIn } from "src/components/Swap/AmountIn";
 import { AmountOut } from "src/components/Swap/AmountOut";
+import { SwapStats } from "src/components/Swap/SwapStats";
 
 export default function SwapSimplePage() {
 	return (
@@ -23,6 +24,7 @@ export default function SwapSimplePage() {
 				<AmountOut />
 			</section>
 			<ReviewSwapDialog />
+			<SwapStats />
 		</Container>
 	);
 }

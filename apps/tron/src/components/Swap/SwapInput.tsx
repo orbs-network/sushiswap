@@ -5,6 +5,12 @@ import { TokenBalanceDisplay } from "./TokenBalanceDisplay";
 
 type SwapInputProps = {
 	type: "input" | "output";
+	//token
+	//value
+	//setValue
+	//handleTokenSelect
+	//maxAmount
+	//tokenBalance
 };
 
 export const SwapInput = ({ type }: SwapInputProps) => {

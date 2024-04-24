@@ -24,6 +24,7 @@ import { getTronscanAddressLink, getTronscanTxnLink } from "src/utils/tronscan-h
 import { useRef } from "react";
 import { createFailedToast, createSuccessToast } from "@sushiswap/ui";
 import { WalletConnector } from "../WalletConnector/WalletConnector";
+import { ReviewSwapDialogTrigger } from "./ReviewSwapDialogTrigger";
 
 export const ReviewSwapDialog = () => {
 	const { token0, token1, isTxnPending } = useSwapState();
@@ -36,6 +37,7 @@ export const ReviewSwapDialog = () => {
 		closeBtnRef?.current?.click();
 	};
 
+	//maybe break out to new component
 	const swapToken = async () => {
 		try {
 			setIsTxnPending(true);
@@ -84,9 +86,7 @@ export const ReviewSwapDialog = () => {
 	return (
 		<Dialog>
 			{isConnected ? (
-				<DialogTrigger asChild>
-					<Button size="lg">Enter Amount</Button>
-				</DialogTrigger>
+				<ReviewSwapDialogTrigger />
 			) : (
 				<WalletConnector variant="default" hideChevron={true} fullWidth={true} size="lg" />
 			)}
