@@ -11,7 +11,7 @@ export const PoolsTable = ({ query }: PoolsTableProps) => {
 			loading={false}
 			data={[{ name: "hello", apr: "0" }]}
 			columns={[NAME_COLUMN, TVL_COLUMN, APR_COLUMN]}
-			linkFormatter={() => "/pool/0x"}
+			linkFormatter={() => "/pool/token0:token1"}
 		/>
 	);
 };

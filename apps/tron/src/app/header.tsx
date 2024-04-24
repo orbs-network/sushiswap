@@ -25,7 +25,7 @@ export const Navigation: FC = () => {
 						</NavigationMenuItem>
 						<NavigationMenuItem className="block">
 							<NavigationMenuLink href="/pool" className={navigationMenuTriggerStyle()}>
-								Pool
+								Pools
 							</NavigationMenuLink>
 						</NavigationMenuItem>
 					</NavigationMenuList>
