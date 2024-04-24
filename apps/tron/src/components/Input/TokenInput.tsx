@@ -1,9 +1,10 @@
 import { TextField } from "@sushiswap/ui";
 import { TokenListSelect } from "../General/TokenListSelect";
-import { DollarAmountDisplay } from "./DollarAmountDisplay";
-import { TokenBalanceDisplay } from "./TokenBalanceDisplay";
+import { DollarAmountDisplay } from "../Shared/DollarAmountDisplay";
+import { TokenBalanceDisplay } from "../Shared/TokenBalanceDisplay";
 
-type SwapInputProps = {
+//@dev need a lot a props so it can be used for both swap and pools
+type TokenInputProps = {
 	type: "input" | "output";
 	//token
 	//value
@@ -13,7 +14,7 @@ type SwapInputProps = {
 	//tokenBalance
 };
 
-export const SwapInput = ({ type }: SwapInputProps) => {
+export const TokenInput = ({ type }: TokenInputProps) => {
 	return (
 		<div className="flex flex-col gap-2 bg-white px-3 py-4 dark:bg-slate-800 rounded-xl">
 			<div className="flex items-center gap-2">

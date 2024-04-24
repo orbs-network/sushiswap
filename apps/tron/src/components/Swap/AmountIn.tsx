@@ -1,5 +1,5 @@
-import { SwapInput } from "./SwapInput";
+import { TokenInput } from "../Input/TokenInput";
 
 export const AmountIn = () => {
-	return <SwapInput type="input" />;
+	return <TokenInput type="input" />;
 };

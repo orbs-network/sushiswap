@@ -6,11 +6,12 @@ import { ReviewSwapDialog } from "src/components/Swap/ReviewSwapDialog";
 import { AmountIn } from "src/components/Swap/AmountIn";
 import { AmountOut } from "src/components/Swap/AmountOut";
 import { SwapStats } from "src/components/Swap/SwapStats";
+import { Title } from "src/components/General/Title";
 
 export default function SwapSimplePage() {
 	return (
 		<Container className="p-4 mx-auto mt-16 mb-[86px] flex flex-col gap-4 max-w-[520px]">
-			<h1 className="text-4xl font-medium text-gray-900 dark:text-slate-50 sm:max-h-[44px] mb-4">Trade</h1>
+			<Title>Trade</Title>
 			<section className="flex items-center justify-between">
 				<SwitchSwapType />
 				<SettingsOverlay
