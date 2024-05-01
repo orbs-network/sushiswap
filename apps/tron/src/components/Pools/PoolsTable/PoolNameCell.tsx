@@ -1,6 +1,6 @@
 import { classNames } from "@sushiswap/ui";
 import { Icon } from "../../General/Icon";
-import { IconList } from "../../General/IconList";
+import { IconList } from "@sushiswap/ui/components/currency/IconList";
 
 export const PoolNameCell = () => {
 	const token0 = "token0";
