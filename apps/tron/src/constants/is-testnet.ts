@@ -1,1 +1,1 @@
-export const IS_TESTNET: boolean = true;
+export const IS_TESTNET: boolean = false;

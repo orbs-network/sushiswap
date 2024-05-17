@@ -1,7 +1,7 @@
 import { ArrowLeftIcon } from "@heroicons/react/20/solid";
-import { List } from "@sushiswap/ui/components/list/List";
+import { List } from "@sushiswap/ui";
 import React, { FC, Fragment } from "react";
-import { IconButton } from "@sushiswap/ui/components/IconButton";
+import { IconButton } from "@sushiswap/ui";
 import { RadioGroup } from "@headlessui/react";
 import { classNames } from "@sushiswap/ui";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";

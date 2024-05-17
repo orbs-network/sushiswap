@@ -1,6 +1,6 @@
 import { Transition } from "@headlessui/react";
 import { classNames } from "@sushiswap/ui";
-import { SkeletonBox, SkeletonText } from "@sushiswap/ui/components/skeleton";
+import { SkeletonBox, SkeletonText } from "@sushiswap/ui";
 // import { TradeRoute } from './TradeRoute'
 
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";

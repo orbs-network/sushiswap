@@ -1,13 +1,14 @@
 import { SkeletonCircle, SkeletonText } from "@sushiswap/ui";
 import { PoolNameCell } from "./PoolNameCell";
 import { ICON_SIZE } from "src/constants/icon-size";
-import { PoolAprCell } from "./PoolAprCell";
 import { PoolTvlCell } from "./PoolTvlCell";
+import { ColumnDef } from "@tanstack/react-table";
+import { PoolReservesCell } from "./PoolReservesCell";
 
-export const NAME_COLUMN = {
+export const NAME_COLUMN: ColumnDef<any, unknown> = {
 	id: "name",
 	header: "Name",
-	cell: () => <PoolNameCell />,
+	cell: (props) => <PoolNameCell data={props.row.original} />,
 	meta: {
 		skeleton: (
 			<div className="flex items-center w-full gap-2">
@@ -16,7 +17,7 @@ export const NAME_COLUMN = {
 					<SkeletonCircle radius={ICON_SIZE} className="-ml-[12px]" />
 				</div>
 				<div className="flex flex-col w-full">
-					<SkeletonText fontSize="text-lg" />
+					<SkeletonText fontSize="lg" />
 				</div>
 			</div>
 		),
@@ -31,22 +32,22 @@ export const TVL_COLUMN = {
 		skeleton: (
 			<div className="flex items-center w-full gap-2">
 				<div className="flex flex-col w-full">
-					<SkeletonText fontSize="text-lg" />
+					<SkeletonText fontSize="lg" />
 				</div>
 			</div>
 		),
 	},
 };
 
-export const APR_COLUMN = {
-	id: "apr",
-	header: "APR",
-	cell: () => <PoolAprCell />,
+export const RESERVES_COLUMN = {
+	id: "reserves",
+	header: "Reserves",
+	cell: () => <PoolReservesCell />,
 	meta: {
 		skeleton: (
 			<div className="flex items-center w-full gap-2">
 				<div className="flex flex-col w-full">
-					<SkeletonText fontSize="text-lg" />
+					<SkeletonText fontSize="lg" />
 				</div>
 			</div>
 		),

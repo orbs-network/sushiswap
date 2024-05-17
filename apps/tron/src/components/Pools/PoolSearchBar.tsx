@@ -7,5 +7,13 @@ type PoolSearchBarProps = {
 };
 
 export const PoolSearchBar: FC<PoolSearchBarProps> = ({ setQuery, query }) => {
-	return <Search id="search" loading={false} onChange={setQuery} value={query ?? ""} delimiter=" " />;
+	return (
+		<Search
+			placeholder="Search by address"
+			id="search"
+			loading={false}
+			onChange={setQuery}
+			value={query ?? ""}
+		/>
+	);
 };

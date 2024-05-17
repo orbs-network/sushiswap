@@ -3,7 +3,7 @@ import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
 import { IconButton, JazzIcon } from "@sushiswap/ui";
 import React, { Dispatch, SetStateAction } from "react";
 import { IProfileView } from "./WalletConnector";
-import { SkeletonText } from "@sushiswap/ui/components/skeleton";
+import { SkeletonText } from "@sushiswap/ui";
 import { formatUSD, formatNumber } from "sushi/format";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import { truncateText } from "src/utils/formatters";

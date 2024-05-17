@@ -1,13 +1,13 @@
 "use client";
 
-import { SushiIcon } from "@sushiswap/ui/components/icons";
+import { SushiIcon } from "@sushiswap/ui";
 import {
 	NavigationMenu,
 	NavigationMenuItem,
 	NavigationMenuLink,
 	NavigationMenuList,
 	navigationMenuTriggerStyle,
-} from "@sushiswap/ui/components/navigation-menu";
+} from "@sushiswap/ui";
 import React, { FC } from "react";
 import { WalletConnector } from "src/components/WalletConnector/WalletConnector";
 

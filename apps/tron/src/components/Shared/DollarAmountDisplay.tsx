@@ -1,4 +1,4 @@
-import { SkeletonText } from "@sushiswap/ui/components/skeleton";
+import { SkeletonText } from "@sushiswap/ui";
 
 type DollarAmountDisplayProps = {
 	isLoading: boolean;

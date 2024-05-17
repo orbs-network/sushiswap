@@ -1,7 +1,7 @@
 import { classNames } from "@sushiswap/ui";
 import React, { FC, KeyboardEvent, ReactElement, forwardRef, useCallback, useEffect, useState } from "react";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Loader } from "@sushiswap/ui/components/Loader";
+import { Loader } from "@sushiswap/ui";
 
 interface Search {
 	className?: string;
@@ -12,10 +12,11 @@ interface Search {
 	onChange(val: string): void;
 	size?: "sm" | "default";
 	delimiter?: string;
+	placeholder?: string;
 }
 
 export const Search: FC<Search> = forwardRef<HTMLInputElement, Search>(function Search(
-	{ className, id, loading, input: Input, value, onChange, size = "default", delimiter },
+	{ className, id, loading, input: Input, value, onChange, size = "default", delimiter, placeholder },
 	ref
 ) {
 	const [values, setValues] = useState({
@@ -109,7 +110,7 @@ export const Search: FC<Search> = forwardRef<HTMLInputElement, Search>(function 
 				<input
 					id={`${id}-address-input`}
 					testdata-id={`${id}-address-input`}
-					placeholder="Search"
+					placeholder={placeholder ?? "Search"}
 					value={values.typed}
 					onChange={(e) => _onChange(e.target.value)}
 					onKeyDown={handleKeyDown}
@@ -168,7 +169,7 @@ export const Search: FC<Search> = forwardRef<HTMLInputElement, Search>(function 
 					id={`${id}-address-input`}
 					testdata-id={`${id}-address-input`}
 					variant="unstyled"
-					placeholder="Search"
+					placeholder={placeholder ?? "Search"}
 					value={value}
 					onChange={onChange}
 					className={classNames(
@@ -183,7 +184,7 @@ export const Search: FC<Search> = forwardRef<HTMLInputElement, Search>(function 
 				<input
 					id={`${id}-address-input`}
 					testdata-id={`${id}-address-input`}
-					placeholder="Search"
+					placeholder={placeholder ?? "Search"}
 					value={value}
 					onChange={(e) => onChange(e.target.value)}
 					className={classNames(

@@ -1,10 +1,7 @@
-import { PlusIcon } from "@heroicons/react/24/outline";
 import { useSlippageTolerance } from "@sushiswap/hooks";
-import { Badge } from "@sushiswap/ui/components/Badge";
-import { Dots } from "@sushiswap/ui/components/Dots";
-import { Button } from "@sushiswap/ui/components/button";
-import { List } from "@sushiswap/ui/components/list/List";
-import { SkeletonText, SkeletonBox, SkeletonCircle } from "@sushiswap/ui/components/skeleton";
+import { Dots } from "@sushiswap/ui";
+import { Button } from "@sushiswap/ui";
+import { List } from "@sushiswap/ui";
 import { Icon } from "../../General/Icon";
 import {
 	Dialog,
@@ -14,14 +11,10 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-	classNames,
 	createInfoToast,
 } from "@sushiswap/ui";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
-import { warningSeverity, warningSeverityClassName } from "src/utils/warning-severity";
-import Link from "next/link";
-import { truncateText } from "src/utils/formatters";
-import { getTronscanAddressLink, getTronscanTxnLink } from "src/utils/tronscan-helpers";
+import { getTronscanTxnLink } from "src/utils/tronscan-helpers";
 import { useRef } from "react";
 import { createFailedToast, createSuccessToast } from "@sushiswap/ui";
 import { WalletConnector } from "../../WalletConnector/WalletConnector";

@@ -1,41 +1,49 @@
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useSlippageTolerance } from "@sushiswap/hooks";
-import { Badge } from "@sushiswap/ui/components/Badge";
-import { Dots } from "@sushiswap/ui/components/Dots";
-import { Button } from "@sushiswap/ui/components/button";
-import { List } from "@sushiswap/ui/components/list/List";
-import { SkeletonText, SkeletonBox, SkeletonCircle } from "@sushiswap/ui/components/skeleton";
+import { Badge } from "@sushiswap/ui";
+import { Dots } from "@sushiswap/ui";
+import { Button } from "@sushiswap/ui";
+import { List } from "@sushiswap/ui";
+import { SkeletonCircle } from "@sushiswap/ui";
 import { Icon } from "../General/Icon";
-import {
-	Dialog,
-	DialogClose,
-	DialogContent,
-	DialogHeader,
-	DialogTrigger,
-	classNames,
-	createInfoToast,
-} from "@sushiswap/ui";
+import { Dialog, DialogClose, DialogContent, classNames, createInfoToast } from "@sushiswap/ui";
 import { useSwapDispatch, useSwapState } from "src/app/swap/swap-provider";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import { warningSeverity, warningSeverityClassName } from "src/utils/warning-severity";
 import Link from "next/link";
 import { truncateText } from "src/utils/formatters";
 import { getTronscanAddressLink, getTronscanTxnLink } from "src/utils/tronscan-helpers";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { createFailedToast, createSuccessToast } from "@sushiswap/ui";
 import { WalletConnector } from "../WalletConnector/WalletConnector";
 import { ReviewSwapDialogTrigger } from "./ReviewSwapDialogTrigger";
+import { formatPercent } from "sushi/format";
 
 export const ReviewSwapDialog = () => {
-	const { token0, token1, isTxnPending } = useSwapState();
+	const { token0, token1, isTxnPending, amountIn, amountOut, priceImpactPercentage } = useSwapState();
 	const { setIsTxnPending } = useSwapDispatch();
 	const closeBtnRef = useRef<HTMLButtonElement>(null);
 	const { address, connected } = useWallet();
 	const isConnected = address && connected;
+	const [slippageTolerance] = useSlippageTolerance("sushi-tron-slippage");
+	const slippage = slippageTolerance === "AUTO" ? 0.005 : Number(slippageTolerance) / 100;
 
 	const closeModal = () => {
 		closeBtnRef?.current?.click();
 	};
+
+	const minOutput = useMemo(() => {
+		if (!amountOut) return "";
+		if (
+			(token0?.symbol === "WTRX" && token1?.address === "TRON") ||
+			(token0?.address === "TRON" && token1?.symbol === "WTRX")
+		) {
+			return amountIn;
+		}
+
+		const output = Number(amountOut) * (1 - slippage);
+		return output;
+	}, [amountOut, slippage, token0, token1, amountIn]);
 
 	//maybe break out to new component
 	const swapToken = async () => {
@@ -81,7 +89,12 @@ export const ReviewSwapDialog = () => {
 			setIsTxnPending(false);
 		}
 	};
-	const [slippageTolerance] = useSlippageTolerance("sushi-tron-slippage");
+
+	const severityClass = useMemo(
+		() => warningSeverityClassName(warningSeverity(priceImpactPercentage)),
+		[priceImpactPercentage]
+	);
+	console.log(severityClass);
 
 	return (
 		<Dialog>
@@ -95,17 +108,11 @@ export const ReviewSwapDialog = () => {
 				<div className="max-w-[504px] mx-auto mt-6">
 					<div className="flex items-start justify-between gap-4 py-2">
 						<div className="flex flex-col flex-grow gap-1">
-							{/* {!outputAmount || isPriceFetching ? (
-                  <Skeleton.Text fontSize="text-3xl" className="w-2/3" />
-                ) : ( */}
 							<h1 className="text-3xl font-semibold dark:text-slate-50">
-								Buy 444 TRX
-								{/* Buy {formatNumber(Number(outputAmount), token1.decimals)} {token1?.symbol} */}
+								Buy {amountOut} {token1?.symbol}
 							</h1>
-							{/* )} */}
 							<h1 className="text-lg font-medium text-gray-900 dark:text-slate-300">
-								Sell 100 USDC
-								{/* Sell {amount} {token0?.symbol} */}
+								Sell {amountIn} {token0?.symbol}
 							</h1>
 						</div>
 						<div className="min-w-[56px] min-h-[56px]">
@@ -125,7 +132,6 @@ export const ReviewSwapDialog = () => {
 									{token1 ? (
 										<Icon currency={token1} width={56} height={56} />
 									) : (
-										// <img src={token1.logoURI} className="rounded-full" width={56} height={56} />
 										<SkeletonCircle radius={56} className="bg-gray-100 dark:bg-slate-800" />
 									)}
 								</Badge>
@@ -139,17 +145,8 @@ export const ReviewSwapDialog = () => {
 								<List.KeyValue
 									title="Price Impact"
 									subtitle="The impact your trade has on the market price of this pool.">
-									<span
-										className={classNames(
-											warningSeverityClassName(warningSeverity(5)),
-											"text-gray-700 text-right dark:text-slate-400 "
-										)}>
-										{/* {isPriceFetching ? (
-                        <SkeletonBox className="h-4 py-0.5 w-[60px] rounded-md" />
-                      ) : ( */}
-										<>{0}%</>
-										{/* <>{routes?.priceImpact ? -routes?.priceImpact : 0}%</> */}
-										{/* )} */}
+									<span className={classNames(severityClass, "text-gray-700 text-right dark:text-slate-400")}>
+										{formatPercent(priceImpactPercentage / 100)}
 									</span>
 								</List.KeyValue>
 								<List.KeyValue
@@ -157,20 +154,10 @@ export const ReviewSwapDialog = () => {
 										slippageTolerance === "AUTO" ? "0.5" : slippageTolerance
 									}%)`}
 									subtitle="The minimum amount you are guaranteed to receive.">
-									{/* {!outputAmount || isPriceFetching ? (
-                      <SkeletonText align="right" fontSize="text-sm" className="w-1/2" />
-                    ) : ( */}
-									<>
-										{/* {minOutput} {token1?.symbol} */}
-										{"minOutput"} TRX
-									</>
-									{/* )} */}
+									{minOutput} {token1?.symbol}
 								</List.KeyValue>
 
-								<List.KeyValue title="Network fee">
-									~$0.00
-									{/* {isPriceFetching ? <SkeletonText align="right" fontSize="text-sm" className="w-1/3" /> : '~$0.00'} */}
-								</List.KeyValue>
+								<List.KeyValue title="Network fee">~$0.00</List.KeyValue>
 							</List.Control>
 
 							{address && (
@@ -197,7 +184,7 @@ export const ReviewSwapDialog = () => {
 									<Dots>Confirming Swap</Dots>
 								) : (
 									<>
-										Swap {token0?.symbol} USDC For {token1?.symbol} TRX
+										Swap {token0?.symbol} For {token1?.symbol}
 									</>
 								)}
 							</Button>

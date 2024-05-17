@@ -1,8 +1,8 @@
 "use client";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
-import { Container } from "@sushiswap/ui/components/Container";
-import { Button } from "@sushiswap/ui/components/button";
-import { DiscordIcon } from "@sushiswap/ui/components/icons";
+import { Container } from "@sushiswap/ui";
+import { Button } from "@sushiswap/ui";
+import { DiscordIcon } from "@sushiswap/ui";
 import Link from "next/link";
 import { PoolsView } from "src/components/Pools/PoolsView";
 

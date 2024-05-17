@@ -9,6 +9,16 @@ const nextConfig = {
 		},
 	},
 	transpilePackages: ["@sushiswap/ui"],
+	images: {
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "static.tronscan.org",
+				port: "",
+				pathname: "**",
+			},
+		],
+	},
 	async redirects() {
 		return [
 			{

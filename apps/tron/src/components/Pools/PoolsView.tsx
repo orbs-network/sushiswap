@@ -1,6 +1,6 @@
 import { Tab } from "@headlessui/react";
-import { Container } from "@sushiswap/ui/components/Container";
-import { Button } from "@sushiswap/ui/components/button";
+import { Container } from "@sushiswap/ui";
+import { Button } from "@sushiswap/ui";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import React, { Fragment, useState } from "react";
 import { PoolSearchBar } from "./PoolSearchBar";

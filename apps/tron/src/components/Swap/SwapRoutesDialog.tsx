@@ -1,4 +1,4 @@
-import { Button } from "@sushiswap/ui/components/button";
+import { Button } from "@sushiswap/ui";
 import {
 	Dialog,
 	DialogContent,

@@ -14,5 +14,6 @@ export const useNativeBalance = () => {
 		},
 		refetchOnMount: true,
 		refetchOnWindowFocus: true,
+		enabled: !!address && !!tronWeb,
 	});
 };

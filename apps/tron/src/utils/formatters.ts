@@ -1,3 +1,7 @@
+import { IToken } from "src/types/token-type";
+import TronWeb from "tronweb";
+import { getValidTokenAddress } from "./helpers";
+
 export const truncateText = (str: string | `0x${string}`, n = 5): string => {
 	if (str) {
 		if (str.length <= n) {
@@ -27,4 +31,50 @@ const _djb2 = (str: string) => {
 		hash = (hash << 5) + hash + str.charCodeAt(i); /* hash * 33 + c */
 	}
 	return hash;
+};
+
+export const sortTokenAddresses = (token0: string, token1: string): [string, string] => {
+	return token0.toLowerCase() < token1.toLowerCase() ? [token0, token1] : [token1, token0];
+};
+
+export const sortTokens = (token0: IToken, token1: IToken): [IToken, IToken] => {
+	return getValidTokenAddress(token0.address).toLowerCase() <
+		getValidTokenAddress(token1.address).toLowerCase()
+		? [token0, token1]
+		: [token1, token0];
+};
+
+export const formatUnits = (amount: string | number, decimals: number, maxDecimals?: number): string => {
+	if (isNaN(Number(amount))) {
+		return "0";
+	}
+	const val = TronWeb.toBigNumber(amount).div(10 ** decimals);
+	if (Number(val) < 0.0001) {
+		return "<0.0001";
+	}
+	if (maxDecimals) {
+		return parseFloat(val.toFixed(maxDecimals)).toString();
+	}
+	return val.toString(10);
+};
+
+export const formatUnitsForInput = (amount: string | number, decimals: number): string => {
+	if (isNaN(Number(amount))) {
+		return "0";
+	}
+	const val = TronWeb.toBigNumber(amount).div(10 ** decimals);
+	if (isNaN(val)) {
+		return "0";
+	}
+
+	return val.toString(10);
+};
+
+export const parseUnits = (amount: string | number, decimals: number): string => {
+	if (isNaN(Number(amount))) {
+		return "0";
+	}
+	return TronWeb.toBigNumber(amount)
+		.times(10 ** decimals)
+		.toString(10);
 };

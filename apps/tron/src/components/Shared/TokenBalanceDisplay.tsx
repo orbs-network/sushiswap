@@ -1,8 +1,8 @@
 import { classNames } from "@sushiswap/ui";
-import { WalletIcon } from "@sushiswap/ui/components/icons";
-import { SkeletonText } from "@sushiswap/ui/components/skeleton";
+import { WalletIcon } from "@sushiswap/ui";
+import { SkeletonText } from "@sushiswap/ui";
 import { useMemo } from "react";
-import { Fraction } from "sushi/math";
+import { formatUnits } from "src/utils/formatters";
 
 type TokenBalanceDisplayProps = {
 	amount: number;
@@ -20,7 +20,7 @@ export const TokenBalanceDisplay = ({
 	type,
 }: TokenBalanceDisplayProps) => {
 	const [big, portion] = useMemo(
-		() => (amount ? `${new Fraction(amount, 10 ** decimals).toSignificant(6)}` : "0.00").split("."),
+		() => (amount ? formatUnits(amount, decimals, 4) : "0.00")?.split("."),
 		[amount, decimals]
 	);
 
@@ -39,7 +39,7 @@ export const TokenBalanceDisplay = ({
 			<WalletIcon width={18} height={18} />
 			{isLoading ? (
 				<div className="w-[60px] flex items-center">
-					<SkeletonText fontSize="text-lg" className="w-full" />
+					<SkeletonText fontSize="lg" className="w-full" />
 				</div>
 			) : (
 				<span className="text-lg">

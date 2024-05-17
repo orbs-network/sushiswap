@@ -1,8 +1,10 @@
 import Image from "next/image";
+import { IToken } from "src/types/token-type";
 import { hashStringToColor } from "src/utils/formatters";
 
+//TODO: Fix the type of currency when Token defined everywhere
 type IconProps = {
-	currency: any | undefined;
+	currency: IToken | any | undefined;
 	height?: number;
 	width?: number;
 };
