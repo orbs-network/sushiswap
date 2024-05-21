@@ -10,7 +10,8 @@
     "lint": "TIMING=1 next lint",
     "lint:fix": "TIMING=1 next lint --fix",
     "start": "next start",
-    "test": "npx playwright test -c test/playwright.config.ts"
+    "test": "npx playwright test -c test/playwright.config.ts",
+    "generate-swaps": "tsx test/swap/scripts/generate-swaps.ts"
   },
   "dependencies": {
     "@0xsquid/sdk": "^2.8.10",
@@ -100,6 +101,7 @@
     "eslint-config-sushi": "workspace:*",
     "postcss": "8.4.23",
     "tailwindcss": "3.3.2",
+    "tsx": "^4.7.1",
     "typescript": "5.2.2",
     "unimported": "1.30.0"
   }
