@@ -1,9 +1,5 @@
-import AlgebraFactory from '@cryptoalgebra/integral-core/artifacts/contracts/AlgebraFactory.sol/AlgebraFactory.json' assert {
-  type: 'json',
-}
-import AlgebraPool from '@cryptoalgebra/integral-core/artifacts/contracts/AlgebraPool.sol/AlgebraPool.json' assert {
-  type: 'json',
-}
+import AlgebraFactory from '@cryptoalgebra/integral-core/artifacts/contracts/AlgebraFactory.sol/AlgebraFactory.json'
+import AlgebraPool from '@cryptoalgebra/integral-core/artifacts/contracts/AlgebraPool.sol/AlgebraPool.json'
 import { Abi } from 'abitype'
 import { Token } from 'sushi/currency'
 import { LiquidityProviders, PoolCode } from 'sushi/router'
