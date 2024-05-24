@@ -21,9 +21,9 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { SushiXSwap2Adapter } from 'src/lib/swap/useCrossChainTrade/SushiXSwap2'
-import { useSquidCrossChainTrade } from 'src/lib/swap/useCrossChainTrade/useSquidCrossChainTrade'
-import { useStargateCrossChainTrade } from 'src/lib/swap/useCrossChainTrade/useStargateCrossChainTrade'
+import { useSquidCrossChainTrade } from 'src/lib/swap/cross-chain/hooks/useCrossChainTrade/useSquidCrossChainTrade'
+import { useStargateCrossChainTrade } from 'src/lib/swap/cross-chain/hooks/useCrossChainTrade/useStargateCrossChainTrade'
+import { SushiXSwap2Adapter } from 'src/lib/swap/cross-chain/lib'
 import { ChainId } from 'sushi/chain'
 import {
   SquidAdapterChainId,

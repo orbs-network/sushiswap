@@ -56,10 +56,10 @@ import {
 
 import { useApproved } from '@sushiswap/wagmi/systems/Checker/Provider'
 import { APPROVE_TAG_XSWAP } from 'src/lib/constants'
-import { SushiXSwap2Adapter } from 'src/lib/swap/useCrossChainTrade/SushiXSwap2'
-import { UseCrossChainTradeReturn } from 'src/lib/swap/useCrossChainTrade/types'
-import { useAxelarScanLink } from 'src/lib/swap/useCrossChainTrade/useAxelarScanLink'
-import { useLayerZeroScanLink } from 'src/lib/swap/useCrossChainTrade/useLayerZeroScanLink'
+import { useAxelarScanLink } from 'src/lib/swap/cross-chain/hooks/useAxelarScanLink'
+import { UseCrossChainTradeReturn } from 'src/lib/swap/cross-chain/hooks/useCrossChainTrade/types'
+import { useLayerZeroScanLink } from 'src/lib/swap/cross-chain/hooks/useLayerZeroScanLink'
+import { SushiXSwap2Adapter } from 'src/lib/swap/cross-chain/lib'
 import { warningSeverity } from 'src/lib/swap/warningSeverity'
 import { Native } from 'sushi/currency'
 import {

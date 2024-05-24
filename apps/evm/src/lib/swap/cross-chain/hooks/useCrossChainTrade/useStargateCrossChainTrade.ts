@@ -21,15 +21,15 @@ import {
 } from 'viem'
 import {
   STARGATE_DEFAULT_SLIPPAGE,
-  TransactionType,
+  SushiXSwapTransactionType,
   encodeStargateTeleportParams,
   encodeSwapData,
   estimateStargateDstGas,
   getBridgeParams,
   getStargateBridgePath,
-} from './SushiXSwap2'
+} from '../../lib'
+import { useStargateBridgeFees } from '../useStargateBridgeFees'
 import { UseCrossChainTradeParams, UseCrossChainTradeReturn } from './types'
-import { useStargateBridgeFees } from './useStargateBridgeFees'
 
 export const useStargateCrossChainTrade = ({
   network0,
@@ -248,7 +248,7 @@ export const useStargateCrossChainTrade = ({
       let transactionType
 
       if (!isSrcSwap && !isDstSwap) {
-        transactionType = TransactionType.Bridge
+        transactionType = SushiXSwapTransactionType.Bridge
         functionName = 'bridge'
         writeArgs = [
           getBridgeParams({
@@ -275,7 +275,7 @@ export const useStargateCrossChainTrade = ({
           srcTrade.writeArgs as Parameters<typeof encodeSwapData>[0],
         )
 
-        transactionType = TransactionType.SwapAndBridge
+        transactionType = SushiXSwapTransactionType.SwapAndBridge
         functionName = 'swapAndBridge'
         writeArgs = [
           getBridgeParams({
@@ -314,7 +314,7 @@ export const useStargateCrossChainTrade = ({
           ],
         )
 
-        transactionType = TransactionType.BridgeAndSwap
+        transactionType = SushiXSwapTransactionType.BridgeAndSwap
         functionName = 'bridge'
         writeArgs = [
           getBridgeParams({
@@ -359,7 +359,7 @@ export const useStargateCrossChainTrade = ({
         )
         dstGasEst = estimateStargateDstGas(dstTrade.route?.gasSpent ?? 0)
 
-        transactionType = TransactionType.CrossChainSwap
+        transactionType = SushiXSwapTransactionType.CrossChainSwap
         functionName = 'swapAndBridge'
         writeArgs = [
           getBridgeParams({

@@ -1,5 +1,7 @@
-import { Amount, Type } from 'sushi/currency'
-import { Address, encodeAbiParameters, parseAbiParameters } from 'viem'
+import { Amount, Token, Type } from 'sushi/currency'
+import { RToken } from 'sushi/tines'
+import { Address, Hex, encodeAbiParameters, parseAbiParameters } from 'viem'
+import { type SuccessfulTradeReturn } from '../actions/getTrade'
 
 interface BridgeParams {
   refId: string
@@ -15,7 +17,7 @@ export enum SushiXSwap2Adapter {
   Squid = 1,
 }
 
-export enum TransactionType {
+export enum SushiXSwapTransactionType {
   Bridge = 0,
   SwapAndBridge = 1,
   BridgeAndSwap = 2,
@@ -86,6 +88,43 @@ export function encodeSwapData([
     ),
     [{ tokenIn, amountIn, tokenOut, amountOut, to, route }],
   )
+}
+
+export function encodeRouteProcessorArgs({
+  tokenIn,
+  amountIn,
+  tokenOut,
+  amountOutMin,
+  to,
+  routeCode,
+}: NonNullable<SuccessfulTradeReturn['routeProcessorArgs']>) {
+  return encodeAbiParameters(
+    parseAbiParameters(
+      '(address tokenIn, uint256 amountIn, address tokenOut, uint256 amountOut, address to, bytes route)',
+    ),
+    [
+      {
+        tokenIn: tokenIn as Address,
+        amountIn: BigInt(amountIn),
+        tokenOut: tokenOut as Address,
+        amountOut: BigInt(amountOutMin),
+        to: to as Address,
+        route: routeCode as Hex,
+      },
+    ],
+  )
+}
+
+export function tokenToRToken(t: Type): RToken {
+  if (t instanceof Token) return t as RToken
+  const nativeRToken: RToken = {
+    address: '',
+    name: t.name,
+    symbol: t.symbol,
+    chainId: t.chainId,
+    decimals: 18,
+  }
+  return nativeRToken
 }
 
 export * from './adapters'

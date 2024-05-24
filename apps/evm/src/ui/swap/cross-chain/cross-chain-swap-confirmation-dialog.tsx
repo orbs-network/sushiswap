@@ -6,11 +6,11 @@ import { CheckMarkIcon } from '@sushiswap/ui/components/icons/CheckmarkIcon'
 import { FailedMarkIcon } from '@sushiswap/ui/components/icons/FailedMarkIcon'
 import { Loader } from '@sushiswap/ui/components/loader'
 import { FC, ReactNode } from 'react'
+import { UseCrossChainTradeReturn } from 'src/lib/swap/cross-chain/hooks/useCrossChainTrade/types'
 import {
   SushiXSwap2Adapter,
   TransactionType,
-} from 'src/lib/swap/useCrossChainTrade/SushiXSwap2'
-import { UseCrossChainTradeReturn } from 'src/lib/swap/useCrossChainTrade/types'
+} from 'src/lib/swap/cross-chain/lib'
 import { Chain } from 'sushi/chain'
 import { STARGATE_TOKEN } from 'sushi/config'
 import { shortenAddress } from 'sushi/format'

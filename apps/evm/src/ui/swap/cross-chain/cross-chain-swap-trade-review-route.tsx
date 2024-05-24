@@ -1,7 +1,7 @@
 'use client'
 
 import { Currency, SkeletonBox, SkeletonText, SquidIcon } from '@sushiswap/ui'
-import { SushiXSwap2Adapter } from 'src/lib/swap/useCrossChainTrade/SushiXSwap2'
+import { SushiXSwap2Adapter } from 'src/lib/swap/cross-chain/lib'
 import { Chain } from 'sushi/chain'
 import { STARGATE_TOKEN } from 'sushi/config'
 import { TradeRoutePathView } from '../trade-route-path-view'
