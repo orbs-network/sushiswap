@@ -39,10 +39,10 @@ export const TVL_COLUMN = {
 	},
 };
 
-export const RESERVES_COLUMN = {
+export const RESERVES_COLUMN: ColumnDef<any, unknown> = {
 	id: "reserves",
 	header: "Reserves",
-	cell: () => <PoolReservesCell />,
+	cell: (props) => <PoolReservesCell data={props.row.original} />,
 	meta: {
 		skeleton: (
 			<div className="flex items-center w-full gap-2">

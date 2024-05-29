@@ -3,23 +3,22 @@ import { Icon } from "../../General/Icon";
 import { IconList } from "@sushiswap/ui/components/currency/IconList";
 import { getBase58Address } from "src/utils/helpers";
 import { useTokenInfo } from "src/hooks/useTokenInfo";
+import { IRowData } from "./PoolsTable";
 
-export const PoolNameCell = ({ data }: { data: { apr: string; name: string } }) => {
-	const { name } = data;
-	const token0 = name.split("/")?.[0];
-	const token1 = name.split("/")?.[1];
+export const PoolNameCell = ({ data }: { data: IRowData }) => {
+	const { token0Address, token1Address } = data;
 	const { data: token0Data, isLoading: isLoadingToken0 } = useTokenInfo({
-		tokenAddress: getBase58Address(token0),
+		tokenAddress: getBase58Address(token0Address),
 	});
 
 	const { data: token1Data, isLoading: isLoadingToken1 } = useTokenInfo({
-		tokenAddress: getBase58Address(token1),
+		tokenAddress: getBase58Address(token1Address),
 	});
 
 	return (
 		<div className="flex items-center gap-1">
 			<div className="flex min-w-[54px]">
-				{token0 && token1 && (
+				{token0Address && token1Address && (
 					<IconList iconWidth={26} iconHeight={26}>
 						<Icon currency={token0Data} />
 						<Icon currency={token1Data} />

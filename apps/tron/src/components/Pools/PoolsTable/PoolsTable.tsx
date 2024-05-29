@@ -5,6 +5,16 @@ import { PaginationState } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useDebounce } from "@sushiswap/hooks";
 
+export type IRowData = {
+	name: string;
+	pairAddress: string;
+	token0Address: string;
+	token1Address: string;
+	reserve0: string;
+	reserve1: string;
+	apr: string;
+};
+
 type PoolsTableProps = {
 	query: string;
 };
@@ -36,6 +46,10 @@ export const PoolsTable = ({ query }: PoolsTableProps) => {
 				filteredData?.map((pool) => ({
 					name: pool.token0Address + "/" + pool.token1Address,
 					pairAddress: pool.pairAddress,
+					token0Address: pool.token0Address,
+					token1Address: pool.token1Address,
+					reserve0: pool.reserve0,
+					reserve1: pool.reserve1,
 					apr: "0",
 				})) ?? []
 			}

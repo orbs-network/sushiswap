@@ -36,3 +36,5 @@ export const chunkAndFlatten = <T>(arr: T[], chunkSize: number): T[] => {
 	const chunked = chunk(arr, chunkSize);
 	return flatten(chunked);
 };
+
+export const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
