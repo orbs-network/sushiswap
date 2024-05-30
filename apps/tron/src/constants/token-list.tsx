@@ -28,11 +28,11 @@ const MAINNET_TOKENS: IToken[] = [
 		symbol: "WTRX",
 	},
 	{
-		address: "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",
-		decimals: 6,
-		logoURI: "https://static.tronscan.org/production/upload/logo/TEkxiTehnzSmSe2XqrBj4w32RUN966rdz81.png",
-		name: "USDC Coin",
-		symbol: "USDC",
+		address: "TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4",
+		decimals: 18,
+		logoURI: "https://static.tronscan.org/production/logo/TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4.png",
+		name: "TrueUSD",
+		symbol: "TUSD",
 	},
 	{
 		address: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
@@ -42,11 +42,11 @@ const MAINNET_TOKENS: IToken[] = [
 		symbol: "USDT",
 	},
 	{
-		address: "TXWkP3jLBqRGojUih1ShzNyDaN5Csnebok",
+		address: "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
 		decimals: 18,
-		logoURI: "https://static.tronscan.org/production/logo/TXWkP3jLBqRGojUih1ShzNyDaN5Csnebok.png",
-		name: "Wrapped ETH",
-		symbol: "WETH",
+		logoURI: "https://static.tronscan.org/production/upload/logo/TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn.png",
+		name: "Decentralized USD",
+		symbol: "USDD",
 	},
 ];
 
