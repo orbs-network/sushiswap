@@ -1,18 +1,19 @@
 import { NextResponse } from "next/server";
 import { BITQUERY_ENDPOINT } from "src/bitquery/bitquery-endpoint";
 import { getOptions } from "src/bitquery/bitquery-options";
-import { getAllPools } from "src/bitquery/queries/getAllPools";
+import { getReserves } from "src/bitquery/queries/getReserves";
 
 export async function GET(req: Request): Promise<NextResponse> {
 	const { searchParams } = new URL(req.url);
-	const factoryAddress = searchParams.get("factoryAddress");
+	const pairAddresses = searchParams.get("pairAddresses");
 
-	if (!factoryAddress) {
-		return NextResponse.json({ success: false, message: "factoryAddress is required" });
+	if (!pairAddresses) {
+		return NextResponse.json({ success: false, message: "pairAddresses is required" });
 	}
 
 	try {
-		const query = getAllPools(factoryAddress);
+		const pairAddressArray = pairAddresses.split(",");
+		const query = getReserves(pairAddressArray);
 
 		const options = getOptions(query);
 

@@ -133,7 +133,7 @@ export const useMyPositions = () => {
 				//pairAddress  TFXKUwrMw4zRKQZ7KUQaDbNL5zFWincHze
 				const _data = await getPairContributions({
 					pairAddresses: chunk.map((pair) => pair.pairAddress),
-					walletAddress: "TMRHono5y6YRRjee2TnzBRcW1SYps4z7H5", //TODO: remove hardcoded test address
+					walletAddress: "TWyK38fWMAjM98GY1ypvHTxj7cQHw7dS66", //TODO: remove hardcoded test address
 					// walletAddress: address,
 				});
 				_result.push(_data);

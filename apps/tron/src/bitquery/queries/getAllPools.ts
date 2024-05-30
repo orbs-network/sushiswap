@@ -1,8 +1,8 @@
-export const getAllPools = (contractAddress: string) => {
+export const getAllPools = (factoryContract: string) => {
 	const query = JSON.stringify({
 		query:
-			'query ($contractAddress: String!) {\n  tron {\n    smartContractEvents(\n      smartContractAddress: {is: $contractAddress}\n      smartContractEvent: {is: "PairCreated"}\n    ) {\n      arguments {\n        argument\n        value\n      }\n    }\n  }\n}\n',
-		variables: `{\n  \"contractAddress\": \"${contractAddress}\"\n}`,
+			'query ($factoryContract: String!) {\n  tron {\n    smartContractEvents(\n      smartContractEvent: {is: "PairCreated"}\n      smartContractAddress: {is: $factoryContract}\n      options: {desc: "block.height"}\n    ) {\n      arguments {\n        argument\n        value\n      }\n      block {\n        height\n      }\n    }\n  }\n}\n',
+		variables: `{\n  \"factoryContract\": \"${factoryContract}\"\n}`,
 	});
 
 	return query;

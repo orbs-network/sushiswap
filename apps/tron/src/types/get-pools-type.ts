@@ -9,14 +9,29 @@ export type IPoolData = {
 export type IPoolDataResponse = {
 	data: {
 		tron: {
-			smartContractEvents: [
-				{
-					arguments: {
-						argument: string;
+			smartContractEvents: {
+				arguments: [
+					{
+						argument: "token0";
 						value: string;
-					}[];
-				}
-			];
+					},
+					{
+						argument: "token1";
+						value: string;
+					},
+					{
+						argument: "pair";
+						value: string;
+					},
+					{
+						argument: "";
+						value: string;
+					}
+				];
+				block: {
+					height: number;
+				};
+			}[];
 		};
 	};
 };
@@ -25,4 +40,31 @@ export type IMyPositionData = {
 	token0: IToken | undefined;
 	token1: IToken | undefined;
 	pairAddress: string | undefined;
+};
+
+export type IReserveDataResponse = {
+	data: {
+		tron: {
+			smartContractEvents: {
+				arguments: [
+					{
+						argument: "reserve0";
+						value: string;
+					},
+					{
+						argument: "reserve1";
+						value: string;
+					}
+				];
+				block: {
+					height: number;
+				};
+				smartContract: {
+					address: {
+						address: string;
+					};
+				};
+			}[];
+		};
+	};
 };

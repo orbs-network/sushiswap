@@ -51,7 +51,8 @@ export const PoolLiquidity = ({
 						<List.KeyValue flex title={`${token0?.symbol}`}>
 							<div className="flex items-center gap-2">
 								<Icon currency={token0} width={18} height={18} />
-								{formatUnits(data?.[0]?.reserve ?? "", token0?.decimals ?? 0, 4)} {" " + token0?.symbol}
+								{formatNumber(formatUnits(data?.[0]?.reserve ?? "", token0?.decimals ?? 0, 4))}{" "}
+								{" " + token0?.symbol}
 								<span className="text-gray-600 dark:text-slate-400">({formatUSD(token0PoolPrice)})</span>
 							</div>
 						</List.KeyValue>
@@ -59,7 +60,8 @@ export const PoolLiquidity = ({
 						<List.KeyValue flex title={`${token1?.symbol}`}>
 							<div className="flex items-center gap-2">
 								<Icon currency={token1} width={18} height={18} />
-								{formatUnits(data?.[1]?.reserve ?? "", token1?.decimals ?? 0, 4)} {" " + token1?.symbol}
+								{formatNumber(formatUnits(data?.[1]?.reserve ?? "", token1?.decimals ?? 0, 4))}{" "}
+								{" " + token1?.symbol}
 								<span className="text-gray-600 dark:text-slate-400">({formatUSD(token1PoolPrice)})</span>
 							</div>
 						</List.KeyValue>
