@@ -24,10 +24,10 @@ export const NAME_COLUMN: ColumnDef<any, unknown> = {
 	},
 };
 
-export const TVL_COLUMN = {
+export const TVL_COLUMN: ColumnDef<any, unknown> = {
 	id: "TVL",
 	header: "TVL",
-	cell: () => <PoolTvlCell />,
+	cell: (props) => <PoolTvlCell data={props.row.original} />,
 	meta: {
 		skeleton: (
 			<div className="flex items-center w-full gap-2">

@@ -38,3 +38,25 @@ export const chunkAndFlatten = <T>(arr: T[], chunkSize: number): T[] => {
 };
 
 export const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+export const getToken0Price = (
+	reserve0Amount: string,
+	reserve1Amount: string,
+	reserve0Decimals: number,
+	reserve1Decimals: number
+): string => {
+	const reserve0 = TronWeb.toBigNumber(reserve0Amount).div(10 ** reserve0Decimals);
+	const reserve1 = TronWeb.toBigNumber(reserve1Amount).div(10 ** reserve1Decimals);
+	return reserve1.div(reserve0).toString(10);
+};
+
+export const getToken1Price = (
+	reserve0Amount: string,
+	reserve1Amount: string,
+	reserve0Decimals: number,
+	reserve1Decimals: number
+): string => {
+	const reserve0 = TronWeb.toBigNumber(reserve0Amount).div(10 ** reserve0Decimals);
+	const reserve1 = TronWeb.toBigNumber(reserve1Amount).div(10 ** reserve1Decimals);
+	return reserve0.div(reserve1).toString(10);
+};

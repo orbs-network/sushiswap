@@ -14,3 +14,21 @@ export type IReserves = {
 	name?: string | undefined;
 	symbol?: string | undefined;
 };
+
+export type ITokenDataResponse = {
+	data: {
+		tron: {
+			address: [
+				{
+					smartContract: {
+						currency: {
+							decimals: number;
+							name: string;
+							symbol: string;
+						};
+					};
+				}
+			];
+		};
+	};
+};

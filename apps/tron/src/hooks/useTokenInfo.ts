@@ -1,44 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { DEFAULT_TOKEN_LIST } from "src/constants/token-list";
+import { getTokenData } from "src/lib/getTokenData";
 import { getValidTokenAddress, isAddress } from "src/utils/helpers";
-
-type ITokenDataResponse = {
-	data: {
-		tron: {
-			address: [
-				{
-					smartContract: {
-						currency: {
-							decimals: number;
-							name: string;
-							symbol: string;
-						};
-					};
-				}
-			];
-		};
-	};
-};
-
-const getTokenData = async ({ contractAddress }: { contractAddress: string }) => {
-	try {
-		const res = await fetch(`/api/token-info?contractAddress=${contractAddress}`, { method: "GET" });
-		if (!res.ok) {
-			throw new Error("Failed to fetch data from Tron API");
-		}
-		const data: ITokenDataResponse | undefined = await res.json();
-
-		const cleanedData = {
-			decimals: data?.data?.tron.address[0].smartContract.currency.decimals ?? 0,
-			name: data?.data?.tron.address[0].smartContract.currency.name ?? "N/A",
-			symbol: data?.data?.tron.address[0].smartContract.currency.symbol ?? "N/A",
-		};
-		return cleanedData;
-	} catch (error) {
-		console.log(error);
-		return undefined;
-	}
-};
 
 export const useTokenInfo = ({ tokenAddress }: { tokenAddress: string }) => {
 	return useQuery({

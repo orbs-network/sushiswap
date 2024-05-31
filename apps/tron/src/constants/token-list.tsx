@@ -10,6 +10,15 @@ export const TRON: IToken = {
 	symbol: "TRX",
 };
 
+export const WTRX: IToken = {
+	address: "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR",
+	decimals: 6,
+	logoURI:
+		"https://static.tronscan.org/production/upload/logo/TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR.png?t=1598430824415",
+	name: "Wrapped TRX",
+	symbol: "WTRX",
+};
+
 const MAINNET_TOKENS: IToken[] = [
 	{
 		address: "TRON",
@@ -93,3 +102,7 @@ export const DEFAULT_TOKEN_LIST_WITH_KEY = () => {
 		{}
 	);
 };
+
+export const STABLE_TOKENS = DEFAULT_TOKEN_LIST.filter(
+	(token) => token.symbol === "USDT" || token.symbol === "TUSD" || token.symbol === "USDD"
+);

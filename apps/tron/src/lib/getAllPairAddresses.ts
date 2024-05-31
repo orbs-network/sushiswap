@@ -11,8 +11,12 @@ export const getAllPairAddresses = async () => {
 
 		const cleanedData = data?.data?.tron.smartContractEvents.map((event) => {
 			const pairAddress = event.arguments.find((arg) => arg.argument === "pair")?.value ?? "";
+			const token0Address = event.arguments.find((arg) => arg.argument === "token0")?.value ?? "";
+			const token1Address = event.arguments.find((arg) => arg.argument === "token1")?.value ?? "";
 
 			return {
+				token0Address,
+				token1Address,
 				pairAddress,
 			};
 		});

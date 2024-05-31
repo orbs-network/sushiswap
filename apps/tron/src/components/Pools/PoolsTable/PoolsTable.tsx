@@ -12,7 +12,7 @@ export type IRowData = {
 	token1Address: string;
 	reserve0: string;
 	reserve1: string;
-	apr: string;
+	tvl: string;
 };
 
 type PoolsTableProps = {
@@ -50,7 +50,7 @@ export const PoolsTable = ({ query }: PoolsTableProps) => {
 					token1Address: pool.token1Address,
 					reserve0: pool.reserve0,
 					reserve1: pool.reserve1,
-					apr: "0",
+					tvl: "0",
 				})) ?? []
 			}
 			columns={[NAME_COLUMN, TVL_COLUMN, RESERVES_COLUMN]}

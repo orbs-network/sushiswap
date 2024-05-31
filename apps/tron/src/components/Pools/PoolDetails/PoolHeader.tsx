@@ -3,7 +3,9 @@ import { SkeletonCircle, SkeletonText } from "@sushiswap/ui";
 import { IconList } from "@sushiswap/ui/components/currency/IconList";
 import Link from "next/link";
 import { Icon } from "src/components/General/Icon";
+import { useStablePrice } from "src/hooks/useStablePrice";
 import { IToken } from "src/types/token-type";
+import { formatUSD } from "sushi/format";
 
 export const PoolHeader = ({
 	token0,
@@ -16,6 +18,8 @@ export const PoolHeader = ({
 	isLoading: boolean;
 	pairAddress: string;
 }) => {
+	const { data: token0USD, isLoading: isLoadingToken0USD } = useStablePrice({ token: token0 });
+	const { data: token1USD, isLoading: isLoadingToken1USD } = useStablePrice({ token: token1 });
 	return (
 		<div className="flex flex-col gap-5">
 			<div className="flex flex-col gap-3">
@@ -63,7 +67,7 @@ export const PoolHeader = ({
 				<div className="flex w-full gap-3 p-3 bg-white rounded-lg dark:bg-slate-800">
 					{isLoading ? <SkeletonCircle radius={20} /> : <Icon currency={token0} width={20} height={20} />}
 
-					{isLoading ? (
+					{isLoading || isLoadingToken0USD ? (
 						<div className="flex gap-2">
 							<SkeletonText className="!w-10" />
 							=
@@ -71,13 +75,13 @@ export const PoolHeader = ({
 						</div>
 					) : (
 						<p className="text-gray-600 dark:text-slate-300">
-							{token0?.symbol} = {"$0.00"}
+							{token0?.symbol} = {formatUSD(token0USD ?? "")}
 						</p>
 					)}
 				</div>
 				<div className="flex w-full gap-3 p-3 bg-white rounded-lg dark:bg-slate-800">
 					{isLoading ? <SkeletonCircle radius={20} /> : <Icon currency={token1} width={20} height={20} />}
-					{isLoading ? (
+					{isLoading || isLoadingToken1USD ? (
 						<div className="flex gap-2">
 							<SkeletonText className="!w-10" />
 							=
@@ -85,7 +89,7 @@ export const PoolHeader = ({
 						</div>
 					) : (
 						<p className="text-gray-600 dark:text-slate-300">
-							{token1?.symbol} = {"$0.00"}
+							{token1?.symbol} = {formatUSD(token1USD ?? "")}
 						</p>
 					)}
 				</div>
