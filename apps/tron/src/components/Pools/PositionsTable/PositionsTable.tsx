@@ -30,16 +30,20 @@ export const PositionsTable = ({ query }: PositionsTableProps) => {
 	const filteredData = useMemo(() => {
 		if (!data) return [];
 		if (!debouncedQuery) return data;
-		return data?.filter((pool) => {
-			return (
-				pool?.pairAddress.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-				pool?.token0?.address?.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-				pool?.token1?.address?.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-				pool?.token0?.symbol?.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-				pool?.token1?.symbol?.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-				pool?.token0?.name?.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-				pool?.token1?.name?.toLowerCase().includes(debouncedQuery.toLowerCase())
-			);
+		const lowercasedQuery = debouncedQuery.toLowerCase();
+
+		return data.filter((pool) => {
+			const poolValues = [
+				pool.pairAddress,
+				pool.token0?.address,
+				pool.token1?.address,
+				pool.token0?.symbol,
+				pool.token1?.symbol,
+				pool.token0?.name,
+				pool.token1?.name,
+			];
+
+			return poolValues.some((value) => value?.toLowerCase().includes(lowercasedQuery));
 		});
 	}, [data, debouncedQuery]);
 	return (

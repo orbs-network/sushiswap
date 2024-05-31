@@ -39,7 +39,11 @@ export const PoolsView = () => {
 				</Container>
 				<Tab.Panels className="bg-gray-50 dark:bg-white/[0.02] py-4 h-full">
 					<Container maxWidth="7xl" className="px-4 mx-auto">
-						<PoolSearchBar query={query} setQuery={setQuery} />
+						<PoolSearchBar
+							query={query}
+							setQuery={setQuery}
+							placeholder={tab === 0 ? "Search by address" : "Search by address, name, or symbol"}
+						/>
 					</Container>
 					<Tab.Panel>
 						<Container maxWidth="7xl" className="px-4 mx-auto mt-4">

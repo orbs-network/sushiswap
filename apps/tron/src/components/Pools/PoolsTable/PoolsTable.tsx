@@ -29,11 +29,11 @@ export const PoolsTable = ({ query }: PoolsTableProps) => {
 	const filteredData = useMemo(() => {
 		if (!data) return [];
 		if (!debouncedQuery) return data;
+		const lowercasedQuery = debouncedQuery.toLowerCase();
+
 		return data.filter((pool) => {
-			return (
-				pool.pairAddress.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-				pool.token0Address.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-				pool.token1Address.toLowerCase().includes(debouncedQuery.toLowerCase())
+			return (["pairAddress", "token0Address", "token1Address"] as Array<keyof (typeof data)[0]>).some(
+				(key) => pool[key].toLowerCase().includes(lowercasedQuery)
 			);
 		});
 	}, [data, debouncedQuery]);

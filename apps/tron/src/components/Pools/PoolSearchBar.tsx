@@ -4,16 +4,11 @@ import { Search } from "../Input/Search";
 type PoolSearchBarProps = {
 	query: string;
 	setQuery: React.Dispatch<React.SetStateAction<string>>;
+	placeholder: string;
 };
 
-export const PoolSearchBar: FC<PoolSearchBarProps> = ({ setQuery, query }) => {
+export const PoolSearchBar: FC<PoolSearchBarProps> = ({ setQuery, query, placeholder }) => {
 	return (
-		<Search
-			placeholder="Search by address"
-			id="search"
-			loading={false}
-			onChange={setQuery}
-			value={query ?? ""}
-		/>
+		<Search placeholder={placeholder} id="search" loading={false} onChange={setQuery} value={query ?? ""} />
 	);
 };
