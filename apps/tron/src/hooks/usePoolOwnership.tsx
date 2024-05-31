@@ -12,17 +12,17 @@ export const usePoolOwnership = ({ pairAddress }: { pairAddress: string | undefi
 		queryKey: ["usePoolOwnership", { pairAddress }],
 		queryFn: async () => {
 			if (!pairAddress || !tronWeb || !isAddress(pairAddress) || !address || !isAddress(address)) {
-				return 0;
+				return { ownership: "0", ownedSupply: "0" };
 			}
 			tronWeb.setAddress(pairAddress);
 			const pairInstance = await tronWeb.contract(PAIR_ABI, pairAddress);
 			const totalSupply = await pairInstance.totalSupply().call();
 			// const ownedSupply = await pairInstance.balanceOf(address).call();
-			const ownedSupply = await pairInstance.balanceOf("TPdthWzUHfepu2TEBimTFi1sBWtGYi3Ksa").call(); //TODO: remove hardcoded test address
+			const ownedSupply = await pairInstance.balanceOf("TWyK38fWMAjM98GY1ypvHTxj7cQHw7dS66").call(); //TODO: remove hardcoded test address
 
-			const ownership = ownedSupply / totalSupply;
+			const ownership = (ownedSupply / totalSupply).toString();
 
-			return ownership;
+			return { ownership, ownedSupply: ownedSupply.toString() };
 		},
 		enabled: !!address && isAddress(address) && !!pairAddress && isAddress(pairAddress) && !!tronWeb,
 	});

@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import { DEFAULT_TOKEN_LIST, TRON } from "src/constants/token-list";
 import { getAllPairAddresses } from "src/lib/getAllPairAddresses";
+import { IReserveDataResponse } from "src/types/get-pools-type";
 import { IToken } from "src/types/token-type";
 import { sortTokenAddresses } from "src/utils/formatters";
 import { chunk, flatten, getValidTokenAddress, isAddress } from "src/utils/helpers";
@@ -24,6 +25,14 @@ type IPairDataResponse = {
 		};
 	};
 };
+
+type _IPools = {
+	token0: IToken;
+	token1: IToken;
+	pairAddress: string;
+	reserve0: string;
+	reserve1: string;
+}[];
 
 const getPairContributions = async ({
 	pairAddresses,
@@ -103,6 +112,8 @@ const getPairContributions = async ({
 				token0: _token0,
 				token1: _token1,
 				pairAddress: pairAddress,
+				reserve0: "0",
+				reserve1: "0",
 			};
 		});
 		// //filter out all objects that have duplicate pair addresses or are undefined
@@ -111,6 +122,45 @@ const getPairContributions = async ({
 		);
 
 		return filteredDataArray;
+	} catch (error) {
+		console.log(error);
+		return [];
+	}
+};
+
+const injectReserves = async (pools: _IPools) => {
+	try {
+		const chunkedPools = chunk(pools, 100);
+		const poolsCopy = [...pools];
+
+		for (const chunk of chunkedPools) {
+			const pairAddresses = chunk.map((pool) => pool.pairAddress);
+			const res = await fetch(`/api/pools/get-reserves?pairAddresses=${pairAddresses}`, { method: "GET" });
+			if (!res.ok) {
+				throw new Error("Failed to fetch data from Tron API");
+			}
+			const data: IReserveDataResponse | undefined = await res.json();
+			if (!data) return [];
+			// find the reserves in the data and inject them into the pool object by pairAddress
+
+			for (const pool of chunk) {
+				const reserveData = data?.data?.tron.smartContractEvents.find(
+					(event) => event.smartContract.address.address.toLowerCase() === pool.pairAddress.toLowerCase()
+				);
+
+				if (reserveData) {
+					const reserve0 = reserveData.arguments.find((arg) => arg.argument === "reserve0")?.value ?? "0";
+					const reserve1 = reserveData.arguments.find((arg) => arg.argument === "reserve1")?.value ?? "0";
+
+					const _pool = poolsCopy.find((p) => p.pairAddress === pool.pairAddress);
+					if (_pool) {
+						_pool.reserve0 = reserve0;
+						_pool.reserve1 = reserve1;
+					}
+				}
+			}
+		}
+		return poolsCopy;
 	} catch (error) {
 		console.log(error);
 		return [];
@@ -138,10 +188,18 @@ export const useMyPositions = () => {
 				});
 				_result.push(_data);
 			}
+			const pools = flatten(_result);
+			if (!pools || pools?.length === 0) {
+				return [];
+			}
+			const poolsWithReserves = await injectReserves(pools as _IPools);
 
-			return flatten(_result);
+			return poolsWithReserves;
 		},
 		keepPreviousData: true,
 		enabled: !!address,
+		refetchOnMount: false,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
 	});
 };

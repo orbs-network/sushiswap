@@ -6,6 +6,7 @@ import { IToken } from "src/types/token-type";
 import { useTokenBalance } from "src/hooks/useTokenBalance";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import { formatUnitsForInput } from "src/utils/formatters";
+import { useStablePrice } from "src/hooks/useStablePrice";
 
 type TokenInputProps = {
 	type: "input" | "output";
@@ -21,6 +22,9 @@ export const TokenInput = ({ type, token, setToken, amount, setAmount }: TokenIn
 		accountAddress: address,
 		tokenAddress: token?.address,
 	});
+	const { data: usdValue, isLoading: isUSDValueLoading } = useStablePrice({ token: token });
+	console.log(amount);
+	const usdAmount = amount ? (Number(amount) * (usdValue ? Number(usdValue) : 0)).toString(10) : "0.00";
 
 	return (
 		<div className="flex flex-col gap-2 bg-white px-3 py-4 dark:bg-slate-800 rounded-xl">
@@ -42,7 +46,7 @@ export const TokenInput = ({ type, token, setToken, amount, setAmount }: TokenIn
 				<TokenListSelect setToken={setToken} token={token} />
 			</div>
 			<div className="flex justify-between gap-2 items-center">
-				<DollarAmountDisplay isLoading={false} error={undefined} value={"0.00"} />
+				<DollarAmountDisplay isLoading={isUSDValueLoading} error={undefined} value={usdAmount} />
 				<TokenBalanceDisplay
 					amount={Number(tokenBalance ?? 0)}
 					isLoading={isInitialLoadingTokenBalance}

@@ -7,10 +7,11 @@ type DollarAmountDisplayProps = {
 };
 export const DollarAmountDisplay = ({ isLoading, error, value }: DollarAmountDisplayProps) => {
 	const [big, portion] = (value ? `${Number(value).toFixed(2)}` : "0.00").split(".");
+
 	if (isLoading) {
 		return (
 			<div className="w-[90px] flex items-center">
-				<SkeletonText fontSize="text-lg" className="w-full" />
+				<SkeletonText fontSize="lg" className="w-full" />
 			</div>
 		);
 	}

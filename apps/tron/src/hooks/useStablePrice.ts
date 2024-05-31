@@ -89,12 +89,12 @@ const getTokenPrice = async (token: IToken | undefined) => {
 			// token0 is WRTX, so token1 is the other token
 			const decimals0 = WTRX.decimals;
 			const decimals1 = token.decimals;
-			return (Number(getToken0Price(reserve0, reserve1, decimals0, decimals1)) * tronInUSDT).toString(10);
+			return (Number(getToken1Price(reserve0, reserve1, decimals0, decimals1)) * tronInUSDT).toString(10);
 		} else if (getValidTokenAddress(pair.token1Address).toLowerCase() === WTRX.address.toLowerCase()) {
 			// token1 is WRTX, so token0 is the other token
 			const decimals0 = token.decimals;
 			const decimals1 = WTRX.decimals;
-			return (Number(getToken1Price(reserve0, reserve1, decimals0, decimals1)) * tronInUSDT).toString(10);
+			return (Number(getToken0Price(reserve0, reserve1, decimals0, decimals1)) * tronInUSDT).toString(10);
 		}
 	}
 

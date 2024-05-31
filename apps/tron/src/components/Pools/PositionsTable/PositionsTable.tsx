@@ -1,14 +1,22 @@
 import { DataTable } from "@sushiswap/ui";
-import { TVL_COLUMN } from "../PoolsTable/PoolColumns";
-import { POSITION_NAME_COLUMN, SIZE_COLUMN } from "./PositionColumns";
+import { POSITION_NAME_COLUMN, SIZE_COLUMN, TVL_COLUMN } from "./PositionColumns";
 import { useMyPositions } from "src/hooks/useMyPositions";
 import { useMemo, useState } from "react";
 import { PaginationState } from "@tanstack/react-table";
 import { useDebounce } from "@sushiswap/hooks";
 import { IMyPositionData } from "src/types/get-pools-type";
+import { IToken } from "src/types/token-type";
 
 type PositionsTableProps = {
 	query: string;
+};
+
+export type IPositionRowData = {
+	token0: IToken;
+	token1: IToken;
+	pairAddress: string;
+	reserve0: string;
+	reserve1: string;
 };
 
 export const PositionsTable = ({ query }: PositionsTableProps) => {
@@ -42,6 +50,8 @@ export const PositionsTable = ({ query }: PositionsTableProps) => {
 					token0: pool?.token0,
 					token1: pool?.token1,
 					pairAddress: pool?.pairAddress,
+					reserve0: pool?.reserve0,
+					reserve1: pool?.reserve1,
 				})) ?? []
 			}
 			columns={[POSITION_NAME_COLUMN, TVL_COLUMN, SIZE_COLUMN]}
