@@ -1,5 +1,5 @@
 import { Tab } from "@headlessui/react";
-import { Container } from "@sushiswap/ui";
+import { Card, CardHeader, CardTitle, Container } from "@sushiswap/ui";
 import { Button } from "@sushiswap/ui";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import React, { Fragment, useState } from "react";
@@ -19,8 +19,8 @@ export const PoolsView = () => {
 					<div className="flex items-center gap-2 mb-4">
 						<Tab as={Fragment}>
 							{({ selected }) => (
-								<Button size="sm" variant={selected ? "secondary" : "ghost"} className="!rounded-full">
-									All
+								<Button size="sm" variant={selected ? "secondary" : "ghost"}>
+									All Pools
 								</Button>
 							)}
 						</Tab>
@@ -28,7 +28,7 @@ export const PoolsView = () => {
 							<>
 								<Tab as={Fragment}>
 									{({ selected }) => (
-										<Button size="sm" variant={selected ? "secondary" : "ghost"} className="!rounded-full">
+										<Button size="sm" variant={selected ? "secondary" : "ghost"}>
 											My Positions
 										</Button>
 									)}
@@ -37,8 +37,8 @@ export const PoolsView = () => {
 						)}
 					</div>
 				</Container>
-				<Tab.Panels className="bg-gray-50 dark:bg-white/[0.02] py-4 h-full">
-					<Container maxWidth="7xl" className="px-4 mx-auto">
+				<Tab.Panels className="py-4 h-full bg-gray-50 dark:bg-white/[0.02] border-t border-accent pt-4">
+					<Container maxWidth="7xl" className="px-4">
 						<PoolSearchBar
 							query={query}
 							setQuery={setQuery}
@@ -46,14 +46,24 @@ export const PoolsView = () => {
 						/>
 					</Container>
 					<Tab.Panel>
-						<Container maxWidth="7xl" className="px-4 mx-auto mt-4">
-							<PoolsTable query={query} />
-						</Container>
+						<div className="px-4 mx-auto max-w-7xl w-full pb-20">
+							<Card className="mt-4">
+								<CardHeader>
+									<CardTitle>Pools</CardTitle>
+								</CardHeader>
+								<PoolsTable query={query} />
+							</Card>
+						</div>
 					</Tab.Panel>
 					<Tab.Panel>
-						<Container maxWidth="7xl" className="px-4 mx-auto mt-4">
-							<PositionsTable query={query} />
-						</Container>
+						<div className="px-4 mx-auto max-w-7xl w-full pb-20">
+							<Card className="mt-4">
+								<CardHeader>
+									<CardTitle>My Positions</CardTitle>
+								</CardHeader>
+								<PositionsTable query={query} />
+							</Card>
+						</div>
 					</Tab.Panel>
 					<Tab.Panel />
 				</Tab.Panels>

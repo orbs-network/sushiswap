@@ -1,6 +1,6 @@
 "use client";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
-import { Container } from "@sushiswap/ui";
+import { Container, LinkExternal, LinkInternal, typographyVariants } from "@sushiswap/ui";
 import { Button } from "@sushiswap/ui";
 import { DiscordIcon } from "@sushiswap/ui";
 import Link from "next/link";
@@ -9,47 +9,52 @@ import { PoolsView } from "src/components/Pools/PoolsView";
 export default function Pool() {
 	return (
 		<>
-			<Container maxWidth="7xl" className="mx-auto px-4 pt-[80px] lg:pb-[54px]">
-				<div className="flex flex-col justify-between gap-12 lg:flex-row lg:items-center">
+			<Container maxWidth="7xl" className="px-4 pt-20 pb-10">
+				<section className="flex flex-col justify-between gap-12 lg:flex-row lg:items-start mb-12">
 					<div className="flex flex-col items-center flex-grow gap-6 lg:items-start">
 						<div className="flex flex-col">
-							<h1 className="scroll-m-20 text-3xl font-bold tracking-tighter md:text-5xl lg:leading-[1.1]">
+							<h1 className={typographyVariants({ variant: "h1" })}>
 								Put your funds to work <br />
 								by providing liquidity.
 							</h1>
-							<p className="scroll-m-20 leading-7 [&:not(:first-child)]:mt-6 text-lg text-gray-600 dark:text-slate-400 sm:text-xl max-w-[500px]">
+							<p
+								className={typographyVariants({
+									variant: "lead",
+									className: "max-w-[500px]",
+								})}>
 								When you add liquidity to a pool, you can receive a share of its trading volume and
 								potentially snag extra rewards when there are incentives involved!
 							</p>
 						</div>
-						<div className="flex items-center">
-							<Link href="/pool/add">
-								<Button size="lg">Create Position</Button>
-							</Link>
-						</div>
-					</div>
-					<div className="relative z-10 group">
-						<div className="flex flex-col items-center gap-4 lg:items-end">
-							<div className="flex flex-col items-center gap-1 lg:items-end">
-								<span className="font-semibold lg:text-sm">Looking for a partnership with Sushi?</span>
-								<Link
-									href="https://rbieu62gj0f.typeform.com/to/KkrPkOFe"
-									className="font-medium text-blue hover:!text-blue-600 lg:text-sm flex gap-1 items-center">
-									Join Onsen <ChevronRightIcon width={16} height={16} />
-								</Link>
-							</div>
-							<div className="flex flex-col items-center gap-1 lg:items-end">
-								<span className="font-semibold lg:text-sm">Need Help?</span>
-								<Link
-									href="https://discord.gg/NVPXN4e"
-									className="font-medium text-blue hover:!text-blue-600 lg:text-sm flex gap-1 items-center">
-									<DiscordIcon width={16} height={16} /> Join our discord
-								</Link>
+						<div className="flex flex-col sm:flex-row w-full sm:w-[unset] gap-4">
+							<div className="flex items-center w-full">
+								<Button asChild size="lg">
+									<LinkInternal href="/pool/add">I want to create a position</LinkInternal>
+								</Button>
 							</div>
 						</div>
 					</div>
-				</div>
+					<div className="flex flex-col items-center gap-4 lg:items-end">
+						<div className="flex flex-col items-center gap-1 lg:items-end">
+							<span className="font-semibold lg:text-sm">Looking for a partnership with Sushi?</span>
+							<Button className="flex-1 w-full sm:flex-0 sm:w-[unset]" variant="link" size="sm" asChild>
+								<LinkExternal href="https://rbieu62gj0f.typeform.com/to/KkrPkOFe">
+									<div className="flex items-center">
+										Join Onsen <ChevronRightIcon width={16} height={16} />
+									</div>
+								</LinkExternal>
+							</Button>
+						</div>
+						<div className="flex flex-col items-center gap-1 lg:items-end">
+							<span className="font-semibold lg:text-sm">Need Help?</span>
+							<Button icon={DiscordIcon} variant="link" size="sm" asChild>
+								<LinkExternal href="https://discord.gg/NVPXN4e">Join our discord</LinkExternal>
+							</Button>
+						</div>
+					</div>
+				</section>
 			</Container>
+
 			<PoolsView />
 		</>
 	);

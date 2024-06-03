@@ -21,7 +21,7 @@ export const DollarAmountDisplay = ({ isLoading, error, value }: DollarAmountDis
 	}
 
 	return (
-		<p className="font-medium text-lg flex items-baseline select-none text-gray-500 dark:text-slate-500">
+		<p className="font-medium text-lg flex items-baseline select-none text-gray-500 dark:text-slate-400">
 			$ {big}.<span className="text-sm font-semibold">{portion}</span>
 		</p>
 	);

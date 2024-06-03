@@ -11,7 +11,7 @@ import { Title } from "src/components/General/Title";
 export default function SwapSimplePage() {
 	return (
 		<Container className="p-4 mx-auto mt-16 mb-[86px] flex flex-col gap-4 max-w-[520px]">
-			<Title>Trade</Title>
+			<Title className="!font-bold">Trade</Title>
 			<section className="flex items-center justify-between">
 				<SwitchSwapType />
 				<SettingsOverlay
@@ -19,7 +19,7 @@ export default function SwapSimplePage() {
 					modules={[SettingsModule.SlippageTolerance]}
 				/>
 			</section>
-			<section className="flex flex-col gap-4 relative">
+			<section className="flex flex-col gap-2 relative">
 				<AmountIn />
 				<SwitchSwapDirection />
 				<AmountOut />

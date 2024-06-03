@@ -52,12 +52,14 @@ export const TokenListSelect = ({
 		<Dialog>
 			<DialogTrigger asChild>
 				<Button
-					icon={() => (token ? <Icon currency={token} width={22} height={22} /> : <></>)}
+					icon={() => (token ? <Icon currency={token} width={26} height={26} /> : <></>)}
 					size="sm"
 					variant="secondary"
-					className="!rounded-full flex items-center !px-2 !py-1">
+					className="!rounded-full flex items-center !p-5 !text-xl">
 					<span>{token?.symbol ?? "Select"}</span>
-					<SelectIcon />
+					<div>
+						<SelectIcon />
+					</div>
 				</Button>
 			</DialogTrigger>
 			<DialogContent>

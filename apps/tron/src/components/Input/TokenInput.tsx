@@ -27,13 +27,13 @@ export const TokenInput = ({ type, token, setToken, amount, setAmount }: TokenIn
 	const usdAmount = amount ? (Number(amount) * (usdValue ? Number(usdValue) : 0)).toString(10) : "0.00";
 
 	return (
-		<div className="flex flex-col gap-2 bg-white px-3 py-4 dark:bg-slate-800 rounded-xl">
+		<div className="flex flex-col gap-2 bg-white px-3 py-4 dark:bg-slate-800 rounded-xl border dark:border-slate-700">
 			<div className="flex items-center gap-2">
 				<TextField
-					className="text-xl font-bold bg-transparent !px-0 hover:!bg-transparent"
+					className="text-3xl bg-transparent !px-0 hover:!bg-transparent"
 					disabled={type === "output"}
 					id={`swap-${type}`}
-					placeholder="0"
+					placeholder="0.0"
 					type="number"
 					value={amount}
 					onChange={(e) => {
