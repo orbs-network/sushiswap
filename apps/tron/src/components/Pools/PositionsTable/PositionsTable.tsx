@@ -30,7 +30,7 @@ export const PositionsTable = ({ query }: PositionsTableProps) => {
 	const filteredData = useMemo(() => {
 		if (!data) return [];
 		if (!debouncedQuery) return data;
-		const lowercasedQuery = debouncedQuery.toLowerCase();
+		const lowercasedQuery = debouncedQuery.toLowerCase()?.replaceAll(" ", "");
 
 		return data.filter((pool) => {
 			const poolValues = [

@@ -1,5 +1,4 @@
-import { FC, useCallback } from "react";
-import { Search } from "../Input/Search";
+import { FC, useCallback, useState, useTransition } from "react";
 import { ChipInput } from "@sushiswap/ui";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 
@@ -10,21 +9,26 @@ type PoolSearchBarProps = {
 };
 
 export const PoolSearchBar: FC<PoolSearchBarProps> = ({ setQuery, query, placeholder }) => {
+	const [isPending, startTransition] = useTransition();
+	const [values, setValues] = useState<string[]>(query.split(" "));
+
 	const onValueChange = useCallback(
 		(values: string[]) => {
-			setQuery(values.join(" "));
+			const value = values?.[0]?.replaceAll(" ", "");
+			setValues([value ?? ""]);
+			startTransition(() => setQuery(values.join(" ")));
 		},
 		[setQuery]
 	);
+
 	return (
-		// <Search placeholder={placeholder} id="search" loading={false} onChange={setQuery} value={query ?? ""} />
 		<div className="w-fit">
 			<ChipInput
 				size="sm"
 				icon={MagnifyingGlassIcon}
 				delimiters={[",", " ", ";", ":", "Enter"]}
 				variant="outline"
-				values={query.split(" ")}
+				values={isPending ? values : query.split(" ")}
 				onValueChange={onValueChange}
 				placeholder={placeholder}
 				maxValues={1}

@@ -29,7 +29,7 @@ export const PoolsTable = ({ query }: PoolsTableProps) => {
 	const filteredData = useMemo(() => {
 		if (!data) return [];
 		if (!debouncedQuery) return data;
-		const lowercasedQuery = debouncedQuery.toLowerCase();
+		const lowercasedQuery = debouncedQuery.toLowerCase()?.replaceAll(" ", "");
 
 		return data.filter((pool) => {
 			return (["pairAddress", "token0Address", "token1Address"] as Array<keyof (typeof data)[0]>).some(
