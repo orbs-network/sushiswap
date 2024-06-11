@@ -53,28 +53,54 @@ export const formatUnits = (amount: string | number, decimals: number, maxDecima
 		return "<0.0001";
 	}
 	if (maxDecimals) {
-		return parseFloat(val.toFixed(maxDecimals)).toString();
+		return toBigNumber(parseFloat(val.toFixed(maxDecimals)).toString()).toString(10);
 	}
-	return val.toString(10);
+	return toBigNumber(parseFloat(val.toFixed(decimals)).toString()).toString(10);
 };
 
 export const formatUnitsForInput = (amount: string | number, decimals: number): string => {
 	if (isNaN(Number(amount))) {
 		return "0";
 	}
-	const val = TronWeb.toBigNumber(amount).div(10 ** decimals);
+
+	const _decimals = toBigNumber(10).pow(decimals);
+
+	const val = TronWeb.toBigNumber(amount).div(_decimals);
 	if (isNaN(val)) {
 		return "0";
 	}
 
-	return val.toString(10);
+	return toBigNumber(parseFloat(val.toFixed(decimals)).toString()).toString(10);
 };
 
 export const parseUnits = (amount: string | number, decimals: number): string => {
 	if (isNaN(Number(amount))) {
 		return "0";
 	}
-	return TronWeb.toBigNumber(amount)
+
+	const val = TronWeb.toBigNumber(amount)
 		.times(10 ** decimals)
 		.toString(10);
+
+	if (!toBigNumber(val).isInteger()) {
+		return toBigNumber(val)
+			.toFormat(0, { groupSeparator: "", decimalSeparator: ".", padFractionalPart: false })
+			.toString(10);
+	}
+
+	return val;
+};
+
+export const toBigNumber = (amount: string | number) => {
+	return TronWeb.toBigNumber(amount);
+};
+
+export const removeDecimals = (amount: string | number): string => {
+	const val = TronWeb.toBigNumber(amount);
+	if (!toBigNumber(val).isInteger()) {
+		return toBigNumber(val)
+			.toFormat(0, { groupSeparator: "", decimalSeparator: ".", padFractionalPart: false })
+			.toString(10);
+	}
+	return val.toString(10);
 };

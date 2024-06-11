@@ -11,6 +11,16 @@ export const PoolsView = () => {
 	const [tab, setTab] = useState<number>(0);
 	const { address } = useWallet();
 	const [query, setQuery] = useState<string>("");
+	const [poolsOnView, setPoolsOnView] = useState<number>(-1);
+	const [myPositionsOnView, setMyPositionsOnView] = useState<number>(-1);
+
+	const handlePoolsOnView = (pools: number) => {
+		setPoolsOnView(pools);
+	};
+
+	const handleMyPositionsOnView = (positions: number) => {
+		setMyPositionsOnView(positions);
+	};
 
 	return (
 		<div className="flex flex-col h-full">
@@ -49,9 +59,9 @@ export const PoolsView = () => {
 						<div className="px-4 mx-auto max-w-7xl w-full pb-20">
 							<Card className="mt-4">
 								<CardHeader>
-									<CardTitle>Pools</CardTitle>
+									<CardTitle>Pools ({poolsOnView === -1 ? "-" : poolsOnView})</CardTitle>
 								</CardHeader>
-								<PoolsTable query={query} />
+								<PoolsTable handlePoolsOnView={handlePoolsOnView} query={query} />
 							</Card>
 						</div>
 					</Tab.Panel>
@@ -59,9 +69,9 @@ export const PoolsView = () => {
 						<div className="px-4 mx-auto max-w-7xl w-full pb-20">
 							<Card className="mt-4">
 								<CardHeader>
-									<CardTitle>My Positions</CardTitle>
+									<CardTitle>My Positions ({myPositionsOnView === -1 ? "-" : myPositionsOnView})</CardTitle>
 								</CardHeader>
-								<PositionsTable query={query} />
+								<PositionsTable handleMyPositionsOnView={handleMyPositionsOnView} query={query} />
 							</Card>
 						</div>
 					</Tab.Panel>

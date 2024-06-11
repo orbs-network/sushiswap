@@ -2,7 +2,7 @@ import { DataTable } from "@sushiswap/ui";
 import { TVL_COLUMN, NAME_COLUMN, RESERVES_COLUMN } from "./PoolColumns";
 import { usePools } from "src/hooks/usePools";
 import { PaginationState } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDebounce } from "@sushiswap/hooks";
 
 export type IRowData = {
@@ -16,9 +16,10 @@ export type IRowData = {
 
 type PoolsTableProps = {
 	query: string;
+	handlePoolsOnView: (pools: number) => void;
 };
 
-export const PoolsTable = ({ query }: PoolsTableProps) => {
+export const PoolsTable = ({ query, handlePoolsOnView }: PoolsTableProps) => {
 	const [paginationState, setPaginationState] = useState<PaginationState>({
 		pageIndex: 0,
 		pageSize: 10,
@@ -37,6 +38,12 @@ export const PoolsTable = ({ query }: PoolsTableProps) => {
 			);
 		});
 	}, [data, debouncedQuery]);
+
+	useEffect(() => {
+		if (filteredData && !isLoading) {
+			handlePoolsOnView(filteredData.length);
+		}
+	}, [filteredData, isLoading]);
 
 	return (
 		<DataTable

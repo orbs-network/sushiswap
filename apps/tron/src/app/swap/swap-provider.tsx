@@ -11,6 +11,7 @@ type Action =
 	| { type: "setIsTxnPending"; value: boolean }
 	| { type: "setAmountIn"; value: string }
 	| { type: "setAmountOut"; value: string }
+	| { type: "setRoute"; value: string[] }
 	| { type: "setPriceImpactPercentage"; value: number };
 
 type Dispatch = {
@@ -21,6 +22,7 @@ type Dispatch = {
 	setAmountIn(amount: string): void;
 	setAmountOut(amount: string): void;
 	setPriceImpactPercentage(priceImpactPercentage: number): void;
+	setRoute(route: string[]): void;
 };
 
 type State = {
@@ -30,6 +32,7 @@ type State = {
 	amountIn: string;
 	amountOut: string;
 	priceImpactPercentage: number;
+	route: string[];
 };
 
 type SwapProviderProps = { children: React.ReactNode };
@@ -67,6 +70,9 @@ function swapReducer(_state: State, action: Action) {
 		case "setPriceImpactPercentage": {
 			return { ..._state, priceImpactPercentage: action.value };
 		}
+		case "setRoute": {
+			return { ..._state, route: action.value };
+		}
 		// default: {
 		// 	throw new Error(`Unhandled action type: ${action.type}`);
 		// }
@@ -81,6 +87,7 @@ const SwapProvider: FC<SwapProviderProps> = ({ children }) => {
 		amountIn: "",
 		amountOut: "",
 		priceImpactPercentage: 0,
+		route: [],
 	});
 
 	const dispatchWithAction = useMemo(
@@ -92,6 +99,7 @@ const SwapProvider: FC<SwapProviderProps> = ({ children }) => {
 			setAmountIn: (value: string) => dispatch({ type: "setAmountIn", value }),
 			setAmountOut: (value: string) => dispatch({ type: "setAmountOut", value }),
 			setPriceImpactPercentage: (value: number) => dispatch({ type: "setPriceImpactPercentage", value }),
+			setRoute: (value: string[]) => dispatch({ type: "setRoute", value }),
 		}),
 		[dispatch]
 	);

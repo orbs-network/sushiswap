@@ -1,8 +1,6 @@
 import { Transition } from "@headlessui/react";
 import { classNames } from "@sushiswap/ui";
-import { SkeletonBox, SkeletonText } from "@sushiswap/ui";
-// import { TradeRoute } from './TradeRoute'
-
+import { SkeletonBox } from "@sushiswap/ui";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import Link from "next/link";
 import { useSwapState } from "src/app/swap/swap-provider";
@@ -10,65 +8,92 @@ import { truncateText } from "src/utils/formatters";
 import { getTronscanAddressLink } from "src/utils/tronscan-helpers";
 import { warningSeverity, warningSeverityClassName } from "src/utils/warning-severity";
 import { SwapRoutesDialog } from "./SwapRoutesDialog";
+import { useSlippageTolerance } from "@sushiswap/hooks";
+import { useMemo } from "react";
+import { formatPercent } from "sushi/format";
+import { getIfWrapOrUnwrap } from "src/utils/helpers";
 
 export const SwapStats = () => {
-	const { token1 } = useSwapState();
+	const { token0, token1, amountOut, amountIn, priceImpactPercentage, route } = useSwapState();
 	const { address } = useWallet();
-	const loading = false;
-	const outputSwapTokenAmount = "444";
 
-	const minOutput = 443;
+	const swapType = useMemo(() => {
+		return getIfWrapOrUnwrap(token0, token1);
+	}, [token0, token1]);
+
+	const isLoading =
+		priceImpactPercentage === undefined ||
+		(priceImpactPercentage === 0 && swapType === "swap") ||
+		amountOut === "" ||
+		amountOut === "";
+
+	const [slippageTolerance] = useSlippageTolerance("sushi-tron-slippage");
+
+	const slippage = slippageTolerance === "AUTO" ? 0.005 : Number(slippageTolerance) / 100;
+
+	const minOutput = useMemo(() => {
+		if (!amountOut) return "";
+		if (
+			(token0?.symbol === "WTRX" && token1?.address === "TRON") ||
+			(token0?.address === "TRON" && token1?.symbol === "WTRX")
+		) {
+			return amountIn;
+		}
+
+		const output = Number(amountOut) * (1 - slippage);
+		return output;
+	}, [amountOut, slippage, token0, token1, amountIn]);
+
+	const severityColor = useMemo(() => {
+		return warningSeverityClassName(warningSeverity(priceImpactPercentage));
+	}, [priceImpactPercentage]);
 
 	return (
 		<Transition
-			show={false} //Number(amountIn) > 0 && bestRoutes.length > 0
+			show={amountIn !== "" && amountOut !== "" && route && route.length > 0}
 			enter="transition duration-300 ease-out"
 			enterFrom="transform translate-y-[16px] opacity-0"
 			enterTo="transform translate-y-0 opacity-100"
 			leave="transition duration-300 ease-out"
 			leaveFrom="transform translate-y-0 opacity-100"
 			leaveTo="transform translate-y-[16px] opacity-0">
-			<div className="w-full px-2 flex flex-col gap-1">
+			<div className="w-full px-2 flex flex-col gap-1 pb-8">
 				<div className="flex justify-between items-center gap-2">
 					<span className="text-sm text-gray-700 dark:text-slate-400">Price impact</span>
-					<span
-						className={classNames(
-							warningSeverityClassName(warningSeverity(0)),
-							"text-sm font-semibold text-gray-700 text-right dark:text-slate-400"
-						)}>
-						{loading ? (
+					<span className={classNames("text-sm font-semibold text-gray-700 text-right dark:text-slate-400")}>
+						{isLoading ? (
 							<SkeletonBox className="h-4 py-0.5 w-[120px] rounded-md" />
 						) : (
-							<>{0}%</>
-							// <>{routes?.priceImpact ? -routes?.priceImpact : 0}%</>
+							<span style={{ color: severityColor }}>
+								{priceImpactPercentage ? `-${formatPercent(priceImpactPercentage / 100)}` : formatPercent(0)}
+							</span>
 						)}
 					</span>
 				</div>
 				<div className="flex justify-between items-center gap-2">
 					<span className="text-sm text-gray-700 dark:text-slate-400">Est. received</span>
 					<span className="text-sm font-semibold text-gray-700 text-right dark:text-slate-400">
-						{loading || !outputSwapTokenAmount ? (
-							<SkeletonText fontSize="text-sm" className="w-[120px]" />
+						{isLoading ? (
+							<SkeletonBox className="h-4 py-0.5 w-[120px] rounded-md" />
 						) : (
-							`${outputSwapTokenAmount} TRX`
-							// `${outputSwapTokenAmount} ${token1.symbol}`
+							`${amountOut} ${token1.symbol}`
 						)}
 					</span>
 				</div>
 				<div className="flex justify-between items-center gap-2">
 					<span className="text-sm text-gray-700 dark:text-slate-400">Min. received</span>
 					<span className="text-sm font-semibold text-gray-700 text-right dark:text-slate-400">
-						{loading || !minOutput ? (
-							<SkeletonText fontSize="text-sm" className="w-[120px]" />
+						{isLoading ? (
+							<SkeletonBox className="h-4 py-0.5 w-[120px] rounded-md" />
 						) : (
-							`${minOutput} TRX`
+							`${minOutput} ${token1.symbol}`
 						)}
 					</span>
 				</div>
 				<div className="flex justify-between items-center">
 					<span className="text-sm text-gray-700 dark:text-slate-400">Route</span>
 					<span className="text-sm font-semibold text-gray-700 text-right dark:text-slate-400">
-						{loading ? <SkeletonText fontSize="text-sm" className="w-[120px]" /> : <SwapRoutesDialog />}
+						{isLoading ? <SkeletonBox className="h-4 py-0.5 w-[120px] rounded-md" /> : <SwapRoutesDialog />}
 					</span>
 				</div>
 				{address && (

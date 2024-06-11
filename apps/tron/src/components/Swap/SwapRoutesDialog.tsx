@@ -8,8 +8,12 @@ import {
 	DialogTrigger,
 } from "@sushiswap/ui";
 import { Icon } from "../General/Icon";
+import { useSwapState } from "src/app/swap/swap-provider";
+import { useTokenInfo } from "src/hooks/useTokenInfo";
 
 export const SwapRoutesDialog = () => {
+	const { route } = useSwapState();
+
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
@@ -22,24 +26,24 @@ export const SwapRoutesDialog = () => {
 					<DialogDescription>Optimized route to get the best price</DialogDescription>
 				</DialogHeader>
 				<div className="flex flex-col gap-2 min-h-[100px] items-center justify-center w-full">
-					<SwapRoute token0Address={"token0"} token1Address={"token1"} />
+					<div className="flex items-center w-full gap-2 justify-between border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-full px-2 py-1">
+						{route?.map((tokenAddress, idx) => (
+							<SwapItem tokenAddress={tokenAddress} key={idx} />
+						))}
+					</div>
 				</div>
 			</DialogContent>
 		</Dialog>
 	);
 };
 
-const SwapRoute = ({ token0Address, token1Address }: { token0Address: string; token1Address: string }) => {
+const SwapItem = ({ tokenAddress }: { tokenAddress: string }) => {
+	const { data } = useTokenInfo({ tokenAddress });
+
 	return (
-		<div className="flex items-center w-full gap-2 justify-between border-2 dark:border-slate-400 rounded-full px-2 py-1">
-			<div className="flex items-center gap-2">
-				<Icon width={16} height={16} currency={"token0"} />
-				<span className="text-sm font-medium">token0</span>
-			</div>
-			<div className="flex items-center gap-2">
-				<Icon width={16} height={16} currency={"token1"} />
-				<span className="text-sm font-medium">token1</span>
-			</div>
+		<div className="flex items-center gap-2">
+			<Icon width={16} height={16} currency={data} />
+			<span className="text-sm font-medium">{data?.symbol}</span>
 		</div>
 	);
 };

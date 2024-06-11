@@ -1,4 +1,4 @@
-import { TextField } from "@sushiswap/ui";
+import { Button, TextField } from "@sushiswap/ui";
 import { TokenListSelect } from "../General/TokenListSelect";
 import { DollarAmountDisplay } from "../Shared/DollarAmountDisplay";
 import { TokenBalanceDisplay } from "../Shared/TokenBalanceDisplay";
@@ -7,6 +7,7 @@ import { useTokenBalance } from "src/hooks/useTokenBalance";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import { formatUnitsForInput } from "src/utils/formatters";
 import { useStablePrice } from "src/hooks/useStablePrice";
+import { Icon } from "../General/Icon";
 
 type TokenInputProps = {
 	type: "input" | "output";
@@ -14,16 +15,24 @@ type TokenInputProps = {
 	setToken: (token: IToken) => void;
 	amount: string;
 	setAmount: (amount: string) => void;
+	hasTokenListSelect?: boolean;
 };
 
-export const TokenInput = ({ type, token, setToken, amount, setAmount }: TokenInputProps) => {
+export const TokenInput = ({
+	type,
+	token,
+	setToken,
+	amount,
+	setAmount,
+	hasTokenListSelect = true,
+}: TokenInputProps) => {
 	const { address } = useWallet();
 	const { data: tokenBalance, isInitialLoading: isInitialLoadingTokenBalance } = useTokenBalance({
 		accountAddress: address,
 		tokenAddress: token?.address,
 	});
 	const { data: usdValue, isLoading: isUSDValueLoading } = useStablePrice({ token: token });
-	console.log(amount);
+
 	const usdAmount = amount ? (Number(amount) * (usdValue ? Number(usdValue) : 0)).toString(10) : "0.00";
 
 	return (
@@ -36,17 +45,33 @@ export const TokenInput = ({ type, token, setToken, amount, setAmount }: TokenIn
 					placeholder="0.0"
 					type="number"
 					value={amount}
+					readOnly={type === "output"}
 					onChange={(e) => {
 						if (type === "output") return;
 						const value = e.target.value;
+
 						setAmount(value);
 					}}
 					// isError={true}
 				/>
-				<TokenListSelect setToken={setToken} token={token} />
+				{hasTokenListSelect ? (
+					<TokenListSelect setToken={setToken} token={token} />
+				) : (
+					<Button
+						icon={() => (token ? <Icon currency={token} width={26} height={26} /> : <></>)}
+						size="sm"
+						variant="ghost"
+						className={`!rounded-full flex items-center !p-5 !text-xl focus:bg-transparent hover:bg-transparent !cursor-default`}>
+						<span>{token?.symbol ?? "Select Token"}</span>
+					</Button>
+				)}
 			</div>
 			<div className="flex justify-between gap-2 items-center">
-				<DollarAmountDisplay isLoading={isUSDValueLoading} error={undefined} value={usdAmount} />
+				<DollarAmountDisplay
+					isLoading={amount !== "" && isUSDValueLoading}
+					error={undefined}
+					value={usdAmount}
+				/>
 				<TokenBalanceDisplay
 					amount={Number(tokenBalance ?? 0)}
 					isLoading={isInitialLoadingTokenBalance}

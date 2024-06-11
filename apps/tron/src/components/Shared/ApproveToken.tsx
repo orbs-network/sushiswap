@@ -15,6 +15,10 @@ import {
 import { useState } from "react";
 import { IToken } from "src/types/token-type";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
+import { useTronWeb } from "src/hooks/useTronWeb";
+import { parseUnits, toBigNumber } from "src/utils/formatters";
+import { getTransactionInfo, parseTxnError } from "src/utils/helpers";
+import { MAX_UINT256 } from "src/constants/max-uint256";
 
 export const ApproveToken = ({
 	tokenToApprove,
@@ -28,43 +32,65 @@ export const ApproveToken = ({
 	onSuccess: () => Promise<void>;
 }) => {
 	const [isApproving, setIsApproving] = useState<boolean>(false);
-	const { address } = useWallet();
+	const { address, signTransaction } = useWallet();
+	const { tronWeb } = useTronWeb();
 
 	const approveToken = async (type: "one-time" | "unlimited") => {
 		try {
 			setIsApproving(true);
-			const txnHash = "5842e34e8d90890b9c39054f3012824cdc51d7b42155dbafc867fbc67fd80462";
-			//if type is unlimited to do max uint256, else amount
-			//approve  - spenderAddress
+			const parsedAmount = parseUnits(amount, tokenToApprove.decimals);
+			const approvalAmount = type === "one-time" ? parsedAmount : MAX_UINT256;
+			const { transaction } = await tronWeb.transactionBuilder.triggerSmartContract(
+				tokenToApprove.address, //contract address
+				"approve(address,uint256)", //function name
+				{}, // options
+				[
+					{ type: "address", value: spenderAddress },
+					{ type: "uint256", value: approvalAmount },
+				], //parameters
+				address //issuerAddress
+			);
+			const signedTransation = await signTransaction(transaction);
+			const _result = await tronWeb.trx.sendRawTransaction(signedTransation);
+			if (!_result.result && "code" in _result) {
+				throw new Error(parseTxnError(_result.code));
+			}
+			const txId = _result?.txid;
 			createInfoToast({
-				summary: type === "one-time" ? "Approving One Time..." : "Approval Unlimited Amonut...",
+				summary: type === "one-time" ? "Approving One Time..." : "Approval Unlimited Amount...",
 				type: "approval",
 				account: address as string,
 				chainId: 1,
 				groupTimestamp: Date.now(),
 				timestamp: Date.now(),
-				txHash: txnHash,
-				href: getTronscanTxnLink(txnHash),
+				txHash: txId,
+				href: getTronscanTxnLink(txId),
 			});
-			//wait for 5 seconds to sim txn
-			await new Promise((resolve) => setTimeout(resolve, 5000));
+			const transactionInfo = await getTransactionInfo(tronWeb, txId);
+			if (transactionInfo?.receipt?.result !== "SUCCESS") {
+				throw new Error("Approval failed");
+			}
 			//create success toast
 			createSuccessToast({
 				summary: "Approval successful",
-				txHash: txnHash,
+				txHash: txId,
 				type: "swap",
 				account: address as string,
 				chainId: 1,
 				groupTimestamp: Date.now(),
 				timestamp: Date.now(),
-				href: getTronscanTxnLink(txnHash),
+				href: getTronscanTxnLink(txId),
 			});
 			await onSuccess();
 			setIsApproving(false);
 		} catch (error) {
+			const errorMessage =
+				typeof error === "string"
+					? error
+					: (error as Error)?.message ?? "An error occurred while setting approval";
 			//create error toast
 			createFailedToast({
-				summary: "Approval failed",
+				summary: errorMessage,
 				type: "swap",
 				account: address as string,
 				chainId: 1,
@@ -86,7 +112,7 @@ export const ApproveToken = ({
 					role="combobox"
 					size="lg"
 					className="w-full">
-					{isApproving ? <Dots>Approving</Dots> : "Approve"}
+					{isApproving ? "Approving" : "Approve"}
 				</Button>
 				<PopoverContent className="!p-0 !overflow-x-hidden !overflow-y-scroll scroll">
 					<Command>
@@ -99,7 +125,8 @@ export const ApproveToken = ({
 									className="flex flex-col">
 									<p className="font-bold">Approve one-time only</p>
 									<p>
-										You&apos;ll give your approval to spend {amount} {tokenToApprove.symbol} on your behalf
+										You&apos;ll give your approval to spend {toBigNumber(amount).toString(10)}{" "}
+										{tokenToApprove.symbol} on your behalf
 									</p>
 								</div>
 							</CommandItem>

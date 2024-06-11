@@ -11,6 +11,8 @@ import { useNativeBalance } from "src/hooks/useNativeBalance";
 import Link from "next/link";
 import { getTronscanAddressLink } from "src/utils/tronscan-helpers";
 import { ClipboardController } from "@sushiswap/ui";
+import { useStablePrice } from "src/hooks/useStablePrice";
+import { WTRX } from "src/constants/token-list";
 
 type DefaultViewProps = {
 	setView: Dispatch<SetStateAction<IProfileView>>;
@@ -18,10 +20,11 @@ type DefaultViewProps = {
 
 export const DefaultView = ({ setView }: DefaultViewProps) => {
 	const { address, disconnect } = useWallet();
-	const { data, isLoading } = useNativeBalance();
+	const { data, isLoading: isLoadingBalance } = useNativeBalance();
 
-	//TODO get price of TRX from somewhere
-	const price = 0.112;
+	const { data: price, isLoading: isLoadingPrice } = useStablePrice({ token: WTRX });
+
+	const isLoading = isLoadingBalance || isLoadingPrice;
 
 	return (
 		<div className="flex flex-col gap-8 p-4 w-full">
@@ -79,7 +82,7 @@ export const DefaultView = ({ setView }: DefaultViewProps) => {
 				{isLoading || !price || data?.formattedBalance === undefined ? (
 					<SkeletonText className="!w-12 mx-auto" />
 				) : (
-					<p className="font-medium text-slate-400">{formatUSD(price * data?.formattedBalance)}</p>
+					<p className="font-medium text-slate-400">{formatUSD(Number(price) * data?.formattedBalance)}</p>
 				)}
 			</div>
 		</div>

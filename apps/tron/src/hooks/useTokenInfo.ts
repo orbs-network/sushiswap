@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { DEFAULT_TOKEN_LIST } from "src/constants/token-list";
+import { DEFAULT_TOKEN_LIST, TRON, WTRX } from "src/constants/token-list";
 import { getTokenData } from "src/lib/getTokenData";
 import { getValidTokenAddress, isAddress } from "src/utils/helpers";
 
@@ -8,6 +8,13 @@ export const useTokenInfo = ({ tokenAddress }: { tokenAddress: string }) => {
 		queryKey: ["useTokenInfo2", { tokenAddress }],
 		staleTime: Infinity,
 		queryFn: async () => {
+			if (tokenAddress === "TRON") {
+				return TRON;
+			}
+			if (tokenAddress.toLowerCase() === WTRX.address.toLowerCase()) {
+				return WTRX;
+			}
+
 			if (!isAddress(tokenAddress)) return undefined;
 			const foundInTokenList = DEFAULT_TOKEN_LIST.find(
 				(i) => getValidTokenAddress(i.address) === getValidTokenAddress(tokenAddress)
@@ -27,6 +34,6 @@ export const useTokenInfo = ({ tokenAddress }: { tokenAddress: string }) => {
 					)?.logoURI ?? undefined,
 			};
 		},
-		enabled: !!tokenAddress && isAddress(tokenAddress),
+		enabled: !!tokenAddress,
 	});
 };

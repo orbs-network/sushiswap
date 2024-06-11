@@ -19,6 +19,8 @@ export const WTRX: IToken = {
 	symbol: "WTRX",
 };
 
+export const INTERMEDIATE_TOKEN = WTRX;
+
 const MAINNET_TOKENS: IToken[] = [
 	{
 		address: "TRON",

@@ -19,13 +19,16 @@ import { useDebounce } from "@sushiswap/hooks";
 import { useTokenInfo } from "src/hooks/useTokenInfo";
 import { useCustomTokens } from "src/hooks/useCustomTokens";
 import { useSortedTokenList } from "src/hooks/useSortedTokenList";
+import { classNames } from "@sushiswap/ui";
 
 export const TokenListSelect = ({
 	token,
 	setToken,
+	className,
 }: {
 	token: IToken | undefined;
 	setToken: (token: IToken) => void;
+	className?: string;
 }) => {
 	const [query, setQuery] = useState<string>("");
 	const debouncedQuery = useDebounce(query, 500);
@@ -55,8 +58,8 @@ export const TokenListSelect = ({
 					icon={() => (token ? <Icon currency={token} width={26} height={26} /> : <></>)}
 					size="sm"
 					variant="secondary"
-					className="!rounded-full flex items-center !p-5 !text-xl">
-					<span>{token?.symbol ?? "Select"}</span>
+					className={`!rounded-full flex items-center !p-5 !text-xl ${className ?? ""}`}>
+					<span>{token?.symbol ?? "Select Token"}</span>
 					<div>
 						<SelectIcon />
 					</div>

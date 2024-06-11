@@ -2,7 +2,7 @@ import { useSwapDispatch, useSwapState } from "src/app/swap/swap-provider";
 import { TokenInput } from "../Input/TokenInput";
 import { useDebounce } from "@sushiswap/hooks";
 import { useAmountsOut } from "src/hooks/useAmountsOut";
-import { formatUnits, formatUnitsForInput, parseUnits } from "src/utils/formatters";
+import { formatUnitsForInput, parseUnits } from "src/utils/formatters";
 import { useEffect } from "react";
 
 export const AmountIn = () => {
@@ -13,8 +13,6 @@ export const AmountIn = () => {
 
 	const { data: amountsOut } = useAmountsOut({
 		amountIn: parseUnits(debouncedAmountIn, token0.decimals),
-		token0Address: token0.address,
-		token1Address: token1.address,
 	});
 
 	useEffect(() => {

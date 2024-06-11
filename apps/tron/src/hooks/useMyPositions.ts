@@ -57,6 +57,7 @@ const getPairContributions = async ({
 				if (!acc[curr.txHash]) {
 					acc[curr.txHash] = [];
 				}
+
 				acc[curr.txHash].push({
 					currency: curr.currency,
 					receiver: curr.receiver.address,
@@ -145,7 +146,8 @@ const injectReserves = async (pools: _IPools) => {
 
 			for (const pool of chunk) {
 				const reserveData = data?.data?.tron.smartContractEvents.find(
-					(event) => event.smartContract.address.address.toLowerCase() === pool.pairAddress.toLowerCase()
+					(event) =>
+						event?.smartContract?.address?.address?.toLowerCase() === pool?.pairAddress?.toLowerCase()
 				);
 
 				if (reserveData) {
@@ -170,7 +172,7 @@ const injectReserves = async (pools: _IPools) => {
 export const useMyPositions = () => {
 	const { address } = useWallet();
 	return useQuery({
-		queryKey: ["useMyPositions"],
+		queryKey: ["useMyPositions", { address: address }],
 		queryFn: async (data) => {
 			if (!address) return [];
 			if (!isAddress(address)) return [];
@@ -180,11 +182,9 @@ export const useMyPositions = () => {
 			//get pair contributions for each chunk
 			let _result = [];
 			for (const chunk of chunkedPairs) {
-				//pairAddress  TFXKUwrMw4zRKQZ7KUQaDbNL5zFWincHze
 				const _data = await getPairContributions({
 					pairAddresses: chunk.map((pair) => pair.pairAddress),
-					walletAddress: "TWyK38fWMAjM98GY1ypvHTxj7cQHw7dS66", //TODO: remove hardcoded test address
-					// walletAddress: address,
+					walletAddress: address,
 				});
 				_result.push(_data);
 			}
@@ -192,11 +192,12 @@ export const useMyPositions = () => {
 			if (!pools || pools?.length === 0) {
 				return [];
 			}
+			console.log({ pools });
 			const poolsWithReserves = await injectReserves(pools as _IPools);
 
 			return poolsWithReserves;
 		},
-		keepPreviousData: true,
+
 		enabled: !!address,
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,

@@ -17,8 +17,7 @@ export const usePoolOwnership = ({ pairAddress }: { pairAddress: string | undefi
 			tronWeb.setAddress(pairAddress);
 			const pairInstance = await tronWeb.contract(PAIR_ABI, pairAddress);
 			const totalSupply = await pairInstance.totalSupply().call();
-			// const ownedSupply = await pairInstance.balanceOf(address).call();
-			const ownedSupply = await pairInstance.balanceOf("TWyK38fWMAjM98GY1ypvHTxj7cQHw7dS66").call(); //TODO: remove hardcoded test address
+			const ownedSupply = await pairInstance.balanceOf(address).call();
 
 			const ownership = (ownedSupply / totalSupply).toString();
 

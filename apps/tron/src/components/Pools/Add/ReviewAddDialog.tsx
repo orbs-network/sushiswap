@@ -1,7 +1,4 @@
-import { useSlippageTolerance } from "@sushiswap/hooks";
-import { Dots } from "@sushiswap/ui";
-import { Button } from "@sushiswap/ui";
-import { List } from "@sushiswap/ui";
+import { List, SkeletonBox } from "@sushiswap/ui";
 import { Icon } from "../../General/Icon";
 import {
 	Dialog,
@@ -10,82 +7,34 @@ import {
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
-	createInfoToast,
 } from "@sushiswap/ui";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
-import { getTronscanTxnLink } from "src/utils/tronscan-helpers";
 import { useRef } from "react";
-import { createFailedToast, createSuccessToast } from "@sushiswap/ui";
 import { WalletConnector } from "../../WalletConnector/WalletConnector";
-import { usePoolDispatch, usePoolState } from "src/app/pool/pool-provider";
+import { usePoolState } from "src/app/pool/pool-provider";
 import { Rate } from "./Rate";
+import { ReviewAddDialogTrigger } from "./ReviewAddDialogTrigger";
+import { useStablePrice } from "src/hooks/useStablePrice";
+import { AddButton } from "./AddButton";
+import { formatUSD } from "sushi/format";
+import { formatUnits } from "src/utils/formatters";
 
 export const ReviewAddDialog = () => {
-	const { token0, token1, isTxnPending } = usePoolState();
-	const { setIsTxnPending } = usePoolDispatch();
+	const { token0, token1, amountInToken0, amountInToken1 } = usePoolState();
 	const closeBtnRef = useRef<HTMLButtonElement>(null);
 	const { address, connected } = useWallet();
 	const isConnected = address && connected;
+	const { data: token0Price, isLoading: isLoadingToken0Price } = useStablePrice({ token: token0 });
+	const { data: token1Price, isLoading: isLoadingToken1Price } = useStablePrice({ token: token1 });
 
 	const closeModal = () => {
 		closeBtnRef?.current?.click();
 	};
 
-	//maybe break out to new component
-	const addLiquidity = async () => {
-		try {
-			setIsTxnPending(true);
-			const txnHash = "5842e34e8d90890b9c39054f3012824cdc51d7b42155dbafc867fbc67fd80462";
-			createInfoToast({
-				summary: "Add liquidity initiated...",
-				type: "swap",
-				account: address as string,
-				chainId: 1,
-				groupTimestamp: Date.now(),
-				timestamp: Date.now(),
-				txHash: txnHash,
-				href: getTronscanTxnLink(txnHash),
-			});
-			//wait for 5 seconds to sim txn
-			await new Promise((resolve) => setTimeout(resolve, 5000));
-			//create success toast
-			createSuccessToast({
-				summary: "Add liquidity successful, and other details",
-				txHash: txnHash,
-				type: "swap",
-				account: address as string,
-				chainId: 1,
-				groupTimestamp: Date.now(),
-				timestamp: Date.now(),
-				href: getTronscanTxnLink(txnHash),
-			});
-			setIsTxnPending(false);
-			closeModal();
-		} catch (error) {
-			//create error toast
-			createFailedToast({
-				summary: "Add liquidity failed, and other details",
-				type: "swap",
-				account: address as string,
-				chainId: 1,
-				groupTimestamp: Date.now(),
-				timestamp: Date.now(),
-			});
-			console.log(error);
-			setIsTxnPending(false);
-		}
-	};
-	const [slippageTolerance] = useSlippageTolerance("sushi-tron-slippage");
-
 	return (
 		<Dialog>
 			{isConnected ? (
-				<DialogTrigger>
-					<Button size="lg" className="w-full">
-						Enter Amount
-					</Button>
-				</DialogTrigger>
+				<ReviewAddDialogTrigger />
 			) : (
 				<WalletConnector variant="default" hideChevron={true} fullWidth={true} size="lg" />
 			)}
@@ -99,34 +48,48 @@ export const ReviewAddDialog = () => {
 					<div className="flex flex-col gap-4 w-full">
 						<List className="w-full">
 							<List.Control>
-								<List.KeyValue title="TRX">
+								<List.KeyValue title={token0?.symbol}>
 									<div className="flex flex-col items-end">
-										<div className="flex items-center">
-											<Icon currency={"token0"} width={16} height={16} />
-											<div className="ml-2">23.212</div>
-											<div>TRX</div>
+										<div className="flex items-center gap-1">
+											<Icon currency={token0} width={16} height={16} />
+											{/* show max 12 decimals so nothing is cut off */}
+											<div>{formatUnits(amountInToken0, 0, 12)}</div> <div>{token0?.symbol}</div>
 										</div>
-										<div className="text-[12px] opacity-60">$3.00</div>
+										{isLoadingToken0Price ? (
+											<SkeletonBox className="h-3 w-[40px] rounded-sm" />
+										) : (
+											<div className="text-[12px] opacity-60">
+												{formatUSD(Number(token0Price) * Number(amountInToken0))}
+											</div>
+										)}
 									</div>
 								</List.KeyValue>
-								<List.KeyValue title="USDC">
+								<List.KeyValue title={token1?.symbol}>
 									<div className="flex flex-col items-end">
-										<div className="flex items-center">
-											<Icon currency={"token0"} width={16} height={16} />
-											<div className="ml-2">3</div>
-											<div>USDC</div>
+										<div className="flex items-center gap-1">
+											<Icon currency={token1} width={16} height={16} />
+											{/* show max 12 decimals so nothing is cut off */}
+											<div>{formatUnits(amountInToken1, 0, 12)}</div> <div>{token1?.symbol}</div>
 										</div>
-										<div className="text-[12px] opacity-60">$3.00</div>
+										{isLoadingToken1Price ? (
+											<SkeletonBox className="h-3 w-[40px] rounded-sm" />
+										) : (
+											<div className="text-[12px] opacity-60">
+												{formatUSD(Number(token1Price) * Number(amountInToken1))}
+											</div>
+										)}
 									</div>
 								</List.KeyValue>
 								<List.KeyValue title="Rate">
-									<Rate />
+									<Rate
+										token0Price={token0Price}
+										token1Price={token1Price}
+										isLoading={isLoadingToken0Price || isLoadingToken1Price}
+									/>
 								</List.KeyValue>
 							</List.Control>
 						</List>
-						<Button disabled={isTxnPending} color="blue" fullWidth size="xl" onClick={addLiquidity}>
-							{isTxnPending ? <Dots>Adding Liquidity</Dots> : <>Add</>}
-						</Button>
+						<AddButton closeModal={closeModal} />
 					</div>
 				</div>
 			</DialogContent>

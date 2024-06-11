@@ -1,7 +1,7 @@
 import { useTronWeb } from "./useTronWeb";
 import { useQuery } from "@tanstack/react-query";
 import { IReserves, IToken } from "src/types/token-type";
-import { parseUnits } from "src/utils/formatters";
+import { parseUnits, toBigNumber } from "src/utils/formatters";
 import { getValidTokenAddress, isAddress } from "src/utils/helpers";
 
 const calculatePriceImpact = ({
@@ -9,45 +9,55 @@ const calculatePriceImpact = ({
 	initialReserve1,
 	tokenAmount0,
 }: {
-	initialReserve0: number;
-	initialReserve1: number;
-	tokenAmount0: number;
+	initialReserve0: any;
+	initialReserve1: any;
+	tokenAmount0: any;
 }): number => {
-	const k = initialReserve0 * initialReserve1; // Constant product
-	const newReserveX = initialReserve0 + tokenAmount0; // Updated reserve of token X
-	const newReserveY = k / newReserveX; // Updated reserve of token Y using constant product formula
-	const receivedTokenY = initialReserve1 - newReserveY; // Amount of token Y received
-	const priceImpact = (receivedTokenY / newReserveY) * 100; // Price impact percentage
-	return priceImpact;
+	const k = initialReserve0.times(initialReserve1); // Constant product
+	const newReserveX = initialReserve0.plus(tokenAmount0); // Updated reserve of token X
+	const newReserveY = k.div(newReserveX); // Updated reserve of token Y using constant product formula
+	const receivedTokenY = initialReserve1.minus(newReserveY); // Amount of token Y received
+	const priceImpact = receivedTokenY.div(newReserveY).times(toBigNumber(100)); // Price impact percentage
+	return Number(priceImpact);
 };
 export const usePriceImpact = ({
-	amountIn,
-	token0,
+	amount,
+	token,
 	reserves,
 }: {
-	amountIn: string;
-	token0: IToken;
+	amount: string;
+	token: IToken;
 	reserves: IReserves[] | undefined;
 }) => {
 	const { tronWeb } = useTronWeb();
 
 	return useQuery({
-		queryKey: ["usePriceImpact", { reserves, token0, amountIn }],
+		queryKey: ["usePriceImpact", { reserves, token, amount }],
 		queryFn: async () => {
+			if (!reserves || !token || !amount) return 0;
+
+			const reserve0 = reserves?.find(
+				(reserve) => getValidTokenAddress(reserve.address as string) === getValidTokenAddress(token.address)
+			);
+			const reserve1 = reserves?.find(
+				(reserve) => getValidTokenAddress(reserve.address as string) !== getValidTokenAddress(token.address)
+			);
+			if (!reserve0 || !reserve1) return 0;
+
 			const priceImpactPercentage = calculatePriceImpact({
-				initialReserve0: Number(reserves?.[0].reserve),
-				initialReserve1: Number(reserves?.[1].reserve),
-				tokenAmount0: Number(parseUnits(amountIn, token0.decimals)),
+				initialReserve0: toBigNumber(reserve0.reserve ?? ""),
+				initialReserve1: toBigNumber(reserve1.reserve ?? ""),
+				tokenAmount0: toBigNumber(Number(parseUnits(amount, token.decimals))),
 			});
 
 			return priceImpactPercentage;
 		},
 		enabled:
-			!!amountIn &&
-			!!token0 &&
+			!!amount &&
+			!!token &&
 			!!reserves?.[0]?.address &&
 			!!reserves?.[1]?.address &&
-			isAddress(getValidTokenAddress(token0?.address)) &&
+			isAddress(getValidTokenAddress(token?.address)) &&
 			isAddress(getValidTokenAddress(reserves?.[0]?.address)) &&
 			isAddress(getValidTokenAddress(reserves?.[1]?.address)) &&
 			!!tronWeb,

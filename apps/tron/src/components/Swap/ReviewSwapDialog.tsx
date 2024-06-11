@@ -1,27 +1,24 @@
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useSlippageTolerance } from "@sushiswap/hooks";
 import { Badge } from "@sushiswap/ui";
-import { Dots } from "@sushiswap/ui";
-import { Button } from "@sushiswap/ui";
 import { List } from "@sushiswap/ui";
 import { SkeletonCircle } from "@sushiswap/ui";
 import { Icon } from "../General/Icon";
-import { Dialog, DialogClose, DialogContent, classNames, createInfoToast } from "@sushiswap/ui";
-import { useSwapDispatch, useSwapState } from "src/app/swap/swap-provider";
+import { Dialog, DialogClose, DialogContent, classNames } from "@sushiswap/ui";
+import { useSwapState } from "src/app/swap/swap-provider";
 import { useWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import { warningSeverity, warningSeverityClassName } from "src/utils/warning-severity";
 import Link from "next/link";
 import { truncateText } from "src/utils/formatters";
-import { getTronscanAddressLink, getTronscanTxnLink } from "src/utils/tronscan-helpers";
+import { getTronscanAddressLink } from "src/utils/tronscan-helpers";
 import { useMemo, useRef } from "react";
-import { createFailedToast, createSuccessToast } from "@sushiswap/ui";
 import { WalletConnector } from "../WalletConnector/WalletConnector";
 import { ReviewSwapDialogTrigger } from "./ReviewSwapDialogTrigger";
 import { formatPercent } from "sushi/format";
+import { SwapButton } from "./SwapButton";
 
 export const ReviewSwapDialog = () => {
-	const { token0, token1, isTxnPending, amountIn, amountOut, priceImpactPercentage } = useSwapState();
-	const { setIsTxnPending } = useSwapDispatch();
+	const { token0, token1, amountIn, amountOut, priceImpactPercentage } = useSwapState();
 	const closeBtnRef = useRef<HTMLButtonElement>(null);
 	const { address, connected } = useWallet();
 	const isConnected = address && connected;
@@ -42,59 +39,12 @@ export const ReviewSwapDialog = () => {
 		}
 
 		const output = Number(amountOut) * (1 - slippage);
-		return output;
+		return String(output);
 	}, [amountOut, slippage, token0, token1, amountIn]);
 
-	//maybe break out to new component
-	const swapToken = async () => {
-		try {
-			setIsTxnPending(true);
-			const txnHash = "5842e34e8d90890b9c39054f3012824cdc51d7b42155dbafc867fbc67fd80462";
-			createInfoToast({
-				summary: "Swap initiated...",
-				type: "swap",
-				account: address as string,
-				chainId: 1,
-				groupTimestamp: Date.now(),
-				timestamp: Date.now(),
-				txHash: txnHash,
-				href: getTronscanTxnLink(txnHash),
-			});
-			//wait for 5 seconds to sim txn
-			await new Promise((resolve) => setTimeout(resolve, 5000));
-			//create success toast
-			createSuccessToast({
-				summary: "Swap successful, and other details",
-				txHash: txnHash,
-				type: "swap",
-				account: address as string,
-				chainId: 1,
-				groupTimestamp: Date.now(),
-				timestamp: Date.now(),
-				href: getTronscanTxnLink(txnHash),
-			});
-			setIsTxnPending(false);
-			closeModal();
-		} catch (error) {
-			//create error toast
-			createFailedToast({
-				summary: "Swap failed, and other details",
-				type: "swap",
-				account: address as string,
-				chainId: 1,
-				groupTimestamp: Date.now(),
-				timestamp: Date.now(),
-			});
-			console.log(error);
-			setIsTxnPending(false);
-		}
-	};
-
-	const severityClass = useMemo(
-		() => warningSeverityClassName(warningSeverity(priceImpactPercentage)),
-		[priceImpactPercentage]
-	);
-	console.log(severityClass);
+	const severityClass = useMemo(() => {
+		return warningSeverityClassName(warningSeverity(priceImpactPercentage));
+	}, [priceImpactPercentage]);
 
 	return (
 		<Dialog>
@@ -145,8 +95,10 @@ export const ReviewSwapDialog = () => {
 								<List.KeyValue
 									title="Price Impact"
 									subtitle="The impact your trade has on the market price of this pool.">
-									<span className={classNames(severityClass, "text-gray-700 text-right dark:text-slate-400")}>
-										{formatPercent(priceImpactPercentage / 100)}
+									<span
+										style={{ color: severityClass }}
+										className={classNames("text-gray-700 text-right dark:text-slate-400")}>
+										-{formatPercent(priceImpactPercentage / 100)}
 									</span>
 								</List.KeyValue>
 								<List.KeyValue
@@ -179,15 +131,7 @@ export const ReviewSwapDialog = () => {
 					</div>
 					<div className="pt-4">
 						<div className="space-y-4">
-							<Button disabled={isTxnPending} color="blue" fullWidth size="xl" onClick={swapToken}>
-								{isTxnPending ? (
-									<Dots>Confirming Swap</Dots>
-								) : (
-									<>
-										Swap {token0?.symbol} For {token1?.symbol}
-									</>
-								)}
-							</Button>
+							<SwapButton closeModal={closeModal} minOutput={minOutput} />
 						</div>
 					</div>
 				</div>

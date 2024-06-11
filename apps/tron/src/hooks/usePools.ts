@@ -86,6 +86,7 @@ export const usePools = () => {
 	const { tronWeb } = useTronWeb();
 	return useQuery({
 		queryKey: ["usePools"],
+		staleTime: Infinity, //TODO: remove after testing
 		queryFn: async () => {
 			if (!tronWeb) return [];
 			const pools = await getPoolsByEvent({ factoryAddress: FACTORY_CONTRACT });

@@ -1,7 +1,7 @@
 import { DataTable } from "@sushiswap/ui";
 import { POSITION_NAME_COLUMN, SIZE_COLUMN, TVL_COLUMN } from "./PositionColumns";
 import { useMyPositions } from "src/hooks/useMyPositions";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PaginationState } from "@tanstack/react-table";
 import { useDebounce } from "@sushiswap/hooks";
 import { IMyPositionData } from "src/types/get-pools-type";
@@ -9,6 +9,7 @@ import { IToken } from "src/types/token-type";
 
 type PositionsTableProps = {
 	query: string;
+	handleMyPositionsOnView: (positions: number) => void;
 };
 
 export type IPositionRowData = {
@@ -19,7 +20,7 @@ export type IPositionRowData = {
 	reserve1: string;
 };
 
-export const PositionsTable = ({ query }: PositionsTableProps) => {
+export const PositionsTable = ({ query, handleMyPositionsOnView }: PositionsTableProps) => {
 	const [paginationState, setPaginationState] = useState<PaginationState>({
 		pageIndex: 0,
 		pageSize: 10,
@@ -46,6 +47,13 @@ export const PositionsTable = ({ query }: PositionsTableProps) => {
 			return poolValues.some((value) => value?.toLowerCase().includes(lowercasedQuery));
 		});
 	}, [data, debouncedQuery]);
+
+	useEffect(() => {
+		if (filteredData && !isLoading) {
+			handleMyPositionsOnView(filteredData.length);
+		}
+	}, [filteredData, isLoading]);
+
 	return (
 		<DataTable
 			loading={isLoading}

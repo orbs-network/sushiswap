@@ -16,7 +16,7 @@ export async function GET(req: Request): Promise<NextResponse> {
 
 		const options = getOptions(query);
 
-		const res = await fetch(BITQUERY_ENDPOINT, { ...options, next: { revalidate: 3600 } }); //TODO: change revalidate time - time in seconds - 1 hour atm
+		const res = await fetch(BITQUERY_ENDPOINT, { ...options, next: { revalidate: 120 } }); // revalidate every 2 minutes
 		if (!res.ok) {
 			throw new Error("Failed to fetch data from Bitquery API");
 		}

@@ -7,15 +7,16 @@ import { useAllowance } from "src/hooks/useAllowance";
 import { useTokenBalance } from "src/hooks/useTokenBalance";
 import { formatUnitsForInput } from "src/utils/formatters";
 import { ApproveToken } from "../Shared/ApproveToken";
-import { usePairContract } from "src/hooks/usePairContract";
 import { useReserves } from "src/hooks/useReserves";
 import { usePriceImpact } from "src/hooks/usePriceImpact";
 import { warningSeverity } from "src/utils/warning-severity";
+import { useRoutes } from "src/hooks/useRoutes";
+import { getIfWrapOrUnwrap } from "src/utils/helpers";
 
 export const ReviewSwapDialogTrigger = () => {
 	const [isChecked, setIsChecked] = useState<boolean>(false);
-	const { token0, token1, amountIn, amountOut } = useSwapState();
-	const { setPriceImpactPercentage } = useSwapDispatch();
+	const { token0, token1, amountIn, amountOut, isTxnPending } = useSwapState();
+	const { setPriceImpactPercentage, setRoute } = useSwapDispatch();
 	const { address } = useWallet();
 	const { data: allowanceAmount, refetch } = useAllowance({
 		tokenAddress: token0?.address as string,
@@ -26,24 +27,52 @@ export const ReviewSwapDialogTrigger = () => {
 		accountAddress: address,
 		tokenAddress: token0.address,
 	});
-	const { data: pairContract, isLoading: isPairLoading } = usePairContract({
-		token0Address: token0?.address,
-		token1Address: token1?.address,
-	});
+	const { data: routeData, isLoading: isLoadingRoutes } = useRoutes({ token0, token1 });
+	//these reserves are always going to be defined if a pair exists
 	const { data: reserves, isLoading: isReservesLoading } = useReserves({
-		pairAddress: pairContract,
+		pairAddress: routeData?.pairs?.[0],
 		token0,
 		token1,
 	});
-	const { data: priceImpactPercentage } = usePriceImpact({
-		amountIn,
+	//these reserves are for is the swap needs an intermediate pair
+	const { data: reserves1, isLoading: isReserves1Loading } = useReserves({
+		pairAddress: routeData?.pairs?.[1],
 		token0,
+		token1,
+	});
+
+	//this number is always going to be defined if the reserves exists
+	const { data: priceImpactPercentage } = usePriceImpact({
+		amount: amountIn,
+		token: token0,
 		reserves,
 	});
 
+	//this number is for the price impact of the second pair in a hop is needed
+	const { data: priceImpactPercentage1 } = usePriceImpact({
+		amount: amountOut,
+		token: token1,
+		reserves: reserves1,
+	});
+
+	const priceImpactTotal = (priceImpactPercentage ?? 0) + (priceImpactPercentage1 ?? 0);
+
 	useEffect(() => {
-		setPriceImpactPercentage(priceImpactPercentage ?? 0);
-	}, [priceImpactPercentage]);
+		if (isLoadingRoutes) {
+			setRoute([]);
+		}
+		if (routeData && routeData.route.length > 0 && !isLoadingRoutes) {
+			setRoute(routeData.route);
+		}
+	}, [routeData, isLoadingRoutes]);
+
+	const swapType = useMemo(() => {
+		return getIfWrapOrUnwrap(token0, token1);
+	}, [token0, token1]);
+
+	useEffect(() => {
+		setPriceImpactPercentage(priceImpactTotal ?? 0);
+	}, [priceImpactTotal]);
 
 	const refreshAllowance = async () => {
 		await refetch();
@@ -54,29 +83,48 @@ export const ReviewSwapDialogTrigger = () => {
 		return Number(formatUnitsForInput(tokenBalance ?? "0", token0.decimals)) < Number(amountIn);
 	}, [tokenBalance, token0, amountIn, isLoading]);
 
-	const pairDoesNotExist = Boolean(amountIn && !amountOut) && !pairContract && !isPairLoading;
+	const noRoutes = swapType === "swap" && !isLoadingRoutes && routeData && routeData.route?.length === 0;
+
+	const allowanceFormatted = formatUnitsForInput(allowanceAmount ?? "0", token0?.decimals);
+
+	const insufficientLiquidity = priceImpactTotal && priceImpactTotal >= 100;
 
 	const buttonText = useMemo(() => {
+		if (isTxnPending) {
+			return "Swapping";
+		}
 		if (!amountIn || amountIn === "0") {
 			return "Enter Amount";
-		}
-		if (pairDoesNotExist) {
-			return "Pair Does Not Exist";
 		}
 		if (hasInsufficientBalance) {
 			return "Insufficient Balance";
 		}
-		if (token0?.symbol === "WTRX" && token1?.address === "TRON") {
+		if (swapType === "unwrap") {
 			return "Unwrap";
 		}
-		if (token0?.address === "TRON" && token1?.symbol === "WTRX") {
+		if (swapType === "wrap") {
 			return "Wrap";
 		}
-		if (allowanceAmount && Number(amountIn) > Number(allowanceAmount) && token0?.address !== "TRON") {
+		if (noRoutes) {
+			return "No Routes Found";
+		}
+		if (insufficientLiquidity) {
+			return "Insufficient Liquidity";
+		}
+		if (allowanceAmount && Number(amountIn) > Number(allowanceFormatted) && swapType === "swap") {
 			return "Approve";
 		}
 		return "Review Swap";
-	}, [amountIn, allowanceAmount, token0, token1, hasInsufficientBalance, pairDoesNotExist]);
+	}, [
+		amountIn,
+		allowanceAmount,
+		hasInsufficientBalance,
+		noRoutes,
+		allowanceFormatted,
+		swapType,
+		insufficientLiquidity,
+		isTxnPending,
+	]);
 
 	const userConfirmationNeeded = useMemo(() => {
 		if (
@@ -100,7 +148,11 @@ export const ReviewSwapDialogTrigger = () => {
 			) : (
 				<DialogTrigger
 					disabled={
-						(userConfirmationNeeded && !isChecked) || !amountIn || hasInsufficientBalance || pairDoesNotExist
+						insufficientLiquidity ||
+						(userConfirmationNeeded && !isChecked) ||
+						!amountIn ||
+						hasInsufficientBalance ||
+						noRoutes
 					}
 					asChild>
 					<Button size="lg">{buttonText}</Button>
