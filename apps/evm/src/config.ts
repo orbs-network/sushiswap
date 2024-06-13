@@ -7,19 +7,21 @@ import {
 } from 'sushi/config'
 import { Currency } from 'sushi/currency'
 
-export const SWAP_API_ENABLED_NETWORKS = EXTRACTOR_SUPPORTED_CHAIN_IDS
+export const SWAP_API_SUPPORTED_CHAIN_IDS = EXTRACTOR_SUPPORTED_CHAIN_IDS
 
-export type SwapApiEnabledChainId = (typeof SWAP_API_ENABLED_NETWORKS)[number]
+export type SwapApiEnabledChainId =
+  (typeof SWAP_API_SUPPORTED_CHAIN_IDS)[number]
 export const isSwapApiEnabledChainId = (
   chainId: number,
 ): chainId is SwapApiEnabledChainId =>
-  SWAP_API_ENABLED_NETWORKS.includes(chainId as SwapApiEnabledChainId)
+  SWAP_API_SUPPORTED_CHAIN_IDS.includes(chainId as SwapApiEnabledChainId)
 
 export const DISABLED_CHAIN_IDS = [
   ChainId.BOBA_AVAX,
   ChainId.PALM,
   ChainId.HECO,
   ChainId.OKEX,
+  ChainId.SKALE_EUROPA,
 ] as const
 
 const PREFERRED_CHAINID_ORDER = [
@@ -27,6 +29,7 @@ const PREFERRED_CHAINID_ORDER = [
   ChainId.ARBITRUM,
   ChainId.BASE,
   ChainId.POLYGON,
+  ChainId.ROOTSTOCK,
   ChainId.BLAST,
   ChainId.ZETACHAIN,
   ChainId.OPTIMISM,
@@ -63,8 +66,7 @@ export const SUPPORTED_CHAIN_IDS = Array.from(
     (typeof TESTNET_CHAIN_IDS)[number] | (typeof DISABLED_CHAIN_IDS)[number]
   > =>
     !TESTNET_CHAIN_IDS.includes(c as (typeof TESTNET_CHAIN_IDS)[number]) &&
-    !DISABLED_CHAIN_IDS.includes(c as (typeof DISABLED_CHAIN_IDS)[number]) &&
-    c !== ChainId.SKALE_EUROPA,
+    !DISABLED_CHAIN_IDS.includes(c as (typeof DISABLED_CHAIN_IDS)[number]),
 )
 
 export const DISABLED_ANALYTICS_CHAIN_IDS = [
