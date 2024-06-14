@@ -1,4 +1,5 @@
 import {
+	Badge,
 	Button,
 	Dialog,
 	DialogClose,
@@ -20,6 +21,7 @@ import { useTokenInfo } from "src/hooks/useTokenInfo";
 import { useCustomTokens } from "src/hooks/useCustomTokens";
 import { useSortedTokenList } from "src/hooks/useSortedTokenList";
 import { classNames } from "@sushiswap/ui";
+import { CheckCircleIcon } from "@heroicons/react/20/solid";
 
 export const TokenListSelect = ({
 	token,
@@ -81,25 +83,27 @@ export const TokenListSelect = ({
 					<List className="!pt-0">
 						<List.Control className="flex flex-col gap-2 p-1 min-h-[250px] max-h-[400px] overflow-y-auto overflow-x-hidden">
 							{newToken ? (
-								[newToken].map((token) => (
+								[newToken].map((_token) => (
 									<TokenButton
-										token={token}
+										token={_token}
 										selectToken={selectToken}
-										key={token.address}
+										key={_token.address}
 										hasToken={hasToken}
 										addOrRemoveToken={addOrRemoveToken}
+										isSelected={_token.symbol === token?.symbol}
 									/>
 								))
 							) : sortedTokenList?.length === 0 ? (
 								<p className="text-gray-400 dark:text-slate-500 text-center pt-2">No tokens found</p>
 							) : (
-								sortedTokenList?.map((token) => (
+								sortedTokenList?.map((_token) => (
 									<TokenButton
-										token={token}
+										token={_token}
 										selectToken={selectToken}
-										key={token.address}
+										key={_token.address}
 										hasToken={hasToken}
 										addOrRemoveToken={addOrRemoveToken}
+										isSelected={_token.symbol === token?.symbol}
 									/>
 								))
 							)}
@@ -116,10 +120,12 @@ const TokenButton = ({
 	selectToken,
 	hasToken,
 	addOrRemoveToken,
+	isSelected,
 }: {
 	token: IToken;
 	selectToken: (_token: IToken) => void;
 	hasToken?: (currency: IToken) => boolean;
+	isSelected: boolean;
 	addOrRemoveToken?: (type: "add" | "remove", currency: IToken[]) => void;
 }) => {
 	const isOnDefaultList = useMemo(() => DEFAULT_TOKEN_LIST.some((t) => t.address === token.address), [token]);
@@ -134,8 +140,21 @@ const TokenButton = ({
 				size="xl"
 				className="flex items-center justify-between w-full"
 				variant="ghost">
-				<div className="flex items-center gap-1 w-full">
-					<Icon currency={token} height={28} width={28} />
+				<div className="flex items-center gap-2 w-full ">
+					{isSelected ? (
+						<Badge
+							position="bottom-right"
+							badgeContent={
+								<div className="bg-white dark:bg-slate-800 rounded-full">
+									<CheckCircleIcon width={14} height={14} className="text-blue rounded-full" />
+								</div>
+							}>
+							<Icon currency={token} height={28} width={28} />
+						</Badge>
+					) : (
+						<Icon currency={token} height={28} width={28} />
+					)}
+
 					<div className="flex flex-col items-start">
 						<p>{token.symbol}</p>
 						<p className="text-xs text-gray-400 dark:text-slate-500">{token.name}</p>
