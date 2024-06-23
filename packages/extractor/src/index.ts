@@ -1,4 +1,4 @@
-export * from './CurveExtractor.js'
+export * from './CurveWhitelistExtractor.js'
 export * from './AlgebraExtractor.js'
 export * from './Extractor.js'
 export * from './LogFilter2.js'

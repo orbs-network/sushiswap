@@ -17,7 +17,7 @@
     "build": "TS_NODE_TRANSPILE_ONLY=1 hardhat compile",
     "clean": "rm -rf .turbo node_modules artifacts cache",
     "console": "hardhat console",
-    "get-deploy-code": "ts-node ./deploy/GetDeployCode.ts",
+    "get-deploy-code": "tsx ./scripts/GetDeployCode.ts",
     "node": "hardhat node",
     "script": "NODE_OPTIONS='--experimental-loader ts-node/esm/transpile-only --no-warnings=ExperimentalWarning' hardhat run",
     "size-contracts": "hardhat size-contracts",
