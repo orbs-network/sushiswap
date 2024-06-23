@@ -62,8 +62,8 @@ export function serializePoolsBinary(
 
   stream.uint24(pools.length)
   pools.forEach((pc) => {
-    stream.str16(pc.liquidityProvider)
     if (pc instanceof ConstantProductPoolCode) {
+      stream.str16(pc.liquidityProvider) // TODO: optimize in index
       const p = pc.pool as ConstantProductRPool
       stream.uint8(PoolTypeIndex.Classic)
       stream.address(p.address)
@@ -73,6 +73,7 @@ export function serializePoolsBinary(
       stream.bigUInt(p.reserve0, p.address, 'res0')
       stream.bigUInt(p.reserve1, p.address, 'res1')
     } else if (pc instanceof UniV3PoolCode) {
+      stream.str16(pc.liquidityProvider) // TODO: optimize in index
       const p = pc.pool as UniV3Pool
       stream.uint8(PoolTypeIndex.Concentrated)
       stream.address(p.address)
@@ -91,6 +92,7 @@ export function serializePoolsBinary(
         stream.bigInt(t.DLiquidity)
       })
     } else if (pc instanceof NativeWrapBridgePoolCode) {
+      stream.str16(pc.liquidityProvider) // TODO: optimize in index
       const p = pc.pool as BridgeUnlimited
       // Native wrappers for example
       stream.uint8(PoolTypeIndex.Bridge)
@@ -104,6 +106,7 @@ export function serializePoolsBinary(
       if (CurveCoreSerialized.has(core.address)) return
       CurveCoreSerialized.add(core.address)
 
+      stream.str16(pc.liquidityProvider) // TODO: optimize in index
       stream.uint8(PoolTypeIndex.Curve)
       stream.uint8(curvePoolType2Num(pc.poolType))
       stream.address(core.address)
