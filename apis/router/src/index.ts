@@ -21,7 +21,7 @@ import {
 import { CPUUsageStatistics } from './cpu-usage-statistics.js'
 import { priceByAddressHandler, pricesHandler } from './handlers/price/index.js'
 import { swapV3_2, swapV4 } from './handlers/swap/index.js'
-import { swapV4_2 } from './handlers/swap2/index.js'
+import { swapV4_2, swapV5_test } from './handlers/swap2/index.js'
 import tokenHandler from './handlers/token/index.js'
 import { updatePrices } from './prices.js'
 
@@ -120,6 +120,11 @@ async function start() {
   })
   app.get(`/swap/v4_2/${CHAIN_ID}`, (req, res) => {
     return swapV4_2(client)(req, res)
+  })
+
+  // just for test - to remove
+  app.get(`/swap/v5_test/${CHAIN_ID}`, (req, res) => {
+    return swapV5_test(client)(req, res)
   })
 
   app.get(`/token/v1/${CHAIN_ID}/:address`, tokenHandler(client))

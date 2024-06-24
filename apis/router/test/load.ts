@@ -24,7 +24,7 @@ enum TestMode {
 
 const RPS = 30
 const TEST_MODE = TestMode.BOTH_UNKNOWN_TOKENS
-const SWAP_AMOUNT = 10
+const SWAP_AMOUNT = 100
 
 const routerServers = [
   // 'https://staging.sushi.com', // staging
@@ -37,8 +37,8 @@ const routerServers = [
   // 'http://localhost:1341',
   // 'http://localhost:1342',
 ]
-const chainId = 56
-const tokensFile = './tokens-56'
+const chainId = 1
+const tokensFile = './tokens-1'
 
 interface Token {
   address: string
@@ -73,7 +73,7 @@ let responseTimeAverage = 0
 
 let next_server = 0
 async function route(tokenIn: Token, tokenOut: Token, amount: bigint) {
-  const query = `/swap/v4/${chainId}?chainId=${chainId}&tokenIn=${
+  const query = `/swap/v5_test/${chainId}?chainId=${chainId}&tokenIn=${
     tokenIn.address
   }&tokenOut=${tokenOut.address}&amount=${amount.toString()}`
   const urlR = routerServers[next_server] + query
@@ -104,7 +104,29 @@ async function route(tokenIn: Token, tokenOut: Token, amount: bigint) {
       // )
       return
     }
-    // const dataR = (await resR.json()) as { status: string }
+    const dataR = (await res.json()) as {
+      tokens: { symbol: string }[]
+      route?: {
+        poolAddress: string
+        poolType: string
+        share: number
+        tokenFrom: number
+        tokenTo: number
+      }[]
+    }
+
+    let num = 1
+    dataR.route?.forEach((p) => {
+      if (p.poolType === 'Curve') {
+        const from = dataR.tokens[p.tokenFrom] as { symbol: string }
+        const to = dataR.tokens[p.tokenTo] as { symbol: string }
+        console.log(
+          `Curve pool ${num++} ${p.poolAddress}: ${from.symbol}->${to.symbol} ${
+            p.share * 100
+          }%`,
+        )
+      }
+    })
     // console.log(
     //   `${tokenIn.symbol} -> ${tokenOut.symbol} ${amount.toString()} ${
     //     dataR.status

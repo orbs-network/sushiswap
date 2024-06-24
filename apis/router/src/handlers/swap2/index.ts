@@ -204,3 +204,10 @@ export const swapV4_2 = handler(
   Router.routeProcessor4Params,
   ROUTE_PROCESSOR_4_ADDRESS[CHAIN_ID as RouteProcessor4ChainId],
 )
+
+// test handler with test RP5 for Curve testing
+export const swapV5_test = handler(
+  querySchema4_2,
+  Router.routeProcessor5Params,
+  '0x3e1116eA5034f5D73a7B530071709D54A4109F5f', // test RP5 at Ethereum
+)
