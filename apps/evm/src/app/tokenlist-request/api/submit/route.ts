@@ -29,6 +29,7 @@ interface MutationParams extends ApplyForTokenListTokenSchemaType {
 export const maxDuration = 15 // in seconds
 
 export async function POST(request: NextRequest) {
+  console.log('r', request)
   const ratelimit = rateLimit(Ratelimit.slidingWindow(5, '1 h'))
   if (ratelimit) {
     const { remaining } = await ratelimit.limit(request.ip || '127.0.0.1')
