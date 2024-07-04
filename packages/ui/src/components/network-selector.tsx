@@ -29,6 +29,7 @@ const PREFERRED_CHAINID_ORDER: ChainId[] = [
   ChainId.SCROLL,
   ChainId.OPTIMISM,
   ChainId.LINEA,
+  ChainId.KYOTO,
   ChainId.ROOTSTOCK,
   ChainId.BLAST,
   ChainId.ZETACHAIN,
@@ -54,6 +55,7 @@ export interface NetworkSelectorProps<T extends number = ChainId> {
 const NEW_CHAINS: number[] = [
   ChainId.SKALE_EUROPA,
   ChainId.ROOTSTOCK,
+  ChainId.KYOTO,
 ] satisfies ChainId[]
 
 const NetworkSelector = <T extends number>({

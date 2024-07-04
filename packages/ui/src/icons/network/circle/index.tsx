@@ -22,6 +22,7 @@ import { HaqqCircle } from './HaqqCircle'
 import { HarmonyCircle } from './HarmonyCircle'
 import { HecoCircle } from './HecoCircle'
 import { KavaCircle } from './KavaCircle'
+import { KyotoCircle } from './KyotoCircle'
 import { LineaCircle } from './LineaCircle'
 import { MetisCircle } from './MetisCircle'
 import { MoonbeamCircle } from './MoonbeamCircle'
@@ -60,6 +61,7 @@ export * from './HaqqCircle'
 export * from './HarmonyCircle'
 export * from './HecoCircle'
 export * from './KavaCircle'
+export * from './KyotoCircle'
 export * from './LineaCircle'
 export * from './MetisCircle'
 export * from './MoonbeamCircle'
@@ -114,4 +116,5 @@ export const NETWORK_CIRCLE_ICON: Partial<Record<ChainId, IconComponent>> = {
   [ChainId.BLAST]: BlastCircle,
   [ChainId.SKALE_EUROPA]: SkaleCircle,
   [ChainId.ROOTSTOCK]: RootstockCircle,
+  [ChainId.KYOTO]: KyotoCircle,
 }

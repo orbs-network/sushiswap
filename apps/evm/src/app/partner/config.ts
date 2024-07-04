@@ -38,6 +38,7 @@ export const SUPPORTED_CHAINS = [
   ChainId.ZETACHAIN,
   ChainId.BLAST,
   ChainId.ROOTSTOCK,
+  ChainId.KYOTO,
 ] as const
 
 export type SupportedChainIds = typeof SUPPORTED_CHAINS

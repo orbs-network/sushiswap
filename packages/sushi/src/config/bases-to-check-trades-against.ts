@@ -492,4 +492,8 @@ export const BASES_TO_CHECK_TRADES_AGAINST: {
     WETH9[ChainId.ROOTSTOCK],
     USDT[ChainId.ROOTSTOCK],
   ],
+  [ChainId.KYOTO]: [
+    // TODO
+    WNATIVE[ChainId.KYOTO],
+  ],
 }

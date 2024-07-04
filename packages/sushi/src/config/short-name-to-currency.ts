@@ -289,6 +289,11 @@ const CHAIN_ID_SHORT_CURRENCY_NAME_TO_CURRENCY = {
     WBTC: Native.onChain(ChainId.ROOTSTOCK),
     WETH: WETH9[ChainId.ROOTSTOCK],
   },
+  [ChainId.KYOTO]: {
+    // TODO
+    NATIVE: Native.onChain(ChainId.KYOTO),
+    WNATIVE: WNATIVE[ChainId.KYOTO],
+  },
 } as const
 
 export type ShortCurrencyNameChainId =

@@ -715,6 +715,13 @@ export const WNATIVE = {
     decimals: 0,
   }),
   [ChainId.ROOTSTOCK]: WBTC[ChainId.ROOTSTOCK],
+  [ChainId.KYOTO]: new Token({
+    chainId: ChainId.KYOTO,
+    address: WNATIVE_ADDRESS[ChainId.KYOTO],
+    decimals: 18,
+    symbol: 'WKYOTO',
+    name: 'Wrapped KYOTO',
+  }),
 } as const
 
 export const SUSHI = addressMapToTokenMap(

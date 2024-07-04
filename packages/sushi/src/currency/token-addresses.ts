@@ -375,6 +375,7 @@ export const WNATIVE_ADDRESS = {
   [ChainId.BLAST]: WETH9_ADDRESS[ChainId.BLAST],
   [ChainId.SKALE_EUROPA]: zeroAddress,
   [ChainId.ROOTSTOCK]: WBTC_ADDRESS[ChainId.ROOTSTOCK],
+  [ChainId.KYOTO]: '0xC21e4ebD1d92036Cb467b53fE3258F219d909Eb9',
 } as const
 
 export const SUSHI_ADDRESS = {

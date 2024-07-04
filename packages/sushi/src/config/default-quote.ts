@@ -11,6 +11,7 @@ import {
   USDC,
   USDT,
   WETH9,
+  WNATIVE,
   axlUSDC,
 } from '../currency/index.js'
 
@@ -89,4 +90,5 @@ export const defaultQuoteCurrency = {
   [ChainId.BLAST]: USDB[ChainId.BLAST],
   [ChainId.SKALE_EUROPA]: USDC[ChainId.SKALE_EUROPA],
   [ChainId.ROOTSTOCK]: USDT[ChainId.ROOTSTOCK],
+  [ChainId.KYOTO]: WNATIVE[ChainId.KYOTO], // TODO
 } as const

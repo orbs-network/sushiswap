@@ -523,6 +523,37 @@ export const skaleEuropa = {
   },
 } as const
 
+export const kyoto = {
+  id: ChainId.KYOTO,
+  name: 'KYOTO',
+  network: 'kyoto',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Kyoto',
+    symbol: 'KYOTO',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.kyotochain.io'],
+    },
+    public: {
+      http: ['https://rpc.kyotochain.io'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'Kyotoscan',
+      url: 'https://kyotoscan.io/',
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      blockCreated: 33686,
+    },
+  },
+} as const
+
 // const alchemyId =
 //   process.env['ALCHEMY_ID'] || process.env['NEXT_PUBLIC_ALCHEMY_ID']
 const drpcId = process.env['DRPC_ID'] || process.env['NEXT_PUBLIC_DRPC_ID']
@@ -612,6 +643,7 @@ export const publicTransports = {
       ? `https://rpc.mainnet.rootstock.io/${rskId}`
       : 'https://public-node.rsk.co',
   ),
+  [ChainId.KYOTO]: http('https://rpc.kyotochain.io'),
   /* Testnets */ // TODO: add testnet transports
   [ChainId.ARBITRUM_TESTNET]: http('https://sepolia-rollup.arbitrum.io/rpc'),
   [ChainId.AVALANCHE_TESTNET]: http(
@@ -641,6 +673,7 @@ export const publicChains = [
   gnosis,
   harmonyOne,
   kava,
+  kyoto,
   metis,
   optimism,
   moonbeam,
@@ -824,6 +857,10 @@ export const publicClientConfig = {
   [ChainId.ROOTSTOCK]: {
     chain: rootstock,
     transport: publicTransports[ChainId.ROOTSTOCK],
+  },
+  [ChainId.KYOTO]: {
+    chain: kyoto,
+    transport: publicTransports[ChainId.KYOTO],
   },
 
   /* Testnets */
