@@ -3,7 +3,7 @@ import { CrossChainSwapEdgeConfig } from 'src/app/(evm)/swap/cross-chain/get-cro
 import { useEdgeConfig } from 'src/providers/edge-config-provider'
 
 export const useIsCrossChainSwapMaintenance = () => {
-  const { maintenance } = useEdgeConfig<CrossChainSwapEdgeConfig>()
+  // const { maintenance } = useEdgeConfig<CrossChainSwapEdgeConfig>()
 
   return useQuery({
     queryKey: ['cross-chain-swap-maintenance'],
@@ -19,7 +19,7 @@ export const useIsCrossChainSwapMaintenance = () => {
 
       return false
     },
-    initialData: maintenance,
+    initialData: false,
     refetchInterval: 60000,
   })
 }

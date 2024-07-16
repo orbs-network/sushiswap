@@ -18,7 +18,6 @@ import {
   useSimpleSwapTrade,
 } from './derivedstate-simple-swap-provider'
 import { SimpleSwapTradeReviewDialog } from './simple-swap-trade-review-dialog'
-import { useIsSwapMaintenance } from './use-is-swap-maintenance'
 
 export const SimpleSwapTradeButton: FC = () => {
   return (
@@ -36,7 +35,8 @@ export const _SimpleSwapTradeButton: FC<{
   error: Error | null
   isSuccess: boolean
 }> = ({ error, isSuccess }) => {
-  const { data: maintenance } = useIsSwapMaintenance()
+  const maintenance = false
+  // const { data: maintenance } = useIsSwapMaintenance()
   const { isSlippageError } = usePersistedSlippageError({ isSuccess, error })
   const { data: trade } = useSimpleSwapTrade()
   const [checked, setChecked] = useState(false)

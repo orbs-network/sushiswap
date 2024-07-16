@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { useIsMounted, useLocalStorage } from '@sushiswap/hooks'
+import { useIsMounted, useLocalStorage } from "@sushiswap/hooks";
 import {
   CardContent,
   CardDescription,
@@ -9,17 +9,18 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from '@sushiswap/ui'
-import { ShuffleIcon } from '@sushiswap/ui/icons/ShuffleIcon'
-import { motion } from 'framer-motion'
-import Link from 'next/link'
+} from "@sushiswap/ui";
+import { ShuffleIcon } from "@sushiswap/ui/icons/ShuffleIcon";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
-import { PathnameButton } from '../pathname-button'
+import { PathnameButton } from "../pathname-button";
+import { useIsTwapSupported } from "./twap";
 
 export const SwapModeButtons = () => {
-  const [bannerMinimized] = useLocalStorage('xswap-banner-minimized', false)
-  const isMounted = useIsMounted()
-
+  const [bannerMinimized] = useLocalStorage("xswap-banner-minimized", false);
+  const isMounted = useIsMounted();
+  const isTwapSupported = useIsTwapSupported();
   return (
     <div className="flex gap-2">
       <Link href="/swap">
@@ -27,6 +28,20 @@ export const SwapModeButtons = () => {
           Swap
         </PathnameButton>
       </Link>
+      {isTwapSupported && (
+        <>
+          <Link href="/swap/limit">
+            <PathnameButton pathname="/swap/limit" size="sm">
+              Limit
+            </PathnameButton>
+          </Link>
+          <Link href="/swap/twap">
+            <PathnameButton pathname="/swap/twap" size="sm">
+              TWAP
+            </PathnameButton>
+          </Link>
+        </>
+      )}
       {bannerMinimized && isMounted ? (
         <HoverCard>
           <motion.div layoutId="container">
@@ -69,5 +84,5 @@ export const SwapModeButtons = () => {
         </HoverCard>
       ) : null}
     </div>
-  )
-}
+  );
+};

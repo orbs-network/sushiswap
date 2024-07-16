@@ -1,9 +1,9 @@
-'use client'
+"use client";
 
-import { usePrice } from '@sushiswap/react-query'
-import { Button, SelectIcon, TextField, classNames } from '@sushiswap/ui'
-import { Currency } from '@sushiswap/ui'
-import { SkeletonBox } from '@sushiswap/ui'
+import { usePrice } from "@sushiswap/react-query";
+import { Button, SelectIcon, TextField, classNames } from "@sushiswap/ui";
+import { Currency } from "@sushiswap/ui";
+import { SkeletonBox } from "@sushiswap/ui";
 import {
   FC,
   useCallback,
@@ -11,40 +11,40 @@ import {
   useMemo,
   useState,
   useTransition,
-} from 'react'
-import { ChainId } from 'sushi/chain'
-import { Token, Type, tryParseAmount } from 'sushi/currency'
-import { useAccount } from 'wagmi'
+} from "react";
+import { ChainId } from "sushi/chain";
+import { Token, Type, tryParseAmount } from "sushi/currency";
+import { useAccount } from "wagmi";
 
-import { useIsMounted } from '@sushiswap/hooks'
-import { useBalanceWeb3 } from 'src/lib/wagmi/hooks/balances/useBalanceWeb3'
-import { TokenSelector } from '../../token-selector/TokenSelector'
-import { BalancePanel } from './BalancePanel'
-import { PricePanel } from './PricePanel'
+import { useIsMounted } from "@sushiswap/hooks";
+import { useBalanceWeb3 } from "src/lib/wagmi/hooks/balances/useBalanceWeb3";
+import { TokenSelector } from "../../token-selector/TokenSelector";
+import { BalancePanel } from "./BalancePanel";
+import { PricePanel } from "./PricePanel";
 
 interface CurrencyInputProps {
-  id?: string
-  disabled?: boolean
-  value: string
-  onChange?(value: string): void
-  currency: Type | undefined
-  onSelect?(currency: Type): void
-  chainId: ChainId
-  className?: string
-  loading?: boolean
-  usdPctChange?: number
-  disableMaxButton?: boolean
-  type: 'INPUT' | 'OUTPUT'
-  fetching?: boolean
-  currencyLoading?: boolean
-  currencies?: Record<string, Token>
-  allowNative?: boolean
-  error?: string
-  hidePinnedTokens?: boolean
-  disableInsufficientBalanceError?: boolean
-  hideSearch?: boolean
-  hidePricing?: boolean
-  hideIcon?: boolean
+  id?: string;
+  disabled?: boolean;
+  value: string;
+  onChange?(value: string): void;
+  currency: Type | undefined;
+  onSelect?(currency: Type): void;
+  chainId: ChainId;
+  className?: string;
+  loading?: boolean;
+  usdPctChange?: number;
+  disableMaxButton?: boolean;
+  type: "INPUT" | "OUTPUT";
+  fetching?: boolean;
+  currencyLoading?: boolean;
+  currencies?: Record<string, Token>;
+  allowNative?: boolean;
+  error?: string;
+  hidePinnedTokens?: boolean;
+  disableInsufficientBalanceError?: boolean;
+  hideSearch?: boolean;
+  hidePricing?: boolean;
+  hideIcon?: boolean;
 }
 
 const CurrencyInput: FC<CurrencyInputProps> = ({
@@ -71,73 +71,73 @@ const CurrencyInput: FC<CurrencyInputProps> = ({
   hidePricing = false,
   hideIcon = false,
 }) => {
-  const isMounted = useIsMounted()
+  const isMounted = useIsMounted();
 
-  const [localValue, setLocalValue] = useState<string>('')
-  const { address } = useAccount()
-  const [pending, startTransition] = useTransition()
+  const [localValue, setLocalValue] = useState<string>("");
+  const { address } = useAccount();
+  const [pending, startTransition] = useTransition();
 
   const { data: balance, isInitialLoading: isBalanceLoading } = useBalanceWeb3({
     chainId,
     account: address,
     currency,
-  })
-
+  });
   const { data: price, isInitialLoading: isPriceLoading } = usePrice({
     chainId: currency?.chainId,
     address: currency?.wrapped?.address,
     enabled: !hidePricing,
-  })
+  });
 
   const _value = useMemo(
     () => tryParseAmount(value, currency),
-    [value, currency],
-  )
+    [value, currency]
+  );
   const insufficientBalance =
     address &&
-    type === 'INPUT' &&
+    type === "INPUT" &&
     balance &&
     _value &&
     balance.lessThan(_value) &&
-    !disableInsufficientBalanceError
+    !disableInsufficientBalanceError;
 
   // If currency changes, trim input to decimals
   useEffect(() => {
-    if (currency && onChange && value && value.includes('.')) {
-      const [, decimals] = value.split('.')
+    if (currency && onChange && value && value.includes(".")) {
+      const [, decimals] = value.split(".");
       if (decimals.length > currency.decimals) {
-        onChange(Number(value).toFixed(currency.decimals))
+        onChange(Number(value).toFixed(currency.decimals));
       }
     }
-  }, [onChange, currency, value])
+  }, [onChange, currency, value]);
 
-  const isLoading = !isMounted || loading || currencyLoading || isBalanceLoading
+  const isLoading =
+    !isMounted || loading || currencyLoading || isBalanceLoading;
   const _error = error
     ? error
     : insufficientBalance
-      ? 'Exceeds Balance'
-      : undefined
+    ? "Exceeds Balance"
+    : undefined;
 
   const _onChange = useCallback(
     (value: string) => {
-      setLocalValue(value)
+      setLocalValue(value);
       startTransition(() => {
-        onChange?.(value)
-      })
+        onChange?.(value);
+      });
     },
-    [onChange],
-  )
+    [onChange]
+  );
 
   useEffect(() => {
     if (currency && chainId && currency?.chainId !== chainId) {
       console.error(
-        `Selected token chainId not equal to passed chainId, impossible state. Currency chainId: ${currency.chainId}, chainId: ${chainId}`,
-      )
+        `Selected token chainId not equal to passed chainId, impossible state. Currency chainId: ${currency.chainId}, chainId: ${chainId}`
+      );
     }
-  }, [currency, chainId])
+  }, [currency, chainId]);
 
   const selector = useMemo(() => {
-    if (!onSelect) return null
+    if (!onSelect) return null;
 
     return (
       <TokenSelector
@@ -151,14 +151,14 @@ const CurrencyInput: FC<CurrencyInputProps> = ({
         hideSearch={hideSearch}
       >
         <Button
-          data-state={isLoading ? 'inactive' : 'active'}
+          data-state={isLoading ? "inactive" : "active"}
           size="lg"
-          variant={currency ? 'secondary' : 'default'}
+          variant={currency ? "secondary" : "default"}
           id={id}
           type="button"
           className={classNames(
-            currency ? 'pl-2 pr-3 text-xl' : '',
-            '!rounded-full data-[state=inactive]:hidden data-[state=active]:flex',
+            currency ? "pl-2 pr-3 text-xl" : "",
+            "!rounded-full data-[state=inactive]:hidden data-[state=active]:flex"
           )}
         >
           {currency ? (
@@ -175,11 +175,11 @@ const CurrencyInput: FC<CurrencyInputProps> = ({
               <SelectIcon />
             </>
           ) : (
-            'Select token'
+            "Select token"
           )}
         </Button>
       </TokenSelector>
-    )
+    );
   }, [
     isLoading,
     id,
@@ -190,33 +190,33 @@ const CurrencyInput: FC<CurrencyInputProps> = ({
     allowNative,
     hidePinnedTokens,
     hideSearch,
-  ])
+  ]);
 
   return (
     <div
       className={classNames(
-        _error ? '!bg-red-500/20 !dark:bg-red-900/30' : '',
-        'relative space-y-2 overflow-hidden pb-2',
-        className,
+        _error ? "!bg-red-500/20 !dark:bg-red-900/30" : "",
+        "relative space-y-2 overflow-hidden pb-2",
+        className
       )}
     >
       <div
-        data-state={fetching ? 'active' : 'inactive'}
+        data-state={fetching ? "active" : "inactive"}
         className="transition-all data-[state=inactive]:hidden data-[state=active]:block absolute inset-0 overflow-hidden p-4 before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_.5s_infinite] before:bg-gradient-to-r before:from-transparent dark:before:via-slate-50/10 before:via-gray-900/[0.07] before:to-transparent"
       />
       <div className="relative flex items-center gap-4">
         <div
-          data-state={isLoading ? 'active' : 'inactive'}
+          data-state={isLoading ? "active" : "inactive"}
           className={classNames(
-            'data-[state=inactive]:hidden data-[state=active]:flex',
-            'gap-4 items-center justify-between flex-grow h-[44px]',
+            "data-[state=inactive]:hidden data-[state=active]:flex",
+            "gap-4 items-center justify-between flex-grow h-[44px]"
           )}
         >
           <SkeletonBox className="w-2/3 h-[32px] rounded-lg" />
           <SkeletonBox className="w-1/3 h-[32px] rounded-lg" />
         </div>
         <div
-          data-state={isLoading ? 'inactive' : 'active'}
+          data-state={isLoading ? "inactive" : "active"}
           className="data-[state=inactive]:hidden data-[state=active]:flex flex-1 items-center"
         >
           <TextField
@@ -228,8 +228,8 @@ const CurrencyInput: FC<CurrencyInputProps> = ({
             value={pending ? localValue : value}
             readOnly={disabled}
             maxDecimals={currency?.decimals}
-            data-state={isLoading ? 'inactive' : 'active'}
-            className={classNames('p-0 py-1 !text-3xl font-medium')}
+            data-state={isLoading ? "inactive" : "active"}
+            className={classNames("p-0 py-1 !text-3xl font-medium")}
           />
         </div>
 
@@ -238,7 +238,7 @@ const CurrencyInput: FC<CurrencyInputProps> = ({
           <div
             id={`${id}-button`}
             className={classNames(
-              'flex items-center gap-1 text-xl py-2 pl-2 pr-2 rounded-full font-medium whitespace-nowrap',
+              "flex items-center gap-1 text-xl py-2 pl-2 pr-2 rounded-full font-medium whitespace-nowrap"
             )}
           >
             {currency ? (
@@ -291,7 +291,7 @@ const CurrencyInput: FC<CurrencyInputProps> = ({
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export { CurrencyInput, type CurrencyInputProps }
+export { CurrencyInput, type CurrencyInputProps };
