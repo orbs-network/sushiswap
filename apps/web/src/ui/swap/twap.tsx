@@ -190,15 +190,6 @@ function Provider({ isLimit }: { isLimit?: boolean }) {
   const { state, mutate } = useDerivedStateSimpleSwap();
   const { resolvedTheme } = useTheme();
 
-  const isTwapSupported = useIsTwapSupported();
-
-  useEffect(() => {
-    // redirect to default supported chain
-    if (state.chainId && !isTwapSupported) {
-      mutate.setChainId(ChainId.ARBITRUM);
-    }
-  }, [state.chainId, isTwapSupported]);
-
   useEffect(() => {
     // we do this to get an indication of market price for single token
     if (state.swapAmountString !== "1") {
