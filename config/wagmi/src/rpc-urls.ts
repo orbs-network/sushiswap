@@ -1,6 +1,6 @@
 import { ChainId } from 'sushi/chain'
 
-const drpcId = process.env['DRPC_ID'] || process.env['NEXT_PUBLIC_DRPC_ID']
+const drpcId = 'c0cc4a53105a582993deb4f9efc9a368f3f053a34384fb379567e01bfb9aace47'
 
 export const rpcUrls = {
   [ChainId.ARBITRUM_NOVA]: [

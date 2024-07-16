@@ -360,7 +360,7 @@ it.skip('Extractor Polygon infinite work test', async () => {
     RP3Address: RP3Address[ChainId.POLYGON],
   })
 })
-const drpcId = process.env['DRPC_ID'] || process.env['NEXT_PUBLIC_DRPC_ID']
+const drpcId = 'c0cc4a53105a582993deb4f9efc9a368f3f053a34384fb379567e01bfb9aace47'
 it.skip('Extractor Arbitrum infinite work test', async () => {
   await startInfinitTest({
     //providerURL: `https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_ID}`,
