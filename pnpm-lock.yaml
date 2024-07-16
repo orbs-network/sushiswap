@@ -697,8 +697,8 @@ importers:
         specifier: 4.0.7
         version: 4.0.7
       '@orbs-network/twap-ui-sushiswap':
-        specifier: 1.1.4-alpha.0
-        version: 1.1.4-alpha.0(@emotion/react@11.11.4)(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.1)(@types/react@18.2.14)(chalk@4.1.2)(ethers@5.7.2)(react-dom@18.2.0)(react-native@0.73.7)(react@18.2.0)(web3-core@1.10.3)(web3-eth-contract@1.10.3)
+        specifier: 1.1.5
+        version: 1.1.5(@emotion/react@11.11.4)(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.1)(@types/react@18.2.14)(chalk@4.1.2)(ethers@5.7.2)(react-dom@18.2.0)(react-native@0.73.7)(react@18.2.0)(web3-core@1.10.3)(web3-eth-contract@1.10.3)
       '@radix-ui/react-slot':
         specifier: 1.0.2
         version: 1.0.2(@types/react@18.2.14)(react@18.2.0)
@@ -11306,8 +11306,8 @@ packages:
   /@openzeppelin/contracts@4.9.3:
     resolution: {integrity: sha512-He3LieZ1pP2TNt5JbkPA4PNT9WC3gOTOlDcFGJW4Le4QKqwmiNJCRt44APfxMxvq7OugU/cqYuPcSBzOw38DAg==}
 
-  /@orbs-network/twap-ui-sushiswap@1.1.4-alpha.0(@emotion/react@11.11.4)(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.1)(@types/react@18.2.14)(chalk@4.1.2)(ethers@5.7.2)(react-dom@18.2.0)(react-native@0.73.7)(react@18.2.0)(web3-core@1.10.3)(web3-eth-contract@1.10.3):
-    resolution: {integrity: sha512-zD1qcGksTumLIc87CmPcS+kwMQJx+L8B1Rx9D4a2MB3FM2arerrtTO8iJmT/jJtDHKN47v9eaKnZcuLTb5dxAw==}
+  /@orbs-network/twap-ui-sushiswap@1.1.5(@emotion/react@11.11.4)(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.1)(@types/react@18.2.14)(chalk@4.1.2)(ethers@5.7.2)(react-dom@18.2.0)(react-native@0.73.7)(react@18.2.0)(web3-core@1.10.3)(web3-eth-contract@1.10.3):
+    resolution: {integrity: sha512-b3ZAKkjoO2OW6S7ghX+ac8e4tWIfr6e6OqtlCtAOmpo16c1KJv8LKUtOQ3TAcl4+aO4vedlIrq6nwVOxjPj75A==}
     peerDependencies:
       react: '*'
       react-dom: '*'
@@ -11316,7 +11316,7 @@ packages:
       '@mui/material': 5.16.1(@emotion/react@11.11.4)(@emotion/styled@11.11.5)(@types/react@18.2.14)(react-dom@18.2.0)(react@18.2.0)
       '@mui/system': 5.16.1(@emotion/react@11.11.4)(@emotion/styled@11.11.5)(@types/react@18.2.14)(react@18.2.0)
       '@orbs-network/twap': 1.25.3(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.1)(chalk@4.1.2)(ethers@5.7.2)(web3-core@1.10.3)(web3-eth-contract@1.10.3)
-      '@orbs-network/twap-ui': 1.1.4-alpha.0(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.1)(@types/react@18.2.14)(chalk@4.1.2)(ethers@5.7.2)(react-dom@18.2.0)(react-native@0.73.7)(react@18.2.0)(web3-core@1.10.3)(web3-eth-contract@1.10.3)
+      '@orbs-network/twap-ui': 1.1.5(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.1)(@types/react@18.2.14)(chalk@4.1.2)(ethers@5.7.2)(react-dom@18.2.0)(react-native@0.73.7)(react@18.2.0)(web3-core@1.10.3)(web3-eth-contract@1.10.3)
       lodash: 4.17.21
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -11344,8 +11344,8 @@ packages:
       - web3-eth-contract
     dev: false
 
-  /@orbs-network/twap-ui@1.1.4-alpha.0(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.1)(@types/react@18.2.14)(chalk@4.1.2)(ethers@5.7.2)(react-dom@18.2.0)(react-native@0.73.7)(react@18.2.0)(web3-core@1.10.3)(web3-eth-contract@1.10.3):
-    resolution: {integrity: sha512-QBATVwCvkdEFR2/vcTIOfVimHXQSyntHT7bI51WamUHI727tXsO+R0isQAX5HWawa6/54eqFtRlslMyzbi/b2g==}
+  /@orbs-network/twap-ui@1.1.5(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.1)(@types/react@18.2.14)(chalk@4.1.2)(ethers@5.7.2)(react-dom@18.2.0)(react-native@0.73.7)(react@18.2.0)(web3-core@1.10.3)(web3-eth-contract@1.10.3):
+    resolution: {integrity: sha512-dwOecEoaJ95h8c5Rq00gw3tUkcbjpY8YhleiTR+VGbfe0oai50gaqc/H9QBpW+OprRNvMLgGl+SbphEk5ZbIYg==}
     peerDependencies:
       react: '*'
       react-dom: '*'
@@ -17492,6 +17492,7 @@ packages:
     resolution: {integrity: sha512-/vPO1EPOs306Cvhwv7KfVfYvOJqA/S/AXjaHQiJboCZzcNDb+TIJFN9/2C9DZ//ijSKWioNyUxD792QmDJ+HKQ==}
     dependencies:
       '@types/ms': 0.7.34
+    dev: false
 
   /@types/detect-port@1.3.3:
     resolution: {integrity: sha512-bV/jQlAJ/nPY3XqSatkGpu+nGzou+uSwrH1cROhn+jBFg47yaNH+blW4C7p9KhopC7QxCv/6M86s37k8dMk0Yg==}
@@ -34138,7 +34139,7 @@ packages:
   /micromark@3.2.0:
     resolution: {integrity: sha512-uD66tJj54JLYq0De10AhWycZWGQNUvDI55xPgk2sQM5kn1JYlhbCMTtEeT27+vAhW2FBQxLlOmS3pmA7/2z4aA==}
     dependencies:
-      '@types/debug': 4.1.8
+      '@types/debug': 4.1.12
       debug: 4.3.4(supports-color@8.1.1)
       decode-named-character-reference: 1.0.2
       micromark-core-commonmark: 1.1.0
@@ -41425,7 +41426,7 @@ packages:
       methods: 1.1.2
       mime: 2.6.0
       qs: 6.12.1
-      semver: 7.5.4
+      semver: 7.6.0
     transitivePeerDependencies:
       - supports-color
     dev: true
