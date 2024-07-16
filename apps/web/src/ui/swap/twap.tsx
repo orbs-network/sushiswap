@@ -1,18 +1,18 @@
 "use client";
+
 import {
   TWAP as TwapContainer,
   isSupportedChain,
 } from "@orbs-network/twap-ui-sushiswap";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount, useChainId} from "wagmi";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@sushiswap/ui";
-
-import { Currency, Token, Type } from "sushi/currency";
+import { Currency } from "sushi/currency";
 import { TokenSelector } from "src/lib/wagmi/components/token-selector/TokenSelector";
 import {
   useDerivedStateSimpleSwap,
@@ -26,17 +26,13 @@ import {
   usePrice,
   useTokens,
 } from "@sushiswap/react-query";
-import { ChainId } from "sushi";
 import { useTheme } from "next-themes";
 import { SimpleSwapSettingsOverlay } from "./simple/simple-swap-settings-overlay";
 import { SwapModeButtons } from "./swap-mode-buttons";
 import { SimpleSwapHeader } from "./simple/simple-swap-header";
 import { SimpleSwapBridgeBanner } from "./simple/simple-swap-bridge-banner";
+import { Address } from "viem";
 
-const LOGO = {
-  [ChainId.BASE]: "ethereum.svg",
-  [ChainId.ARBITRUM]: "ethereum.svg",
-};
 
 const Modal = ({
   open,
@@ -52,9 +48,8 @@ const Modal = ({
   header?: ReactNode;
 }) => {
   return (
-    <Dialog open={open} onOpenChange={() => onClose()}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
-        {" "}
         <DialogHeader>
           {header}
           {title && <DialogTitle>{title}</DialogTitle>}
@@ -70,11 +65,11 @@ const TokenSelectModal = ({
   children,
   onSelect,
 }: {
-  selected: any;
+  selected: Currency;
   children: ReactNode;
-  onSelect: (currency: Type) => void;
+  onSelect: (currency: Currency) => void;
 }) => {
-  const chainId = useDerivedStateSimpleSwap().state.chainId;
+  const { state: { chainId } }  = useDerivedStateSimpleSwap()
 
   return (
     <TokenSelector
@@ -91,37 +86,18 @@ const TokenSelectModal = ({
   );
 };
 
-export const useProvider = () => {
-  const [provider, setProvider] = useState<any>(undefined);
-  const { connector, address } = useAccount();
-  const chainId = useChainId();
-
-  const setProviderFromConnector = useCallback(async () => {
-    setProvider(undefined);
-    try {
-      const res = await connector?.getProvider();
-      setProvider(res);
-    } catch (error) {}
-  }, [setProvider, connector, chainId, address]);
-
-  useEffect(() => {
-    setProviderFromConnector();
-  }, [setProviderFromConnector]);
-
-  return provider;
-};
 
 const useTrade = () => {
-  const { data: trade } = useSimpleSwapTrade();
-  const outAmount = trade?.amountOut?.quotient.toString();
+  const { data: trade, isInitialLoading } = useSimpleSwapTrade();
+
   return {
-    isLoading: !outAmount,
-    outAmount: outAmount,
+    isLoading: isInitialLoading,
+    outAmount: trade?.amountOut?.quotient.toString()
   };
 };
 
-const usePriceUSD = (address?: string) => {
-  const chainId = useDerivedStateSimpleSwap().state.chainId;
+const usePriceUSD = (address?: Address) => {
+  const { state: { chainId } }  = useDerivedStateSimpleSwap()
 
   const { data: price } = usePrice({
     chainId,
@@ -135,7 +111,7 @@ const usePriceUSD = (address?: string) => {
 const getTokenLogo = (currency: Currency) => {
   try {
     const src = currency.isNative
-      ? `native-currency/${LOGO[currency.chainId as keyof typeof LOGO]}`
+      ? `native-currency/ethereum.svg`
       : `tokens/${currency.chainId}/${currency.wrapped.address}.jpg`;
     const params = ["f_auto", "c_limit", `w_${64}`];
     return `https://cdn.sushi.com/image/upload/${params.join(
@@ -148,11 +124,11 @@ const getTokenLogo = (currency: Currency) => {
 
 const useTokenList = () => {
   const { data: customTokenMap } = useCustomTokens();
-  const chainId = useDerivedStateSimpleSwap().state.chainId;
+  const { state: { chainId } }  = useDerivedStateSimpleSwap()
 
   const { data: otherTokenMap } = useOtherTokenListsQuery({
     chainId,
-    query: "",
+    query: undefined,
   });
   const { data: defaultTokenMap } = useTokens({
     chainId,
@@ -170,7 +146,6 @@ const useTokenList = () => {
     customTokenMap,
     tokenMap,
     chainId,
-    balancesMap: {},
     includeNative: true,
   });
 
@@ -178,17 +153,18 @@ const useTokenList = () => {
 };
 
 export const useIsTwapSupported = () => {
-  const { state } = useDerivedStateSimpleSwap();
+  const { state: { chainId } } = useDerivedStateSimpleSwap();
 
-  return useMemo(() => isSupportedChain(state.chainId), [state.chainId]);
+  return useMemo(() => isSupportedChain(chainId), [chainId]);
 };
 
 function Provider({ isLimit }: { isLimit?: boolean }) {
   const { openConnectModal } = useConnectModal();
-  const provider = useProvider();
-  const tokens = useTokenList();
+  const { connector } = useAccount();
   const { state, mutate } = useDerivedStateSimpleSwap();
   const { resolvedTheme } = useTheme();
+  const tokens = useTokenList();
+  const connectedChainId = useChainId()
 
   useEffect(() => {
     // we do this to get an indication of market price for single token
@@ -213,7 +189,7 @@ function Provider({ isLimit }: { isLimit?: boolean }) {
         account={state.recipient}
         limit={isLimit}
         useTrade={useTrade}
-        provider={provider}
+        connector={connector}
         dappTokens={tokens}
         srcToken={state.token0}
         dstToken={state.token1}
@@ -224,6 +200,7 @@ function Provider({ isLimit }: { isLimit?: boolean }) {
         isDarkTheme={resolvedTheme === "dark"}
         onSwitchTokens={mutate.switchTokens}
         configChainId={state.chainId}
+        connectedChainId={connectedChainId}
       />
     </div>
   );

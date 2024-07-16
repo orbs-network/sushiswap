@@ -21,6 +21,7 @@ export const SwapModeButtons = () => {
   const [bannerMinimized] = useLocalStorage("xswap-banner-minimized", false);
   const isMounted = useIsMounted();
   const isTwapSupported = useIsTwapSupported();
+
   return (
     <div className="flex gap-2">
       <Link href="/swap">
