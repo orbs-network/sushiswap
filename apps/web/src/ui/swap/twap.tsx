@@ -153,7 +153,7 @@ const useTokenList = () => {
 };
 
 export const useIsTwapSupported = () => {
-  const { state: { chainId } } = useDerivedStateSimpleSwap();
+  const chainId = useChainId();
 
   return useMemo(() => isSupportedChain(chainId), [chainId]);
 };
