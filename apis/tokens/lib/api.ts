@@ -187,10 +187,10 @@ export async function getPopularTokens(chainId: number) {
   })
 
   const filteredTokens = approvedTokens
-    .map((token) => {
+    .map((token: any) => {
       const liquidity =
-        token.pools0.reduce((a, b) => a + Number(b.liquidityUSD) / 2, 0) +
-        token.pools1.reduce((a, b) => a + Number(b.liquidityUSD) / 2, 0)
+        token.pools0.reduce((a: any, b:any) => a + Number(b.liquidityUSD) / 2, 0) +
+        token.pools1.reduce((a:any, b:any) => a + Number(b.liquidityUSD) / 2, 0)
       return {
         id: token.id,
         address: token.address,
@@ -202,7 +202,7 @@ export async function getPopularTokens(chainId: number) {
         liquidityUSD: Number(liquidity.toFixed(0)),
       }
     })
-    .sort((a, b) => b.liquidityUSD - a.liquidityUSD)
+    .sort((a: any, b: any) => b.liquidityUSD - a.liquidityUSD)
     .slice(0, 10)
 
   await client.$disconnect()

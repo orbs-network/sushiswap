@@ -13,33 +13,33 @@ const schema = z.object({
   chainId: z.coerce
     .number()
     .refine(
-      (chainId) =>
+      (chainId: any) =>
         isSushiSwapV2ChainId(chainId as ChainId) ||
         isSushiSwapV3ChainId(chainId as ChainId) ||
         isBentoBoxChainId(chainId as ChainId),
       { message: 'Invalid chainId' },
     )
-    .transform((chainId) => {
+    .transform((chainId: any) => {
       return chainId as ChainId
     }),
   protocol: z
     .string()
     .refine(
-      (protocol) => Object.values(Protocol).includes(protocol as Protocol),
+      (protocol: any) => Object.values(Protocol).includes(protocol as Protocol),
       {
         message: `Invalid protocol, valid values are: ${Object.values(
           Protocol,
         ).join(', ')}`,
       },
     )
-    .transform((protocol) => protocol as Protocol),
+    .transform((protocol: any) => protocol as Protocol),
   isApproved: z.coerce
     .string()
     .default('true')
-    .refine((val) => ['true', 'false'].includes(val), {
+    .refine((val: any) => ['true', 'false'].includes(val), {
       message: 'isApproved must true or false',
     })
-    .transform((val) => val === 'true')
+    .transform((val: any) => val === 'true')
     .optional(),
 })
 
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
         ...approval,
       },
     })
-    .then((pools) => pools.map((pool) => pool.address))
+    .then((pools: any) => pools.map((pool: any) => pool.address))
   await client.$disconnect()
 
   return NextResponse.json(data, { headers: CORS })
