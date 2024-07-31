@@ -13,22 +13,21 @@ import {
 import { ShuffleIcon } from '@sushiswap/ui/icons/ShuffleIcon'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { PathnameButton } from '../pathname-button'
-import { useChainId} from "wagmi";
 import { useCallback, useEffect, useState } from 'react'
+import { useChainId } from 'wagmi'
+import { PathnameButton } from '../pathname-button'
 
 const useIsTwapSupported = () => {
-  const chainId = useChainId();
+  const chainId = useChainId()
   const [isTwapSupported, setIsTwapSupported] = useState(false)
 
-  const validate = useCallback(
-    async () => {
-      const { isSupportedChain } = await import('@orbs-network/twap-ui-sushiswap');
-     setIsTwapSupported(isSupportedChain(chainId));
-    },
-    [chainId],
-  )
-  
+  const validate = useCallback(async () => {
+    const isSupportedChain = await import(
+      /* webpackExports: "isSupportedChain" */ '@orbs-network/twap-ui-sushiswap'
+    ).then((m) => m.isSupportedChain)
+    setIsTwapSupported(isSupportedChain(chainId))
+  }, [chainId])
+
   useEffect(() => {
     validate()
   }, [validate])
@@ -42,7 +41,7 @@ export const SwapModeButtons = () => {
   const isTwapSupported = useIsTwapSupported()
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 flex-wrap">
       <Link href="/swap">
         <PathnameButton pathname="/swap" size="sm">
           Swap
