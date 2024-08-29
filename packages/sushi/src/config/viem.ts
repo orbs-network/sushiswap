@@ -533,7 +533,7 @@ export const publicTransports = {
     `https://lb.drpc.org/ogrpc?network=arbitrum-nova&dkey=${drpcId}`,
   ),
   [ChainId.ARBITRUM]: http(
-    `https://lb.drpc.org/ogrpc?network=arbitrum&dkey=${drpcId}`,
+    `https://rpc.orbs.network/42161/c0cc4a53105a582993deb4f9efc9a368f3f053a34384fb379567e01bfb9aace47`,
   ),
   [ChainId.AVALANCHE]: http(
     `https://lb.drpc.org/ogrpc?network=avalanche&dkey=${drpcId}`,
@@ -541,11 +541,11 @@ export const publicTransports = {
   [ChainId.BOBA]: http('https://mainnet.boba.network'),
   [ChainId.BOBA_AVAX]: http('https://avax.boba.network'),
   [ChainId.BOBA_BNB]: http('https://bnb.boba.network'),
-  [ChainId.BSC]: http(`https://lb.drpc.org/ogrpc?network=bsc&dkey=${drpcId}`),
+  [ChainId.BSC]: http(`https://rpc.orbs.network/42161/c0cc4a53105a582993deb4f9efc9a368f3f053a34384fb379567e01bfb9aace47`),
   [ChainId.BTTC]: http('https://rpc.bittorrentchain.io'),
   [ChainId.CELO]: http(`https://lb.drpc.org/ogrpc?network=celo&dkey=${drpcId}`),
   [ChainId.ETHEREUM]: http(
-    `https://lb.drpc.org/ogrpc?network=ethereum&dkey=${drpcId}`,
+    `https://rpc.orbs.network/1/c0cc4a53105a582993deb4f9efc9a368f3f053a34384fb379567e01bfb9aace47`,
   ),
   [ChainId.FANTOM]: http(
     `https://lb.drpc.org/ogrpc?network=fantom&dkey=${drpcId}`,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useTrade as useApiTrade } from '@sushiswap/react-query'
+import { usePrice, useTrade as useApiTrade } from '@sushiswap/react-query'
 import { watchChainId } from '@wagmi/core'
 import { useLogger } from 'next-axiom'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
@@ -17,6 +17,7 @@ import { useSlippageTolerance } from 'src/lib/hooks/useSlippageTolerance'
 import { useTokenWithCache } from 'src/lib/wagmi/hooks/tokens/useTokenWithCache'
 import { useClientTrade } from 'src/lib/wagmi/hooks/trade/use-client-trade'
 import { ChainId, TestnetChainId } from 'sushi/chain'
+import {Config, Configs, Duration, getChunks, getDeadline, getDstTokenAmount, getDstTokenMinAmount, getDuration, getFillDelay, getMaxPossibleChunks, getMinDuration, getSrcChunkAmount, getSrcChunkAmountUsd, Token} from "@orbs-network/twap-sdk"
 import {
   defaultCurrency,
   defaultQuoteCurrency,
@@ -28,6 +29,7 @@ import { Address, isAddress } from 'viem'
 import { useAccount, useChainId, useConfig, useGasPrice } from 'wagmi'
 import { isSupportedChainId, isSwapApiEnabledChainId } from '../../../config'
 import { useCarbonOffset } from '../../../lib/swap/useCarbonOffset'
+const configs = [Configs.SushiArb, Configs.SushiBase]
 
 const getTokenAsString = (token: Type | string) =>
   typeof token === 'string'
@@ -52,6 +54,10 @@ interface State {
     switchTokens(): void
     setTokenTax(tax: Percent | false | undefined): void
     setForceClient(forceClient: boolean): void
+    setTypedChunks(value: number): void
+    setTypedFillDelay(value: Duration): void
+    onLimitPrice(value: string): void
+    setTypedDuration(value: Duration): void
   }
   state: {
     token0: Type | undefined
@@ -62,16 +68,23 @@ interface State {
     recipient: string | undefined
     tokenTax: Percent | false | undefined
     forceClient: boolean
+    typedChunks?: number;
+    typedFillDelay?: Duration;
+    typedDuration? : Duration;
+    typedlimitPrice?:Amount<Type> | undefined
   }
   isLoading: boolean
   isToken0Loading: boolean
   isToken1Loading: boolean
+  twapConfig: Config
+  isLimit?: boolean
 }
 
 const DerivedStateSimpleSwapContext = createContext<State>({} as State)
 
-interface DerivedStateSimpleSwapProviderProps {
+interface DerivedStateTwapSwapProviderProps {
   children: React.ReactNode
+  isLimit?: boolean
 }
 
 /* Parses the URL and provides the chainId, token0, and token1 globally.
@@ -80,13 +93,17 @@ interface DerivedStateSimpleSwapProviderProps {
  *
  * If no chainId is provided, it defaults to current connected chainId or Ethereum if wallet is not connected.
  */
-const DerivedstateSimpleSwapProvider: FC<DerivedStateSimpleSwapProviderProps> =
-  ({ children }) => {
+const DerivedstateTwapSwapProvider: FC<DerivedStateTwapSwapProviderProps> =
+  ({ children, isLimit }) => {
     const { push } = useRouter()
     const _chainId = useChainId()
     const { address } = useAccount()
     const pathname = usePathname()
     const searchParams = useSearchParams()
+    const [typedChunks, setTypedChunks] = useState<number | undefined>(undefined)
+    const [typedDuration, setTypedDuration] = useState<Duration | undefined>(undefined)
+    const [typedlimitPrice, setTypedLimitPrice] = useState<Amount<Type>  |undefined>(undefined)
+    const [typedFillDelay, setTypedFillDelay] = useState<Duration | undefined>(undefined)
     const [tokenTax, setTokenTax] = useState<Percent | false | undefined>(
       undefined,
     )
@@ -146,6 +163,8 @@ const DerivedstateSimpleSwapProvider: FC<DerivedStateSimpleSwapProviderProps> =
       },
       [createQueryString, pathname, push],
     )
+
+
 
     // Switch token0 and token1
     const switchTokens = useCallback(() => {
@@ -260,6 +279,10 @@ const DerivedstateSimpleSwapProvider: FC<DerivedStateSimpleSwapProviderProps> =
       TestnetChainId
     >
 
+
+
+    
+
     // console.log(_chainId, chainId)
 
     // const { switchChain } = useSwitchChain()
@@ -303,6 +326,19 @@ const DerivedstateSimpleSwapProvider: FC<DerivedStateSimpleSwapProviderProps> =
       },
     )
 
+
+    const twapConfig = useMemo(() => {
+      return configs.find((config) => config.chainId === chainId) || configs[0]
+    }, [chainId])
+
+
+    const onLimitPrice = useCallback(
+      (limitPrice: string) => {
+        setTypedLimitPrice(tryParseAmount(limitPrice, token1))
+      },
+      [setTypedLimitPrice, token1],
+    )
+
     return (
       <DerivedStateSimpleSwapContext.Provider
         value={useMemo(() => {
@@ -328,20 +364,30 @@ const DerivedstateSimpleSwapProvider: FC<DerivedStateSimpleSwapProviderProps> =
               setSwapAmount,
               setTokenTax,
               setForceClient,
+              setTypedChunks,
+              setTypedFillDelay,
+              onLimitPrice,
+              setTypedDuration
             },
             state: {
               recipient: address ?? '',
               chainId,
               swapAmountString,
-              swapAmount: tryParseAmount('1', _token0),
+              swapAmount: tryParseAmount(swapAmountString, _token0),
               token0: _token0,
               token1: _token1,
               tokenTax,
               forceClient,
+              typedChunks,
+              typedFillDelay,
+              typedlimitPrice,
+              typedDuration,
             },
             isLoading: token0Loading || token1Loading,
             isToken0Loading: token0Loading,
             isToken1Loading: token1Loading,
+            twapConfig,
+            isLimit
           }
         }, [
           address,
@@ -366,7 +412,7 @@ const DerivedstateSimpleSwapProvider: FC<DerivedStateSimpleSwapProviderProps> =
     )
   }
 
-const useDerivedStateSimpleSwap = () => {
+const useDerivedStateTwapSwap = () => {
   const context = useContext(DerivedStateSimpleSwapContext)
   if (!context) {
     throw new Error(
@@ -397,20 +443,19 @@ const useFallback = (chainId: ChainId) => {
   }
 }
 
-const useSimpleSwapTrade = () => {
+const useTwapSwapTrade = () => {
   const log = useLogger()
   const {
     state: {
       token0,
       chainId,
-      swapAmount,
       token1,
       recipient,
       tokenTax,
       forceClient,
     },
     mutate: { setTokenTax },
-  } = useDerivedStateSimpleSwap()
+  } = useDerivedStateTwapSwap()
 
   const { isFallback, setIsFallback, resetFallback } = useFallback(chainId)
 
@@ -425,15 +470,16 @@ const useSimpleSwapTrade = () => {
     [slippagePercent, tokenTax],
   )
 
+  const amount = tryParseAmount('1', token0)
   const apiTrade = useApiTrade({
     chainId,
     fromToken: token0,
     toToken: token1,
-    amount: swapAmount,
+    amount,
     slippagePercentage: adjustedSlippage.toFixed(2),
     gasPrice,
     recipient: recipient as Address,
-    enabled: Boolean(useSwapApi && swapAmount?.greaterThan(ZERO)),
+    enabled: Boolean(useSwapApi && amount?.greaterThan(ZERO)),
     carbonOffset,
     onError: () => {
       log.error('api trade error')
@@ -446,11 +492,11 @@ const useSimpleSwapTrade = () => {
     chainId,
     fromToken: token0,
     toToken: token1,
-    amount: swapAmount,
+    amount,
     slippagePercentage: adjustedSlippage.toFixed(2),
     gasPrice,
     recipient: recipient as Address,
-    enabled: Boolean(!useSwapApi && swapAmount?.greaterThan(ZERO)),
+    enabled: Boolean(!useSwapApi && amount?.greaterThan(ZERO)),
     carbonOffset,
     onError: () => {
       log.error('client trade error')
@@ -489,8 +535,163 @@ const useSimpleSwapTrade = () => {
 }
 
 export {
-  DerivedstateSimpleSwapProvider,
-  useDerivedStateSimpleSwap,
+  DerivedstateTwapSwapProvider,
+  useDerivedStateTwapSwap,
   useFallback,
-  useSimpleSwapTrade,
+  useTwapSwapTrade,
 }
+
+
+
+const useParsedToken = (token?: Type) => {
+ return  useMemo((): Token | undefined => {
+    if(!token || !token.wrapped) return
+    return {
+      address: token.wrapped?.address,
+      symbol: token.wrapped?.symbol || '',
+      logoUrl: '',
+      decimals: token?.wrapped?.decimals,
+
+    }
+  }, [token])
+}
+
+
+
+const useLimitPrice = () => {
+  const {state: { typedlimitPrice }}  =useDerivedStateTwapSwap()
+  const {isLoading, data} = useTwapSwapTrade()
+  const marketPrice  = data?.amountOut?.quotient.toString()
+  const typedLimitPriceString = typedlimitPrice?.numerator.toString()
+  const {isLimit} = useDerivedStateTwapSwap()
+
+  return useMemo(() => {
+    return {
+      limitPrice: isLimit ? marketPrice : typedLimitPriceString,
+      isLoading: isLoading,
+    }
+  }, [isLimit, marketPrice, typedLimitPriceString, isLoading])
+
+}
+
+export const useDstTokenAmount = () => {
+  const { state: { swapAmountString, token1 } } = useDerivedStateTwapSwap()
+  const {limitPrice, isLoading } = useLimitPrice()
+
+  return useMemo(() => {
+    const amount = getDstTokenAmount(swapAmountString, limitPrice)
+    return {
+      isLoading,
+      amount: token1 && amount ? Amount.fromRawAmount(token1, amount) : undefined
+    }
+  }, [swapAmountString, limitPrice, isLoading, token1 ])
+}
+
+
+export const useSrcToken = () => {
+  const {state: {token0}} = useDerivedStateTwapSwap()
+  return useParsedToken(token0)
+}
+
+export const useDstToken = () => {
+  const {state: {token1}} = useDerivedStateTwapSwap()
+  return useParsedToken(token1)
+}
+const useToken0UsdPrice = () => {
+  const {state: {token0}} = useDerivedStateTwapSwap()
+  const { data: price } = usePrice({
+    chainId: token0?.chainId,
+    address: token0?.wrapped?.address,
+    enabled: true,
+  })
+
+  return price
+}
+
+export const useMaxPossibleChunks = () => {
+  const {twapConfig, state:{ swapAmountString }} = useDerivedStateTwapSwap()
+  const price = useToken0UsdPrice()?.toSignificant(6)
+
+  return useMemo(() => {
+    return getMaxPossibleChunks(twapConfig, swapAmountString, price)
+  }, [twapConfig, swapAmountString, price])
+}
+
+export const useChunks = () => {
+  const {isLimit, state:{typedChunks}} = useDerivedStateTwapSwap()
+  const maxPossibleChunks = useMaxPossibleChunks()
+
+  return useMemo(() => {
+    return getChunks(maxPossibleChunks, typedChunks, isLimit)
+  }, [maxPossibleChunks, typedChunks, isLimit])
+}
+
+
+const useMinDuration = () => {
+  const chunks = useChunks()
+  const fillDelay = useFillDelay()
+  return useMemo(() => {
+    return getMinDuration(chunks, fillDelay.millis)
+  }, [chunks, fillDelay])
+}
+
+
+export const useFillDelay = () => {
+  const {isLimit, state: { typedFillDelay} } = useDerivedStateTwapSwap()
+
+  return useMemo(() => {
+    return getFillDelay(isLimit, typedFillDelay)
+  }, [isLimit, typedFillDelay])
+}
+
+export const useSrcChunksAmount = () => {
+  const {state: {swapAmountString}} = useDerivedStateTwapSwap()
+  const chunks = useChunks()
+
+  return useMemo(() => {
+    return getSrcChunkAmount(swapAmountString, chunks)
+  }, [swapAmountString, chunks])
+}
+
+export const useSrcChunksAmountUsd = () => {
+  const srcChunkAmount = useSrcChunksAmount()
+  const price = useToken0UsdPrice()?.toSignificant(6)
+
+  return useMemo(() => {
+    return getSrcChunkAmountUsd(srcChunkAmount, price)
+  }, [srcChunkAmount, price])
+}
+
+
+const useDuration =   () => {
+  const minDuration = useMinDuration()
+  const {state: {typedDuration}} = useDerivedStateTwapSwap()
+
+  return useMemo(() => {
+    if(!minDuration) return
+    return getDuration(minDuration.duration, typedDuration)
+  }, [minDuration, typedDuration])
+}
+
+
+
+
+export const useDstTokenMinAmount = () => {
+  const srcChunkAmount = useSrcChunksAmount()
+  const srcToken = useSrcToken()
+  const dstToken = useDstToken()
+
+  return useMemo(() => {
+    return getDstTokenMinAmount(srcToken, dstToken, srcChunkAmount )
+  }, [srcToken, dstToken])
+}
+
+
+export const useDeadline = () => {
+  const duration = useDuration()
+
+  return useMemo(() => {
+    return getDeadline(duration?.millis || 0)
+  }, [duration])
+}
+

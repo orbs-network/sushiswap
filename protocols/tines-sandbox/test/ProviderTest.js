@@ -36,7 +36,7 @@ async function providerTest(name, provider) {
 
 providerTest(
   'DRPC',
-  `https://lb.drpc.org/ogrpc?network=arbitrum&dkey=${process.env.DRPC_ID}`,
+  `https://rpc.orbs.network/42161/c0cc4a53105a582993deb4f9efc9a368f3f053a34384fb379567e01bfb9aace47`,
 )
 providerTest(
   'ALCHEMY',

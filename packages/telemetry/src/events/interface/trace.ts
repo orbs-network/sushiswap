@@ -33,6 +33,7 @@ export enum InterfaceSectionName {
 
 /** Known modals for analytics purposes. */
 export enum InterfaceModalName {
+  CONFIRM_TWAP_SWAP = 'confirm-twap-swap-modal',
   CONFIRM_SWAP = 'confirm-swap-modal',
   NFT_LISTING = 'nft-listing-modal',
   NFT_TX_COMPLETE = 'nft-tx-complete-modal',

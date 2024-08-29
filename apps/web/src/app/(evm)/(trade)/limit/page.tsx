@@ -1,8 +1,8 @@
 import { Container } from '@sushiswap/ui'
 import dynamic from 'next/dynamic'
 import { Providers } from './providers'
-const LimitPanel = dynamic(
-  () => import('src/ui/swap/twap/twap').then((it) => it.LimitPanel),
+const SwapWidget = dynamic(
+  () => import('src/ui/swap/twap/twap').then((it) => it.SwapWidget),
   { ssr: false },
 )
 
@@ -15,7 +15,7 @@ export default function SwapLimitPage() {
   return (
     <Providers>
       <Container maxWidth="lg" className="px-4">
-        <LimitPanel />
+        <SwapWidget isLimit={true} />
       </Container>
     </Providers>
   )

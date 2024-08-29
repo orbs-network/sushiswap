@@ -270,7 +270,7 @@ it.skip('Extractor BSC infinite work test', async () => {
     cacheDir: './cache',
     logDepth: 300,
     logging: true,
-    providerURL: `https://lb.drpc.org/ogrpc?network=bsc&dkey=${drpcId}`,
+    providerURL: `https://rpc.orbs.network/42161/c0cc4a53105a582993deb4f9efc9a368f3f053a34384fb379567e01bfb9aace47`,
   })
 })
 
